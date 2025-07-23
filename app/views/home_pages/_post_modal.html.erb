@@ -1,5 +1,5 @@
 <!-- Button to trigger modal -->
-<button id="newPostBtn" onclick="my_modal_1.showModal()" class="bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+<button id="newPostBtn" onclick="my_modal_1.showModal()" class="bg-[#673386] text-white px-6 py-3 rounded-lg shadow-md hover:bg-[#9158b4] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#9158b4] focus:ring-opacity-50">
   + New Post
 </button>
 <dialog id="my_modal_1" class="modal" data-controller="post">
@@ -38,7 +38,7 @@
         </div>
     </div>
     <div class="form-group mt-3">
-        <%= f.submit " Post Now", class: "btn btn-primary submit-btn" %>
+        <%= f.submit " Post Now", class: "publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50" %>
     </div>
     <% end %>
     <% unless session[:ig_user_id] && session[:fb_page_id]  %>
