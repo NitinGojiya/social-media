@@ -25,7 +25,7 @@
           </a>
         </li>
         <li><a>Settings</a></li>
-        <li><a>Logout</a></li>
+        <li><%= button_to "Log out", session_path, method: :delete if authenticated? %></li>
       </ul>
     </div>
   </div>
