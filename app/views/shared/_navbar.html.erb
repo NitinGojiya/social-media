@@ -1,12 +1,36 @@
 <div class="navbar bg-base-100 shadow-sm sticky top-0 z-50">
   <div class="flex-1">
-    <a class="text-xl">Universal Posting</a>
+    <a class="text-xl" href="/">Universal Posting</a>
   </div>
   <div class="flex gap-2 items-center justify-center">
-    <div>
-        <a href=".">Home</a>
-        <a href=".">Post</a>
+    <div class="navbar bg-base-100">
+  <!-- Desktop Menu -->
+  <div class="hidden md:flex space-x-4 text-xl">
+    <a href="/" class="btn btn-ghost text-xl">
+      <i class="fa-solid fa-house"></i> Home
+    </a>
+    <a href="/post" class="btn btn-ghost text-xl">
+      <i class="fa-solid fa-photo-film"></i> Post
+    </a>
+    <a href="/link_account" class="btn btn-ghost text-xl">
+      <i class="fa-solid fa-link"></i> Link Social Account
+    </a>
+  </div>
+
+  <!-- Mobile Menu Icon -->
+  <div class="md:hidden dropdown dropdown-end ml-auto">
+    <div tabindex="0" role="button" class="btn btn-ghost text-xl">
+      <i class="fa-solid fa-bars"></i>
     </div>
+    <ul tabindex="0" class="menu dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+      <li><a href="/"><i class="fa-solid fa-house"></i> Home</a></li>
+      <li><a href="/post"><i class="fa-solid fa-photo-film"></i> Post</a></li>
+      <li><a href="/link_account"><i class="fa-solid fa-link"></i> Link Social Account</a></li>
+    </ul>
+  </div>
+</div>
+
+
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
         <div class="w-10 rounded-full">
@@ -24,7 +48,7 @@
             <span class="badge">New</span>
           </a>
         </li>
-        <li><a>Settings</a></li>
+        <li><a href="/link_account">Linked Account</a></li>
         <li><%= button_to "Log out", session_path, method: :delete if authenticated? %></li>
       </ul>
     </div>
