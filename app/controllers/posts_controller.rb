@@ -1,4 +1,4 @@
-class InstagramsController < ApplicationController
+class PostsController < ApplicationController
   require 'net/http'
   require 'uri'
   require 'json'
@@ -108,4 +108,5 @@ class InstagramsController < ApplicationController
       { error: false, message: "Facebook post published! ID: #{res_data["post_id"] || res_data["id"]}" }
     end
   end
+
 end
