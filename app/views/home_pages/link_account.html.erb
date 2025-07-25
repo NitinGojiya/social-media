@@ -19,7 +19,7 @@
             </button>
 
             <!-- LinkedIn -->
-            <button class="btn bg-[#0967C2] text-white border-[#0059b3]">
+            <%= link_to "/auth/linkedin",class:"btn bg-[#0967C2] text-white border-[#0059b3]" do %>
                 <svg aria-label="LinkedIn logo" width="16" height="16" xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 32 32">
                     <path fill="white"
@@ -27,6 +27,5 @@
                         fill-rule="evenodd"></path>
                 </svg>
                 Login with LinkedIn
-            </button>
-
+                <%end%>
 </div>
