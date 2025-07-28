@@ -14,8 +14,14 @@ Rails.application.routes.draw do
   get '/auth/failure', to: redirect('/')
 
   # linkdin routes
-  post "linkdin", to: "linkdin_posts#create", as: "linkdin"
-  get '/auth/linkedin/callback', to: 'linkedin_posts#linkedin_session'
-  get '/auth/failure', to: redirect('/')
+  # post "linkdin", to: "linkdin_posts#create", as: "linkdin"
+  # get '/auth/linkedin/callback', to: 'linkedin_posts#linkedin_session'
+  # get '/auth/failure', to: redirect('/')
+
+  get '/auth/linkedin', to: 'linkedin_posts#auth'
+  get '/auth/linkedin/callback', to: 'linkedin_posts#callback'
+  get '/linkedin/profile', to: 'linkedin_posts#profile', as: 'linkedin_profile'
+
+
 
 end
