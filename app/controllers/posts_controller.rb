@@ -5,7 +5,6 @@ class PostsController < ApplicationController
 
   after_action :delete_uploaded_file, only: [:create]
 
-
   def new
   end
 
