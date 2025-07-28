@@ -3,6 +3,8 @@ class PostsController < ApplicationController
   require 'uri'
   require 'json'
 
+
+
   def new
   end
 
@@ -34,61 +36,89 @@ class PostsController < ApplicationController
     redirect_to post_path, notice: "Connected to Facebook Page: #{first_page["name"]}"
   end
 
-  def create
-  # Get the uploaded file or image URL
-  uploaded_file = params[:image_file] # e.g., form field name for file upload
-  image_url     = params[:image_url]
-  caption       = params[:caption]
-  post_to_ig    = params[:post_to_ig] == "1"
-  post_to_fb    = params[:post_to_fb] == "1"
+def create
+  uploaded_file  = params[:image_file]
+  image_url      = params[:image_url]
+  caption        = params[:caption]
+  post_to_ig     = params[:post_to_ig] == "1"
+  post_to_fb     = params[:post_to_fb] == "1"
+  selected_date  = params[:date].to_date rescue Date.today
 
   fb_token       = session[:fb_token]
   ig_user_id     = session[:ig_user_id]
   fb_page_id     = session[:fb_page_id]
   fb_page_token  = session[:fb_page_token]
 
-  # If a file was uploaded, handle it and generate a URL
   if uploaded_file.present?
     image_url = upload_image_and_get_url(uploaded_file)
+    uploaded_file.rewind if uploaded_file.respond_to?(:rewind)
   end
 
   if image_url.blank? || (!post_to_ig && !post_to_fb)
-    render json: { error: "Please select platform and provide an image URL or upload a file." }, status: :unprocessable_entity
+    render json: { error: "Please select a platform and provide an image." }, status: :unprocessable_entity
     return
   end
 
+  user = Current.session.user
+  post = user.posts.create!(
+    caption: caption,
+    ig: post_to_ig ? 1 : 0,
+    fb: post_to_fb ? 1 : 0,
+    scheduled_at: selected_date,
+    status: selected_date == Date.today ? 2 : 1
+  )
+
+  if uploaded_file.present? && uploaded_file.respond_to?(:tempfile) && uploaded_file.size > 0
+    post.photo.attach(
+      io: uploaded_file.tempfile,
+      filename: uploaded_file.original_filename,
+      content_type: uploaded_file.content_type
+    )
+  end
+
   results = []
+  if selected_date == Date.today
+    if post_to_ig && ig_user_id && fb_token
+      ig_res = post_to_instagram(ig_user_id, fb_token, image_url, caption)
+      results << ig_res[:message]
+    end
 
-  if post_to_ig && ig_user_id && fb_token
-    ig_res = post_to_instagram(ig_user_id, fb_token, image_url, caption)
-    results << ig_res[:message]
+    if post_to_fb && fb_page_id && fb_page_token
+      fb_res = post_to_facebook(fb_page_id, fb_page_token, image_url, caption)
+      results << fb_res[:message]
+    end
   end
 
-  if post_to_fb && fb_page_id && fb_page_token
-    fb_res = post_to_facebook(fb_page_id, fb_page_token, image_url, caption)
-    results << fb_res[:message]
-  end
-
-  render json: { success: true, message: results.join(" | ") }, status: :ok
+  render json: {
+    success: true,
+    message: selected_date == Date.today ? results.join(" | ") : "Post scheduled for #{selected_date}"
+  }, status: :ok
+rescue => e
+  Rails.logger.error("Post creation failed: #{e.message}")
+  render json: { error: "Something went wrong. #{e.message}" }, status: :unprocessable_entity
 end
+
+
+
+
 
 
   private
 
-def upload_image_and_get_url(file)
-  # Replace spaces and special characters
-  sanitized_name = file.original_filename.gsub(/[^\w.\-]/, "_")
-  filename = "#{SecureRandom.uuid}_#{sanitized_name}"
+  def upload_image_and_get_url(file)
+    # Replace spaces and special characters
+    sanitized_name = file.original_filename.gsub(/[^\w.\-]/, "_")
+    filename = "#{SecureRandom.uuid}_#{sanitized_name}"
 
-  upload_dir = Rails.root.join("public", "uploads")
-  FileUtils.mkdir_p(upload_dir) unless Dir.exist?(upload_dir)
+    upload_dir = Rails.root.join("public", "uploads")
+    FileUtils.mkdir_p(upload_dir) unless Dir.exist?(upload_dir)
 
-  filepath = upload_dir.join(filename)
-  File.open(filepath, "wb") { |f| f.write(file.read) }
+    filepath = upload_dir.join(filename)
+    File.open(filepath, "wb") { |f| f.write(file.read) }
 
-  base_url = ENV.fetch("BASE_URL", "https://5e75be2c9477.ngrok-free.app")
-  "#{base_url}/uploads/#{filename}"
-end
+    base_url = ENV.fetch("BASE_URL", "https://5e75be2c9477.ngrok-free.app")
+    "#{base_url}/uploads/#{filename}"
+  end
 
 
 

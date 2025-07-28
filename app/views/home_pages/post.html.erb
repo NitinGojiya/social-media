@@ -3,51 +3,79 @@
     <main class="container mx-auto p-8 flex-grow">
         <!-- Header with New Post Button -->
         <div class="flex justify-between items-center mb-8">
-            <h1 class="text-4xl font-extrabold text-gray-900">Your Posts</h1>
+            <h1 class="text-4xl font-extrabold text-gray-900">Your Feature</h1>
               <%=render 'post_modal'%>
         </div>
 
         <!-- Posts Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Example Post Card 1 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <% @posts_future.each do |post| %>
             <div class="bg-white p-7 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out flex flex-col justify-between">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-3">Understanding Web Components</h2>
-                    <p class="text-gray-700 leading-relaxed mb-5">
-                        Dive deep into the world of Web Components and learn how to build reusable custom elements for your web applications.
-                    </p>
-                </div>
-                <button class="publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">
-                    Publish
-                </button>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-3">
+                <%= truncate(post.caption, length: 60) %>
+                </h2>
+                <p class="text-gray-700 leading-relaxed mb-5">
+                Scheduled for <%= post.scheduled_at&.strftime("%B %d, %Y") %><br>
+                Platforms:
+                <%=
+                    [("Facebook" if post.fb == 1), ("Instagram" if post.ig == 1)]
+                    .compact.join(", ")
+                %>
+                </p>
+
+                <% if post.photo.attached? %>
+                <img src="<%= url_for(post.photo) %>" alt="Post image" class="mb-4 rounded-xl object-cover w-full h-48" />
+                <% end %>
             </div>
 
-            <!-- Example Post Card 2 -->
-            <div class="bg-white p-7 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out flex flex-col justify-between">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-3">The Future of AI in Content Creation</h2>
-                    <p class="text-gray-700 leading-relaxed mb-5">
-                        Explore how artificial intelligence is revolutionizing content creation, from text generation to image synthesis.
-                    </p>
-                </div>
-                <button class="publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">
-                    Publish
-                </button>
+            <button
+                data-action="click->posts#publish"
+                data-post-id="<%= post.id %>"
+                class="publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">
+                Publish
+            </button>
             </div>
-
-            <!-- Example Post Card 3 -->
-            <div class="bg-white p-7 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out flex flex-col justify-between">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-3">Mastering Responsive Design with Tailwind CSS</h2>
-                    <p class="text-gray-700 leading-relaxed mb-5">
-                        A comprehensive guide to building fully responsive and beautiful web interfaces using Tailwind CSS utility classes.
-                    </p>
-                </div>
-                <button class="publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">
-                    Publish
-                </button>
-            </div>
+        <% end %>
         </div>
+
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-4xl font-extrabold text-gray-900">Your Posts</h1>
+
+        </div>
+
+        <!-- Posts Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <% @posts_posted.each do |post| %>
+            <div class="bg-white p-7 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out flex flex-col justify-between">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-3">
+                <%= truncate(post.caption, length: 60) %>
+                </h2>
+                <p class="text-gray-700 leading-relaxed mb-5">
+                Scheduled for <%= post.scheduled_at&.strftime("%B %d, %Y") %><br>
+                Platforms:
+                <%=
+                    [("Facebook" if post.fb == 1), ("Instagram" if post.ig == 1)]
+                    .compact.join(", ")
+                %>
+                </p>
+
+                <% if post.photo.attached? %>
+                <img src="<%= url_for(post.photo) %>" alt="Post image" class="mb-4 rounded-xl object-cover w-full h-48" />
+                <% end %>
+            </div>
+
+            <button
+                data-action="click->posts#publish"
+                data-post-id="<%= post.id %>"
+                class="publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">
+                Publish
+            </button>
+            </div>
+        <% end %>
+        </div>
+
     </main>
 
 

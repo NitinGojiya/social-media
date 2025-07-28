@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   resources :passwords, param: :token
 
   resources :posts, only: [:new]
-  get "post", controller: "home_pages", as: "post"
+  get "post", to: "home_pages#post", as: "post"
   get "link_account", controller: "home_pages", as: "link_account"
 
   # ig and fb routes

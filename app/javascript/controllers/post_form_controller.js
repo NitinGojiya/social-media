@@ -35,6 +35,10 @@ export default class extends Controller {
     formData.append("post_to_ig", postToIG ? "1" : "0")
     formData.append("post_to_fb", postToFB ? "1" : "0")
 
+    const rawDate = this.formTarget.querySelector("input[name='date']")?.value
+    const datePart = rawDate || new Date().toISOString().slice(0, 10)
+    const formattedDate = `${datePart} 00:00:00.000000000 +0000`
+    formData.append("date", formattedDate)
 
     const endpoint = "/instagrams"
 
