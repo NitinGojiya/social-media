@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["form", "imageUrl", "caption", "ig", "fb"]
+  static targets = ["form", "imageUrl", "imageFile", "caption", "ig", "fb"]
 
   async submit(event) {
     document.getElementById('my_modal_1').close();
@@ -13,23 +13,36 @@ export default class extends Controller {
     const postToIG = this.hasIgTarget ? this.igTarget.checked : false
     const postToFB = this.hasFbTarget ? this.fbTarget.checked : false
 
-    if (!postToIG && !postToFB) {
-      alert("Please select at least one platform.")
-      return
-    }
+   const fileInput = this.hasImageFileTarget ? this.imageFileTarget.files[0] : null
 
-    if (imageUrl === "") {
-      alert("Image URL cannot be empty.")
-      return
-    }
+      if (!postToIG && !postToFB) {
+        alert("Please select at least one platform.")
+        return
+      }
 
-    const endpoint = "/instagrams"
+      if (!imageUrl && !fileInput) {
+        alert("Please provide either an image URL or upload a file.")
+        return
+      }
 
     const formData = new FormData()
-    formData.append("image_url", imageUrl)
+    if (fileInput) {
+      formData.append("image_file", fileInput)
+    } else {
+      formData.append("image_url", imageUrl)
+    }
     formData.append("caption", caption)
     formData.append("post_to_ig", postToIG ? "1" : "0")
     formData.append("post_to_fb", postToFB ? "1" : "0")
+
+
+    const endpoint = "/instagrams"
+
+    // const formData = new FormData()
+    // formData.append("image_url", imageUrl)
+    // formData.append("caption", caption)
+    // formData.append("post_to_ig", postToIG ? "1" : "0")
+    // formData.append("post_to_fb", postToFB ? "1" : "0")
 
     const csrfToken = document.querySelector("meta[name='csrf-token']").content
     const loader = document.getElementById("fullscreen-loader")

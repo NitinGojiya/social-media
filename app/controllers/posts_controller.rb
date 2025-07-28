@@ -35,37 +35,63 @@ class PostsController < ApplicationController
   end
 
   def create
-    image_url   = params[:image_url]
-    caption     = params[:caption]
-    post_to_ig  = params[:post_to_ig] == "1"
-    post_to_fb  = params[:post_to_fb] == "1"
+  # Get the uploaded file or image URL
+  uploaded_file = params[:image_file] # e.g., form field name for file upload
+  image_url     = params[:image_url]
+  caption       = params[:caption]
+  post_to_ig    = params[:post_to_ig] == "1"
+  post_to_fb    = params[:post_to_fb] == "1"
 
-    fb_token     = session[:fb_token]
-    ig_user_id   = session[:ig_user_id]
-    fb_page_id   = session[:fb_page_id]
-    fb_page_token = session[:fb_page_token]
+  fb_token       = session[:fb_token]
+  ig_user_id     = session[:ig_user_id]
+  fb_page_id     = session[:fb_page_id]
+  fb_page_token  = session[:fb_page_token]
 
-    if image_url.blank? || (!post_to_ig && !post_to_fb)
-      render json: { error: "Please select platform and provide an image URL." }, status: :unprocessable_entity
-      return
-    end
-
-    results = []
-
-    if post_to_ig && ig_user_id && fb_token
-      ig_res = post_to_instagram(ig_user_id, fb_token, image_url, caption)
-      results << ig_res[:message]
-    end
-
-    if post_to_fb && fb_page_id && fb_page_token
-      fb_res = post_to_facebook(fb_page_id, fb_page_token, image_url, caption)
-      results << fb_res[:message]
-    end
-
-    render json: { success: true, message: results.join(" | ") }, status: :ok
+  # If a file was uploaded, handle it and generate a URL
+  if uploaded_file.present?
+    image_url = upload_image_and_get_url(uploaded_file)
   end
 
+  if image_url.blank? || (!post_to_ig && !post_to_fb)
+    render json: { error: "Please select platform and provide an image URL or upload a file." }, status: :unprocessable_entity
+    return
+  end
+
+  results = []
+
+  if post_to_ig && ig_user_id && fb_token
+    ig_res = post_to_instagram(ig_user_id, fb_token, image_url, caption)
+    results << ig_res[:message]
+  end
+
+  if post_to_fb && fb_page_id && fb_page_token
+    fb_res = post_to_facebook(fb_page_id, fb_page_token, image_url, caption)
+    results << fb_res[:message]
+  end
+
+  render json: { success: true, message: results.join(" | ") }, status: :ok
+end
+
+
   private
+
+def upload_image_and_get_url(file)
+  # Replace spaces and special characters
+  sanitized_name = file.original_filename.gsub(/[^\w.\-]/, "_")
+  filename = "#{SecureRandom.uuid}_#{sanitized_name}"
+
+  upload_dir = Rails.root.join("public", "uploads")
+  FileUtils.mkdir_p(upload_dir) unless Dir.exist?(upload_dir)
+
+  filepath = upload_dir.join(filename)
+  File.open(filepath, "wb") { |f| f.write(file.read) }
+
+  base_url = ENV.fetch("BASE_URL", "https://5e75be2c9477.ngrok-free.app")
+  "#{base_url}/uploads/#{filename}"
+end
+
+
+
 
   def post_to_instagram(ig_user_id, token, image_url, caption)
     uri = URI("https://graph.facebook.com/v18.0/#{ig_user_id}/media")
@@ -94,19 +120,22 @@ class PostsController < ApplicationController
   end
 
   def post_to_facebook(page_id, token, image_url, caption)
-    uri = URI("https://graph.facebook.com/v18.0/#{page_id}/photos")
-    res = Net::HTTP.post_form(uri, {
-      url: image_url,
-      caption: caption,
-      access_token: token
-    })
+  uri = URI("https://graph.facebook.com/v18.0/#{page_id}/photos")
+  res = Net::HTTP.post_form(uri, {
+    url: image_url,
+    caption: caption,
+    access_token: token
+  })
 
-    res_data = JSON.parse(res.body)
-    if res_data["error"]
-      { error: true, message: res_data["error"]["message"] }
-    else
-      { error: false, message: "Facebook post published! ID: #{res_data["post_id"] || res_data["id"]}" }
-    end
+  res_data = JSON.parse(res.body)
+  Rails.logger.debug("[Facebook Response] #{res_data.inspect}") # 👈 Log the full response
+
+  if res_data["error"]
+    { error: true, message: res_data["error"]["message"] }
+  else
+    { error: false, message: "Facebook post published! ID: #{res_data["post_id"] || res_data["id"]}" }
   end
+end
+
 
 end

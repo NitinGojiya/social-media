@@ -12,17 +12,31 @@
     data-post-form-target="form"
     class="post-form"
   >
-    <div class="form-group">
-      <label for="image-url-input" class="block text-lg font-medium text-gray-700 mb-2">Image URL</label>
-      <input
-        type="text"
-        id="image-url-input"
-        name="image_url"
-        data-post-form-target="imageUrl"
-        class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-lg outline-none"
-        placeholder="https://example.com/image.jpg"
-      />
-    </div>
+
+  <div class="form-group hidden">
+  <label for="image-url-input" class="block text-lg font-medium text-gray-700 mb-2">Image URL</label>
+  <input
+    type="text"
+    id="image-url-input"
+    name="image_url"
+    data-post-form-target="imageUrl"
+    class="hidden mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-lg outline-none"
+    placeholder="https://example.com/image.jpg"
+  />
+</div>
+
+<div class="form-group mt-4">
+  <label for="image-file-input" class="block text-lg font-medium text-gray-700 mb-2">Or Upload Image File</label>
+  <input
+    type="file"
+    id="image-file-input"
+    name="image_file"
+    data-post-form-target="imageFile"
+    accept="image/*"
+    class="block w-full text-lg text-gray-600 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
+  />
+</div>
+
 
     <div class="form-group">
       <label for="caption-input" class="block text-lg font-medium text-gray-700 mb-2">Caption</label>
@@ -75,8 +89,9 @@
         data-action="click->post-form#submit"
         class="publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50"
       >
-        Post Now
+        Create Now
       </button>
+
     </div>
   </form>
 <% end %>
