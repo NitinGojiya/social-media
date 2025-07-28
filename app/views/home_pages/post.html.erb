@@ -8,36 +8,39 @@
         </div>
 
         <!-- Posts Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+   <div class="overflow-x-auto">
+    <div class="flex space-x-8 px-2">
         <% @posts_future.each do |post| %>
-            <div class="bg-white p-7 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out flex flex-col justify-between">
+        <div class="min-w-[300px] bg-white p-7 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out flex flex-col justify-between">
             <div>
-                <h2 class="text-2xl font-bold text-gray-900 mb-3">
+            <h2 class="text-2xl font-bold text-gray-900 mb-3">
                 <%= truncate(post.caption, length: 60) %>
-                </h2>
-                <p class="text-gray-700 leading-relaxed mb-5">
+            </h2>
+            <p class="text-gray-700 leading-relaxed mb-5">
                 Scheduled for <%= post.scheduled_at&.strftime("%B %d, %Y") %><br>
                 Platforms:
                 <%=
-                    [("Facebook" if post.fb == 1), ("Instagram" if post.ig == 1)]
-                    .compact.join(", ")
+                [("Facebook" if post.fb == 1), ("Instagram" if post.ig == 1)]
+                .compact.join(", ")
                 %>
-                </p>
+            </p>
 
-                <% if post.photo.attached? %>
+            <% if post.photo.attached? %>
                 <img src="<%= url_for(post.photo) %>" alt="Post image" class="mb-4 rounded-xl object-cover w-full h-48" />
-                <% end %>
+            <% end %>
             </div>
 
             <button
-                data-action="click->posts#publish"
-                data-post-id="<%= post.id %>"
-                class="publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">
-                Publish
+            data-action="click->posts#publish"
+            data-post-id="<%= post.id %>"
+            class="publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">
+            Publish
             </button>
-            </div>
-        <% end %>
         </div>
+        <% end %>
+    </div>
+    </div>
+
 
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-4xl font-extrabold text-gray-900">Your Posts</h1>
@@ -45,36 +48,38 @@
         </div>
 
         <!-- Posts Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+           <div class="overflow-x-auto">
+    <div class="flex space-x-8 px-2">
         <% @posts_posted.each do |post| %>
-            <div class="bg-white p-7 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out flex flex-col justify-between">
+        <div class="min-w-[300px] bg-white p-7 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out flex flex-col justify-between">
             <div>
-                <h2 class="text-2xl font-bold text-gray-900 mb-3">
+            <h2 class="text-2xl font-bold text-gray-900 mb-3">
                 <%= truncate(post.caption, length: 60) %>
-                </h2>
-                <p class="text-gray-700 leading-relaxed mb-5">
+            </h2>
+            <p class="text-gray-700 leading-relaxed mb-5">
                 Scheduled for <%= post.scheduled_at&.strftime("%B %d, %Y") %><br>
                 Platforms:
                 <%=
-                    [("Facebook" if post.fb == 1), ("Instagram" if post.ig == 1)]
-                    .compact.join(", ")
+                [("Facebook" if post.fb == 1), ("Instagram" if post.ig == 1)]
+                .compact.join(", ")
                 %>
-                </p>
+            </p>
 
-                <% if post.photo.attached? %>
+            <% if post.photo.attached? %>
                 <img src="<%= url_for(post.photo) %>" alt="Post image" class="mb-4 rounded-xl object-cover w-full h-48" />
-                <% end %>
+            <% end %>
             </div>
 
             <button
-                data-action="click->posts#publish"
-                data-post-id="<%= post.id %>"
-                class="publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">
-                Publish
+            data-action="click->posts#publish"
+            data-post-id="<%= post.id %>"
+            class="publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">
+            Publish
             </button>
-            </div>
-        <% end %>
         </div>
+        <% end %>
+    </div>
+    </div>
 
     </main>
 

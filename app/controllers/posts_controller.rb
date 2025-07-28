@@ -3,6 +3,7 @@ class PostsController < ApplicationController
   require 'uri'
   require 'json'
 
+  after_action :delete_uploaded_file, only: [:create]
 
 
   def new
@@ -104,6 +105,14 @@ end
 
 
   private
+  def delete_uploaded_file
+    return unless @uploaded_file_path.present? && File.exist?(@uploaded_file_path)
+
+    File.delete(@uploaded_file_path)
+    Rails.logger.info "Deleted uploaded file: #{@uploaded_file_path}"
+  rescue => e
+    Rails.logger.error "Failed to delete uploaded file: #{e.message}"
+  end
 
   def upload_image_and_get_url(file)
     # Replace spaces and special characters
