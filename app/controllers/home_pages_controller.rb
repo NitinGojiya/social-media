@@ -45,7 +45,7 @@ class HomePagesController < ApplicationController
   end
 
   def post
-     @posts_future = Current.session.user.posts.scheduled.order(created_at: :desc)
+     @posts_future = Current.session.user.posts.scheduled.order(scheduled_at: :asc)
      @posts_posted = Current.session.user.posts.posted.order(created_at: :desc)
      @user = Current.session.user
   end
