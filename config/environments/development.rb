@@ -71,6 +71,6 @@ Rails.application.configure do
   # config.generators.apply_rubocop_autocorrect_after_generate!
 
   config.hosts << /.*\.ngrok-free\.app/
-  Rails.application.routes.default_url_options[:host] = 'https://c18601497a5c.ngrok-free.app/' # or your domain
+  Rails.application.routes.default_url_options[:host] = ENV.fetch("APP_HOST", "http://localhost:3000")
 
 end
