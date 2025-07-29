@@ -11,7 +11,7 @@ export default class extends Controller {
 
       events: "/calendar_events",
 
-      eventDidMount: function(info) {
+      eventDidMount: function (info) {
         const isHoliday = info.event.extendedProps.holiday
         const isPosted = info.event.extendedProps.posted
 
@@ -27,8 +27,8 @@ export default class extends Controller {
           dot.style.backgroundColor = isHoliday
             ? "red"
             : isPosted
-            ? "green"
-            : "gray"
+              ? "green"
+              : "gray"
 
           const titleEl = info.el.querySelector('.fc-event-title')
           if (titleEl) {
@@ -37,23 +37,22 @@ export default class extends Controller {
         }
       },
 
-      eventClick: function(info) {
+      eventClick: function (info) {
         info.jsEvent.preventDefault()
-      if(!info.event.extendedProps.holiday)
-      {
-        const event = info.event
-        const title = event.title
-        const date = event.start.toLocaleString()
-        const isHoliday = event.extendedProps.holiday
-        const isPosted = event.extendedProps.posted
+        if (!info.event.extendedProps.holiday) {
+          const event = info.event
+          const title = event.title
+          const date = event.start.toLocaleString()
+          const isHoliday = event.extendedProps.holiday
+          const isPosted = event.extendedProps.posted
 
-        document.getElementById("event-modal-title").textContent = title
-        document.getElementById("event-modal-date").textContent = `Date: ${date}`
-        document.getElementById("event-modal-type").textContent =
-          isHoliday ? "Type: Holiday" : isPosted ? "Status: Posted" : "Status: Scheduled Post"
+          document.getElementById("event-modal-title").textContent = title
+          document.getElementById("event-modal-date").textContent = `Date: ${date}`
+          document.getElementById("event-modal-type").textContent =
+            isHoliday ? "Type: Holiday" : isPosted ? "Status: Posted" : "Status: Scheduled Post"
 
-        document.getElementById("event_details_modal").showModal()
-      }
+          document.getElementById("event_details_modal").showModal()
+        }
       }
     })
 

@@ -7,7 +7,7 @@ export default class extends Controller {
     this.updateButtonLabel()
   }
 
-  // 👇 Add this function to update the button text
+  // Add this function to update the button text
   updateButtonLabel() {
     const rawDate = this.formTarget.querySelector("input[name='date']")?.value
     const selectedDate = new Date(rawDate)
@@ -23,7 +23,7 @@ export default class extends Controller {
     this.btnPostTarget.textContent = isToday ? "Post Now" : "Schedule Post"
   }
 
-  // 👇 Listen for date input changes to update the label live
+  //  Listen for date input changes to update the label live
   dateChanged(event) {
     this.updateButtonLabel()
   }
