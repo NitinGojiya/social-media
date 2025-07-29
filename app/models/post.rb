@@ -1,4 +1,7 @@
 class Post < ApplicationRecord
+   include Rails.application.routes.url_helpers
+  include ActionDispatch::Routing::UrlFor # ✅ REQUIRED for rails_blob_url
+
   belongs_to :user
   has_one_attached :photo
 
@@ -11,12 +14,14 @@ class Post < ApplicationRecord
   scope :scheduled_for_today, -> { where(status: 1, scheduled_at: Date.today) }
   before_destroy :purge_photo
 
-  include Rails.application.routes.url_helpers
 
-  def photo_url
-    return nil unless photo.attached?
-    Rails.application.routes.url_helpers.rails_blob_url(photo, host: Rails.application.config.default_url_host)
-  end
+def photo_url
+  return nil unless photo.attached?
+
+  # Use default_url_options[:host] instead of config.default_url_host
+  rails_blob_url(photo, host: Rails.application.routes.default_url_options[:host])
+end
+
   private
 
   def purge_photo
