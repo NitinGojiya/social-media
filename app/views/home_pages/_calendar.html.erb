@@ -1,0 +1,36 @@
+
+<button class="bg-[#B12C00] hover:bg-[#c17962] text-white px-6 py-3 rounded-lg shadow-md  transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50" onclick="scheduled_calender.showModal()">
+    <i class="fa-solid fa-calendar-days"></i>scheduled Post
+</button>
+<dialog id="scheduled_calender" class="modal">
+  <div class="modal-box w-11/12 max-w-5xl">
+    <h1>Your Post Status</h1>
+    <div>
+        <div aria-label="status" class="status status-success  status-xl"></div> Posted
+         <div aria-label="status" class="status status-xl"></div>scheduled
+    </div>
+
+    <div data-controller="calendar" class="h-[500px]"></div>
+    <div class="modal-action">
+      <form method="dialog">
+        <!-- if there is a button, it will close the modal -->
+        <button class="btn">Close</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+
+<dialog id="event_details_modal" class="modal">
+  <div class="modal-box">
+    <h3 id="event-modal-title" class="font-bold text-lg">Event Title</h3>
+    <p id="event-modal-date" class="py-2">Date Info</p>
+    <p id="event-modal-type" class="py-1">Status</p>
+    <div class="modal-action">
+      <form method="dialog">
+        <button class="btn">Close</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
