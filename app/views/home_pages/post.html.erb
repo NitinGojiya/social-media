@@ -64,7 +64,7 @@
                 <%= truncate(post.caption, length: 60) %>
             </h2>
             <p class="text-gray-700 leading-relaxed mb-5">
-                Scheduled for <%= post.scheduled_at&.strftime("%B %d, %Y") %><br>
+                Published Date <%= post.scheduled_at&.strftime("%B %d, %Y") %><br>
                 Platforms:
                 <%=
                 [("Facebook" if post.fb == 1), ("Instagram" if post.ig == 1)]
