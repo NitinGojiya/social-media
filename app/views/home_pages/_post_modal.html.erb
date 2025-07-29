@@ -66,7 +66,7 @@
     <div>
       <p class="block text-lg font-medium text-gray-700 mb-3">Select Social Media Platforms:</p>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <% if session[:ig_user_id] %>
+        <% if @user.ig_user_id %>
           <label class="flex items-center p-3 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50">
             <input
               type="checkbox"
@@ -80,7 +80,7 @@
           </label>
         <% end %>
 
-        <% if session[:fb_page_id] %>
+        <% if @user.fb_page_id %>
           <label class="flex items-center p-3 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50">
             <input
               type="checkbox"
@@ -113,7 +113,7 @@
   <h6 class="text-2xl capitalize ">Before you post, pause and log in</h6>
 </div>
   <div class="flex flex-wrap gap-4 mt-2">
-        <% unless session[:ig_user_id] && session[:fb_page_id]  %>
+        <% unless @user.ig_user_id && @user.fb_page_id  %>
             <%= link_to "/auth/facebook", class: "btn bg-[#1A77F2] text-white border-[#005fd8]" do %>
                   <svg aria-label="Facebook logo" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="white" d="M8 12h5V8c0-6 4-7 11-6v5c-4 0-5 0-5 3v2h5l-1 6h-4v12h-6V18H8z"></path></svg>
                   Login with Facebook
