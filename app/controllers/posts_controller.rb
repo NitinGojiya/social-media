@@ -134,7 +134,7 @@ end
     filepath = upload_dir.join(filename)
     File.open(filepath, "wb") { |f| f.write(file.read) }
 
-    base_url = ENV.fetch("BASE_URL", "https://5e75be2c9477.ngrok-free.app")
+    base_url = ENV.fetch("APP_HOST", "https://c18601497a5c.ngrok.app/")
     "#{base_url}/uploads/#{filename}"
   end
 
