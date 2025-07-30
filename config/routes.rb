@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   resources :passwords, param: :token
 
   resources :posts, only: [:new]
+  delete "/delete_post/:id", to: "posts#destroy", as: :delete_post
   get "post", to: "home_pages#post", as: "post"
   get "link_account", controller: "home_pages", as: "link_account"
   get 'calendar_events', to: 'home_pages#calendar_events'

@@ -18,6 +18,7 @@
         <% @posts_future.each do |post| %>
         <div class="min-w-[300px] bg-white p-7 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out flex flex-col justify-between">
             <div>
+
             <h2 class="text-2xl font-bold text-gray-900 mb-3">
                 <%= truncate(post.caption, length: 60) %>
             </h2>
@@ -45,6 +46,7 @@
             class="publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">
             Publish
             </button>
+
         </div>
         <% end %>
     </div>
@@ -62,6 +64,10 @@
         <% @posts_posted.each do |post| %>
         <div class="min-w-[300px] bg-white p-7 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out flex flex-col justify-between">
             <div>
+                                  <% if post.fb_post_id || post.ig_post_id %>
+                        <%= button_to "Delete Post", delete_post_path(post), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-danger" %>
+
+                                  <% end %>
             <h2 class="text-2xl font-bold text-gray-900 mb-3">
                 <%= truncate(post.caption, length: 60) %>
             </h2>

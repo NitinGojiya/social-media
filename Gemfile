@@ -74,3 +74,11 @@ gem 'env'
 gem 'httparty'
 
 gem 'whenever', require: false
+
+group :development, :test do
+  gem 'pry'
+  gem 'pry-rails'      # Enables pry in Rails console
+  gem 'pry-byebug'     # Adds step-by-step debugging
+end
+
+gem "mini_magick"
