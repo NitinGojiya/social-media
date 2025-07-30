@@ -30,10 +30,12 @@
                 %>
             </p>
 
-            <%=link_to "photo",post.photo_url%>
+
 
             <% if post.photo.attached? %>
-                <img src="<%= url_for(post.photo) %>" alt="Post image" class="mb-4 rounded-xl object-cover w-full h-48" />
+            <%=link_to post.photo_url do%>
+                <img src="<%= url_for(post.photo) %>" alt="Post image" loading="lazy" class="mb-4 rounded-xl object-cover w-full h-48" />
+            <% end %>
             <% end %>
             </div>
 
@@ -73,7 +75,9 @@
             </p>
 
             <% if post.photo.attached? %>
-                <img src="<%= url_for(post.photo) %>" alt="Post image" class="mb-4 rounded-xl object-cover w-full h-48" />
+            <%=link_to post.photo_url do%>
+                <img src="<%= url_for(post.photo) %>" alt="Post image" loading="lazy" class="mb-4 rounded-xl object-cover w-full h-48" />
+            <% end %>
             <% end %>
             </div>
         </div>
