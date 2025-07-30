@@ -155,19 +155,34 @@ class PostsController < ApplicationController
 
       image = MiniMagick::Image.read(file)
 
-      # Resize to fit within Instagram’s accepted dimensions, without cropping or padding
-      max_width  = 1080
-      max_height = 1350
+      width = image.width
+      height = image.height
+      aspect_ratio = width.to_f / height
 
-      if image.width > max_width || image.height > max_height
-        image.resize "#{max_width}x#{max_height}>"
+      min_ratio = 0.8      # 4:5
+      max_ratio = 1.91     # 1.91:1
+
+      if aspect_ratio < min_ratio
+        # Too tall: crop top and bottom
+        new_height = (width / min_ratio).round
+        offset = ((height - new_height) / 2).round
+        image.crop("#{width}x#{new_height}+0+#{offset}")
+      elsif aspect_ratio > max_ratio
+        # Too wide: crop sides
+        new_width = (height * max_ratio).round
+        offset = ((width - new_width) / 2).round
+        image.crop("#{new_width}x#{height}+#{offset}+0")
       end
+
+      # Finally, resize to max allowed dimensions (optional but good practice)
+      image.resize "1080x1350>"
 
       image.write(filepath)
 
       base_url = ENV.fetch("APP_HOST", "https://your-app.com")
       "#{base_url}/uploads/#{filename}"
     end
+
 
 
 
