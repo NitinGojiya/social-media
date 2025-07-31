@@ -14,6 +14,7 @@ class HomePagesController < ApplicationController
         posted: post.status == 2  # true if posted
       }
     end
+
     # For holiday on calender just for feature in if any api for holiday
 
      holiday_events = [

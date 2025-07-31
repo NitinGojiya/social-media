@@ -119,14 +119,16 @@ class PostsController < ApplicationController
     if post.fb_post_id.present?
       fb_delete = delete_facebook_post(post.fb_post_id, user.fb_page_token) #  use page token
       Rails.logger.info("Facebook post delete result: #{fb_delete}")
+      post.update(fb_post_id: nil, fb: 0)
     end
 
     if post.ig_post_id.present?
+      # binding.pry
       ig_delete = delete_instagram_post(post.ig_post_id, user.fb_token) # IG still uses user token
       Rails.logger.info("Instagram post delete result: #{ig_delete}")
     end
 
-    post.destroy
+
     #  binding.pry
     redirect_to post_path, notice: "Post deleted successfully."
   end

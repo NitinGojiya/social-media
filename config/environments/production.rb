@@ -89,5 +89,5 @@ Rails.application.configure do
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 
 #  Rails.application.routes.default_url_options[:host] = ENV.fetch("APP_HOST", "http://localhost:3000")
-  Rails.application.routes.default_url_options[:host] = 'https://bc91ba221f41.ngrok-free.app'
+  Rails.application.routes.default_url_options[:host] = 'https://31eb8ff3acd8.ngrok-free.app'
 end
