@@ -23,38 +23,53 @@ class LinkedinPostsController < ApplicationController
     })
 
     access_token = JSON.parse(response.body)["access_token"]
-    session[:linkedin_token] = access_token
+    # session[:linkedin_token] =
 
-    redirect_to linkedin_profile_path
-  end
 
-  def profile
-    access_token = session[:linkedin_token]
-
-    userinfo_response = HTTParty.get("https://api.linkedin.com/v2/userinfo", {
+      userinfo_response = HTTParty.get("https://api.linkedin.com/v2/userinfo", {
       headers: { "Authorization" => "Bearer #{access_token}" }
     })
-
     userinfo = userinfo_response.parsed_response
-    session[:linkedin_userinfo] = userinfo  # ✅ Save user info in session
+    linkedin_id = userinfo["sub"]
+      user = Current.session.user
 
-    puts "User Info:"
-    puts JSON.pretty_generate(userinfo)
-
-    render json: {
-      message: "User info fetched successfully.",
-      linkedin_user: userinfo
-    }
+    user.update!(
+    linkedin_token: access_token,
+    linkedin_id: linkedin_id
+    )
+    redirect_to post_path
   end
-  def post_to_linkedin
-  access_token = session[:linkedin_token]
-  userinfo = session[:linkedin_userinfo]
 
-  unless access_token && userinfo
+  # def profile
+  #   user = Current.session.user
+  #   access_token = user.linkedin_token
+
+  #   userinfo_response = HTTParty.get("https://api.linkedin.com/v2/userinfo", {
+  #     headers: { "Authorization" => "Bearer #{access_token}" }
+  #   })
+
+  #   userinfo = userinfo_response.parsed_response
+  #   session[:linkedin_userinfo] = userinfo  # ✅ Save user info in session
+
+  #   puts "User Info:"
+  #   puts JSON.pretty_generate(userinfo)
+
+  #   # render json: {
+  #   #   message: "User info fetched successfully.",
+  #   #   linkedin_user: userinfo
+  #   # }
+  #   redirect_to post_path
+  # end
+  def post_to_linkedin
+    user = Current.session.user
+  access_token = user.linkedin_token
+  linkedin_id = user.linkedin_id
+
+  unless access_token && linkedin_id
     render json: { error: "Missing access token or user info" }, status: :unauthorized and return
   end
 
-  linkedin_id = userinfo["sub"]
+
   author_urn = "urn:li:person:#{linkedin_id}"
 
   post_body = {
@@ -90,14 +105,14 @@ class LinkedinPostsController < ApplicationController
 end
 
 def post_with_image
-  access_token = session[:linkedin_token]
-  userinfo = session[:linkedin_userinfo]
+     user = Current.session.user
+  access_token = user.linkedin_token
+  linkedin_id = user.linkedin_id
 
-  unless access_token && userinfo
+  unless access_token && linkedin_id
     render json: { error: "Missing access token or user info" }, status: :unauthorized and return
   end
 
-  linkedin_id = userinfo["sub"]
   author_urn = "urn:li:person:#{linkedin_id}"
 
   # STEP 1: Register the image upload
