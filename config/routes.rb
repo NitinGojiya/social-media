@@ -18,9 +18,8 @@ Rails.application.routes.draw do
 
   get '/auth/linkedin', to: 'linkedin_posts#auth'
   get '/auth/linkedin/callback', to: 'linkedin_posts#callback'
-  get '/linkedin/profile', to: 'linkedin_posts#profile', as: 'linkedin_profile'
-  get "/linkedin/post", to: "linkedin_posts#post_to_linkedin", as: :linkedin_post
 
-  post "/linkedin/post_with_image", to: "posts#post_with_image", as: :linkedin_post_with_image
 
+  post "/linkedin/create_linkedin_post", to: "posts#create_linkedin_post", as: :create_linkedin_post
+  delete "/delete_linkedin_post/:id", to: "posts#delete_linkedin_post", as: :delete_linkedin_post
 end

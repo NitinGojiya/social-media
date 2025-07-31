@@ -1,16 +1,16 @@
 class PostsController < ApplicationController
-  require 'net/http'
-  require 'uri'
-  require 'json'
+  require "net/http"
+  require "uri"
+  require "json"
 
-  after_action :delete_uploaded_file, only: [:create]
+  after_action :delete_uploaded_file, only: [ :create ]
 
   def new
   end
 
   def facebook_callback
-    auth = request.env['omniauth.auth']
-    token = auth['credentials']['token']
+    auth = request.env["omniauth.auth"]
+    token = auth["credentials"]["token"]
 
     # Step 1: Get Facebook Pages
     pages_uri = URI("https://graph.facebook.com/v18.0/me/accounts?fields=name,access_token&access_token=#{token}")
@@ -43,7 +43,6 @@ class PostsController < ApplicationController
 
     redirect_to post_path, notice: "Connected to Facebook Page: #{first_page["name"]}"
   end
-
 
   def create
     uploaded_file  = params[:image_file]
@@ -89,10 +88,10 @@ class PostsController < ApplicationController
     results = []
     if selected_date == Date.today
 
-     if post_to_ig && ig_user_id && fb_token
-        ig_res = post_to_instagram(ig_user_id, fb_token, image_url, caption)
-        @post.update(ig_post_id: ig_res[:id]) if ig_res[:id]
-        results << ig_res[:message]
+    if post_to_ig && ig_user_id && fb_token
+      ig_res = post_to_instagram(ig_user_id, fb_token, image_url, caption)
+      @post.update(ig_post_id: ig_res[:id]) if ig_res[:id]
+      results << ig_res[:message]
     end
 
     if post_to_fb && fb_page_id && fb_page_token
@@ -133,7 +132,7 @@ class PostsController < ApplicationController
     redirect_to post_path, notice: "Post deleted successfully."
   end
 
-  def post_with_image
+  def create_linkedin_post
     user = Current.session.user
     access_token = user.linkedin_token
     linkedin_id = user.linkedin_id
@@ -158,7 +157,7 @@ class PostsController < ApplicationController
       body: {
         registerUploadRequest: {
           owner: author_urn,
-          recipes: ["urn:li:digitalmediaRecipe:feedshare-image"],
+          recipes: [ "urn:li:digitalmediaRecipe:feedshare-image" ],
           serviceRelationships: [
             {
               identifier: "urn:li:userGeneratedContent",
@@ -241,6 +240,31 @@ class PostsController < ApplicationController
     end
   end
 
+  def delete_linkedin_post
+    post = Current.session.user.posts.find(params[:id])
+    linkedin_post_urn = post.linkedin_post_urn
+    access_token = Current.session.user.linkedin_token
+
+    unless linkedin_post_urn && access_token
+      render json: { error: "Missing LinkedIn post ID or access token" }, status: :unprocessable_entity and return
+    end
+
+    linkedin_post_id = linkedin_post_urn.split(":").last
+
+    response = HTTParty.delete(
+      "https://api.linkedin.com/v2/shares/#{linkedin_post_id}",
+      headers: {
+        "Authorization" => "Bearer #{access_token}",
+        "X-Restli-Protocol-Version" => "2.0.0"
+      }
+      )
+    if response.success?
+      post.destroy
+      render json: { message: "LinkedIn post deleted." }
+    else
+      render json: { error: "Failed to delete LinkedIn post", response: response.parsed_response }, status: :unprocessable_entity
+    end
+  end
   private
     def delete_uploaded_file
       return unless @uploaded_file_path.present? && File.exist?(@uploaded_file_path)
@@ -252,7 +276,7 @@ class PostsController < ApplicationController
     end
 
     def upload_image_and_get_url(file)
-      require 'mini_magick'
+      require "mini_magick"
 
       sanitized_name = file.original_filename.gsub(/[^\w.\-]/, "_")
       filename = "#{SecureRandom.uuid}_#{sanitized_name}"
@@ -291,9 +315,6 @@ class PostsController < ApplicationController
       "#{base_url}/uploads/#{filename}"
     end
 
-
-
-
     def post_to_instagram(ig_user_id, token, image_url, caption)
       Rails.logger.debug("▶ IG Media Create | image_url: #{image_url}, caption: #{caption}")
 
@@ -326,7 +347,6 @@ class PostsController < ApplicationController
       end
     end
 
-
     def post_to_facebook(page_id, token, image_url, caption)
       uri = URI("https://graph.facebook.com/v18.0/#{page_id}/photos")
       res = Net::HTTP.post_form(uri, {
@@ -347,7 +367,6 @@ class PostsController < ApplicationController
           id: res_data["post_id"] || res_data["id"]
         }
       end
-
     end
 
     def delete_facebook_post(post_id, token)
@@ -367,5 +386,4 @@ class PostsController < ApplicationController
       response = http.request(request)
       JSON.parse(response.body)
     end
-
 end

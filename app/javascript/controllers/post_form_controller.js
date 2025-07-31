@@ -136,7 +136,7 @@ export default class extends Controller {
     loader.style.display = "flex"
 
     try {
-      const response = await fetch("/linkedin/post_with_image", {
+      const response = await fetch("/linkedin/create_linkedin_post", {
         method: "POST",
         headers: {
           "X-CSRF-Token": csrfToken,
