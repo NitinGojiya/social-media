@@ -222,22 +222,20 @@ class PostsController < ApplicationController
     )
 
     if post_response.success?
-      if @post.present?
-        @post.update!(linkedin: 1)
-      else
-          user = Current.session.user
-          @post = user.posts.create!(
-            caption: caption,
-            scheduled_at: Date.today,
-            linkedin: 1,
-            status: 2
-          )
+      linkedin_post_urn = post_response.parsed_response["id"]
+
+      user = Current.session.user
+      @post = user.posts.create!(
+        caption: caption,
+        scheduled_at: Date.today,
+        linkedin: 1,
+        status: 2,
+        linkedin_post_urn: linkedin_post_urn
+      )
+
       @post.photo.attach(uploaded_file)
 
-      end
-
       render json: { message: "Image post created!", response: post_response.parsed_response }
-      # redirect_to post_path
     else
       render json: { error: "Failed to post with image", response: post_response.parsed_response }, status: :unprocessable_entity
     end
