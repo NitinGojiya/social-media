@@ -70,7 +70,7 @@ class PostsController < ApplicationController
     end
 
     user = Current.session.user
-    post = user.posts.create!(
+    @post = user.posts.create!(
       caption: caption,
       ig: post_to_ig ? 1 : 0,
       fb: post_to_fb ? 1 : 0,
@@ -79,7 +79,7 @@ class PostsController < ApplicationController
     )
 
     if uploaded_file.present? && uploaded_file.respond_to?(:tempfile) && uploaded_file.size > 0
-      post.photo.attach(
+      @post.photo.attach(
         io: uploaded_file.tempfile,
         filename: uploaded_file.original_filename,
         content_type: uploaded_file.content_type
@@ -91,13 +91,13 @@ class PostsController < ApplicationController
 
      if post_to_ig && ig_user_id && fb_token
         ig_res = post_to_instagram(ig_user_id, fb_token, image_url, caption)
-        post.update(ig_post_id: ig_res[:id]) if ig_res[:id]
+        @post.update(ig_post_id: ig_res[:id]) if ig_res[:id]
         results << ig_res[:message]
-      end
+    end
 
     if post_to_fb && fb_page_id && fb_page_token
       fb_res = post_to_facebook(fb_page_id, fb_page_token, image_url, caption)
-      post.update(fb_post_id: fb_res[:id]) if fb_res[:id]
+      @post.update(fb_post_id: fb_res[:id]) if fb_res[:id]
       results << fb_res[:message]
     end
 
@@ -133,7 +133,115 @@ class PostsController < ApplicationController
     redirect_to post_path, notice: "Post deleted successfully."
   end
 
+  def post_with_image
+    user = Current.session.user
+    access_token = user.linkedin_token
+    linkedin_id = user.linkedin_id
 
+    unless access_token && linkedin_id
+      render json: { error: "Missing access token or user info" }, status: :unauthorized and return
+    end
+
+    uploaded_file = params[:image_file]
+    unless uploaded_file
+      render json: { error: "No image file uploaded" }, status: :unprocessable_entity and return
+    end
+
+    author_urn = "urn:li:person:#{linkedin_id}"
+
+    # STEP 1: Register the image upload
+    register_response = HTTParty.post("https://api.linkedin.com/v2/assets?action=registerUpload", {
+      headers: {
+        "Authorization" => "Bearer #{access_token}",
+        "Content-Type" => "application/json"
+      },
+      body: {
+        registerUploadRequest: {
+          owner: author_urn,
+          recipes: ["urn:li:digitalmediaRecipe:feedshare-image"],
+          serviceRelationships: [
+            {
+              identifier: "urn:li:userGeneratedContent",
+              relationshipType: "OWNER"
+            }
+          ]
+        }
+      }.to_json
+    })
+
+    unless register_response.success?
+      render json: { error: "Failed to register image upload", response: register_response.parsed_response }, status: :unprocessable_entity and return
+    end
+
+    upload_info = register_response.parsed_response
+    upload_url = upload_info["value"]["uploadMechanism"]["com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest"]["uploadUrl"]
+    asset = upload_info["value"]["asset"]
+
+    # STEP 2: Upload the actual file content received from the frontend
+    upload_result = HTTParty.put(upload_url,
+      headers: { "Content-Type" => uploaded_file.content_type },
+      body: uploaded_file.read
+    )
+
+    unless upload_result.success?
+      render json: { error: "Failed to upload image", response: upload_result.parsed_response }, status: :unprocessable_entity and return
+    end
+
+    # STEP 3: Create the LinkedIn post with the uploaded image
+    caption = params[:caption] || "Posted via API"
+
+    post_body = {
+      author: author_urn,
+      lifecycleState: "PUBLISHED",
+      specificContent: {
+        "com.linkedin.ugc.ShareContent": {
+          shareCommentary: {
+            text: caption
+          },
+          shareMediaCategory: "IMAGE",
+          media: [
+            {
+              status: "READY",
+              media: asset
+            }
+          ]
+        }
+      },
+      visibility: {
+        "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
+      }
+    }
+
+    post_response = HTTParty.post("https://api.linkedin.com/v2/ugcPosts",
+      headers: {
+        "Authorization" => "Bearer #{access_token}",
+        "X-Restli-Protocol-Version" => "2.0.0",
+        "Content-Type" => "application/json"
+      },
+      body: post_body.to_json
+    )
+
+    if post_response.success?
+      if @post.present?
+        @post.update!(linkedin: 1)
+      else
+          user = Current.session.user
+          @post = user.posts.create!(
+            caption: caption,
+            scheduled_at: Date.today,
+            linkedin: 1,
+            status: 2
+          )
+      @post.photo.attach(uploaded_file)
+
+      end
+
+      render json: { message: "Image post created!", response: post_response.parsed_response }
+      # redirect_to post_path
+    else
+      render json: { error: "Failed to post with image", response: post_response.parsed_response }, status: :unprocessable_entity
+    end
+  end
 
   private
     def delete_uploaded_file
