@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   get 'calendar', controller: 'home_pages'
 
   # ig and fb routes
-  post "instagrams", to: "posts#create", as: "instagrams"
+  post "ig_fb_posts", to: "posts#create", as: "ig_fb_posts"
 
   get '/auth/facebook/callback', to: 'facebook_links#facebook_callback',as:"facebook_callback"
   get '/auth/failure', to: redirect('/')

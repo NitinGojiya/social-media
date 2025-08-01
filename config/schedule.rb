@@ -1,4 +1,4 @@
-# config/schedule.rb
+
 set :output, "log/cron.log"
 set :environment, "development"  # or "production" if deploying
 

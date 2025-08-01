@@ -1,8 +1,6 @@
 class PostsController < ApplicationController
   after_action :delete_uploaded_file, only: [:create]
 
-
-
   def create
     uploaded_file  = params[:image_file]
     image_url      = params[:image_url]

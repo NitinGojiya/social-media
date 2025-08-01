@@ -22,8 +22,6 @@ export default class extends Controller {
   this.btnPostTarget.textContent = is_schedule ? "Schedule Post" : "Post Now";
 }
 
-
-
   dateChanged(event) {
     this.updateButtonLabel()
   }
@@ -85,7 +83,7 @@ export default class extends Controller {
     loader.style.display = "flex"
 
     try {
-      const response = await fetch("/instagrams", {
+      const response = await fetch("/ig_fb_posts", {
         method: "POST",
         headers: {
           "X-CSRF-Token": csrfToken,
