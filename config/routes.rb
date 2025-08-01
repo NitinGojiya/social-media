@@ -5,6 +5,7 @@ Rails.application.routes.draw do
 
   resources :posts, only: [:new]
   delete "/delete_post/:id", to: "posts#destroy", as: :delete_post
+
   get "post", to: "home_pages#post", as: "post"
   get "link_account", controller: "home_pages", as: "link_account"
   get 'calendar_events', to: 'home_pages#calendar_events'
@@ -13,11 +14,11 @@ Rails.application.routes.draw do
   # ig and fb routes
   post "instagrams", to: "posts#create", as: "instagrams"
 
-  get '/auth/facebook/callback', to: 'posts#facebook_callback',as:"facebook_callback"
+  get '/auth/facebook/callback', to: 'facebook_links#facebook_callback',as:"facebook_callback"
   get '/auth/failure', to: redirect('/')
 
-  get '/auth/linkedin', to: 'linkedin_posts#auth'
-  get '/auth/linkedin/callback', to: 'linkedin_posts#callback'
+  get '/auth/linkedin', to: 'linkedin_links#auth'
+  get '/auth/linkedin/callback', to: 'linkedin_links#callback'
 
 
   post "/linkedin/create_linkedin_post", to: "posts#create_linkedin_post", as: :create_linkedin_post

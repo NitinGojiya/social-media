@@ -1,7 +1,7 @@
-class LinkedinPostsController < ApplicationController
-  LINKEDIN_CLIENT_ID = ENV['LINKEDIN_CLIENT_ID']
-  LINKEDIN_CLIENT_SECRET = ENV['LINKEDIN_CLIENT_SECRET']
-  REDIRECT_URI = "https://31eb8ff3acd8.ngrok-free.app/auth/linkedin/callback"
+class LinkedinLinksController < ApplicationController
+ LINKEDIN_CLIENT_ID = "77rznug8l4pmrr"
+  LINKEDIN_CLIENT_SECRET = "WPL_AP1.ocAN5q9icvMV3wW1.Eqtqdw=="
+  REDIRECT_URI = "https://5d3c378c59e2.ngrok-free.app/auth/linkedin/callback"
 
   def auth
     scope = 'openid profile email w_member_social'
@@ -39,5 +39,4 @@ class LinkedinPostsController < ApplicationController
     )
     redirect_to post_path
   end
-
 end
