@@ -48,6 +48,25 @@ class PostSchedulerJob < ApplicationJob
         end
       end
 
+      if post.linkedin == 1 && user.linkedin_token.present? && user.linkedin_id.present?
+        begin
+          Rails.logger.info("[PostSchedulerJob] Attempting LinkedIn post for Post##{post.id}")
+          photo_file = StringIO.new(post.photo.blob.download)
+          photo_file.set_encoding('BINARY')
+          photo_file.define_singleton_method(:content_type) { post.photo.blob.content_type }
+
+          linkedin_service = LinkedInService.new(user)
+          response = linkedin_service.create_post(image_file: photo_file, caption: post.caption)
+
+          linkedin_post_urn = response["id"]
+          post.update(linkedin_post_urn: linkedin_post_urn) if linkedin_post_urn.present?
+          results << "LinkedIn: Post published!"
+        rescue => e
+          Rails.logger.error("[PostSchedulerJob] LinkedIn post failed for Post##{post.id}: #{e.message}")
+          results << "LinkedIn failed"
+        end
+      end
+
       # binding.pry
 
       # Update status if posted

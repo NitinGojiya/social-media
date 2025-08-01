@@ -53,7 +53,7 @@ class LinkedInService
   end
 
   def create_ugc_post(author_urn, asset, caption)
-    HTTParty.post(
+    response = HTTParty.post(
       "https://api.linkedin.com/v2/ugcPosts",
       headers: auth_headers.merge("Content-Type" => "application/json"),
       body: {
@@ -69,7 +69,13 @@ class LinkedInService
         visibility: { "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC" }
       }.to_json
     )
+
+    raise "LinkedIn post failed: #{response.body}" unless response.success?
+
+    # Return the post URN (e.g., "urn:li:ugcPost:123456789")
+    JSON.parse(response.body)
   end
+
 
   def auth_headers
     {
