@@ -4,8 +4,8 @@ class PostSchedulerJob < ApplicationJob
 
   def perform
 
-    today = Time.zone.today
-    Post.where(status: 1, scheduled_at: Time.zone.today.all_day).includes(:user, photo_attachment: :blob).find_each do |post|
+      today = Time.zone.today
+      Post.where(status: 1, scheduled_at: ..Time.current).includes(:user, photo_attachment: :blob).find_each do |post|
       user = post.user
       next unless user
 

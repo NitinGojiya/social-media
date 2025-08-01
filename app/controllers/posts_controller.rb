@@ -118,7 +118,6 @@ def create_linkedin_post
         status: 2,  # status 2 = posted
         linkedin_post_urn: linkedin_post_urn
       )
-
       @post.photo.attach(uploaded_file)
 
       render json: { message: "Image post created!", response: response }

@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
   root "home_pages#index"
+  require 'sidekiq/web'
+  mount Sidekiq::Web => '/sidekiq'
   resource :session
   resources :passwords, param: :token
 
@@ -23,4 +25,6 @@ Rails.application.routes.draw do
 
   post "/linkedin/create_linkedin_post", to: "posts#create_linkedin_post", as: :create_linkedin_post
   delete "/delete_linkedin_post/:id", to: "posts#delete_linkedin_post", as: :delete_linkedin_post
+
+
 end

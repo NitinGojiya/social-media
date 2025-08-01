@@ -82,3 +82,7 @@ group :development, :test do
 end
 
 gem "mini_magick"
+
+# Gemfile
+gem 'sidekiq'
+gem 'sidekiq-cron'
