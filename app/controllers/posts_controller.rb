@@ -81,7 +81,7 @@ class PostsController < ApplicationController
     redirect_to post_path, notice: "Post deleted successfully."
   end
 
- def create_linkedin_post
+def create_linkedin_post
   user = Current.session.user
   uploaded_file = params[:image_file]
   caption = params[:caption] || "Posted via API"
@@ -98,7 +98,7 @@ class PostsController < ApplicationController
       caption: caption,
       scheduled_at: selected_time,
       linkedin: 1,
-      status: 1,  # status 0 = scheduled
+      status: 1,  # status 1 = scheduled
     )
 
     @post.photo.attach(uploaded_file)
@@ -109,8 +109,8 @@ class PostsController < ApplicationController
     service = LinkedInService.new(user)
     response = service.create_post(image_file: uploaded_file, caption: caption)
 
-    if response.success?
-      linkedin_post_urn = response.parsed_response["id"]
+    if response["id"].present?
+      linkedin_post_urn = response["id"]
       @post = user.posts.create!(
         caption: caption,
         scheduled_at: Time.current,
@@ -121,12 +121,13 @@ class PostsController < ApplicationController
 
       @post.photo.attach(uploaded_file)
 
-      render json: { message: "Image post created!", response: response.parsed_response }
+      render json: { message: "Image post created!", response: response }
     else
-      render json: { error: "Failed to post with image", response: response.parsed_response }, status: :unprocessable_entity
+      render json: { error: "Failed to post with image", response: response }, status: :unprocessable_entity
     end
   end
 end
+
 
 
   def delete_linkedin_post
