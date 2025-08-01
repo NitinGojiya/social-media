@@ -9,7 +9,8 @@ class PostsController < ApplicationController
     caption        = params[:caption]
     post_to_ig     = params[:post_to_ig] == "1"
     post_to_fb     = params[:post_to_fb] == "1"
-    selected_date  = params[:date].to_date rescue Date.today
+    schedule_to_post     = params[:schedule_to_post] == "1"
+    selected_date = schedule_to_post ? Time.parse(params[:date]) : Time.current
     user           = Current.session.user
 
     if uploaded_file.present?
@@ -27,7 +28,7 @@ class PostsController < ApplicationController
       ig: post_to_ig ? 1 : 0,
       fb: post_to_fb ? 1 : 0,
       scheduled_at: selected_date,
-      status: selected_date == Date.today ? 2 : 1
+      status: schedule_to_post ? 1 : 2
     )
 
     if uploaded_file.present? && uploaded_file.respond_to?(:tempfile)
@@ -39,7 +40,7 @@ class PostsController < ApplicationController
     end
 
     results = []
-    if selected_date == Date.today
+    if !schedule_to_post
       fb_service = FacebookService.new(user)
 
       if post_to_ig
@@ -57,7 +58,7 @@ class PostsController < ApplicationController
 
     render json: {
       success: true,
-      message: selected_date == Date.today ? results.join(" | ") : "Post scheduled for #{selected_date}"
+      message: schedule_to_post ? results.join(" | ") : "Post scheduled for #{selected_date}"
     }, status: :ok
   rescue => e
     Rails.logger.error("Post creation failed: #{e.message}")
@@ -82,15 +83,31 @@ class PostsController < ApplicationController
     redirect_to post_path, notice: "Post deleted successfully."
   end
 
-  def create_linkedin_post
-    user = Current.session.user
-    uploaded_file = params[:image_file]
-    caption = params[:caption] || "Posted via API"
+ def create_linkedin_post
+  user = Current.session.user
+  uploaded_file = params[:image_file]
+  caption = params[:caption] || "Posted via API"
+  schedule_to_post = params[:schedule_to_post] == "1"
+  selected_time = schedule_to_post ? Time.parse(params[:date]) : Time.current
 
-    unless uploaded_file
-      render json: { error: "No image file uploaded" }, status: :unprocessable_entity and return
-    end
+  unless uploaded_file
+    render json: { error: "No image file uploaded" }, status: :unprocessable_entity and return
+  end
 
+  if schedule_to_post
+    # Schedule post for later
+    @post = user.posts.create!(
+      caption: caption,
+      scheduled_at: selected_time,
+      linkedin: 1,
+      status: 1,  # status 0 = scheduled
+    )
+
+    @post.photo.attach(uploaded_file)
+
+    render json: { message: "Post scheduled for #{selected_time}" }
+  else
+    # Post immediately
     service = LinkedInService.new(user)
     response = service.create_post(image_file: uploaded_file, caption: caption)
 
@@ -98,9 +115,9 @@ class PostsController < ApplicationController
       linkedin_post_urn = response.parsed_response["id"]
       @post = user.posts.create!(
         caption: caption,
-        scheduled_at: Date.today,
+        scheduled_at: Time.current,
         linkedin: 1,
-        status: 2,
+        status: 2,  # status 2 = posted
         linkedin_post_urn: linkedin_post_urn
       )
 
@@ -111,6 +128,8 @@ class PostsController < ApplicationController
       render json: { error: "Failed to post with image", response: response.parsed_response }, status: :unprocessable_entity
     end
   end
+end
+
 
   def delete_linkedin_post
     post = Current.session.user.posts.find(params[:id])

@@ -1,24 +1,28 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["form", "imageUrl", "imageFile", "caption", "ig", "fb", "btnPost", "li"]
+  static targets = ["form", "imageUrl", "imageFile", "caption", "ig", "fb", "btnPost", "li","schedule","dateinput"]
 
   connect() {
     this.updateButtonLabel()
   }
 
   updateButtonLabel() {
-    const rawDate = this.formTarget.querySelector("input[name='date']")?.value
-    const selectedDate = new Date(rawDate)
-    const today = new Date()
+  const is_schedule = this.scheduleTarget.checked;
 
-    const isToday =
-      selectedDate.getFullYear() === today.getFullYear() &&
-      selectedDate.getMonth() === today.getMonth() &&
-      selectedDate.getDate() === today.getDate()
-
-    this.btnPostTarget.textContent = isToday ? "Post Now" : "Schedule Post"
+  // Show or hide the date input
+  if (is_schedule) {
+    this.dateinputTarget.classList.remove("hidden");
+    console.log(document.getElementById("datetime").value)
+  } else {
+    this.dateinputTarget.classList.add("hidden");
   }
+
+  // Update button text
+  this.btnPostTarget.textContent = is_schedule ? "Schedule Post" : "Post Now";
+}
+
+
 
   dateChanged(event) {
     this.updateButtonLabel()
@@ -46,6 +50,7 @@ export default class extends Controller {
 
     const postToIG = this.hasIgTarget ? this.igTarget.checked : false
     const postToFB = this.hasFbTarget ? this.fbTarget.checked : false
+    const scheduleToPOST = this.hasScheduleTarget ? this.scheduleTarget.checked : false
     const fileInput = this.hasImageFileTarget ? this.imageFileTarget.files[0] : null
 
     if (!postToIG && !postToFB) {
@@ -68,11 +73,12 @@ export default class extends Controller {
     formData.append("caption", caption)
     formData.append("post_to_ig", postToIG ? "1" : "0")
     formData.append("post_to_fb", postToFB ? "1" : "0")
+    formData.append("schedule_to_post", scheduleToPOST ? "1" : "0")
 
-    const rawDate = this.formTarget.querySelector("input[name='date']")?.value
-    const datePart = rawDate || new Date().toISOString().slice(0, 10)
-    const formattedDate = `${datePart} 00:00:00.000000000 +0000`
-    formData.append("date", formattedDate)
+   const rawDate = this.formTarget.querySelector("input[name='date']")?.value
+    // const datePart = rawDate || new Date().toISOString().slice(0, 10)
+    // const formattedDate = `${datePart} 00:00:00.000000000 +0000`
+    formData.append("date",rawDate)
 
     const csrfToken = document.querySelector("meta[name='csrf-token']").content
     const loader = document.getElementById("fullscreen-loader")
@@ -107,7 +113,7 @@ export default class extends Controller {
   async submitLinkedIn() {
     const caption = this.captionTarget.value.trim()
     const fileInput = this.hasImageFileTarget ? this.imageFileTarget.files[0] : null
-
+    const scheduleToPOST = this.hasScheduleTarget ? this.scheduleTarget.checked : false
     if (!fileInput) {
       alert("Please upload an image file for LinkedIn.")
       return
@@ -124,12 +130,10 @@ export default class extends Controller {
     formData.append("image_file", fileClone)
 
     formData.append("caption", caption)
-
+    formData.append("schedule_to_post", scheduleToPOST ? "1" : "0")
 
     const rawDate = this.formTarget.querySelector("input[name='date']")?.value
-    const datePart = rawDate || new Date().toISOString().slice(0, 10)
-    const formattedDate = `${datePart} 00:00:00.000000000 +0000`
-    formData.append("date", formattedDate)
+    formData.append("date", rawDate)
 
     const csrfToken = document.querySelector("meta[name='csrf-token']").content
     const loader = document.getElementById("fullscreen-loader")

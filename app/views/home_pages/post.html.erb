@@ -26,11 +26,10 @@
                 Scheduled for <%= post.scheduled_at&.strftime("%B %d, %Y") %><br>
                 Platforms:
                 <%=
-                [("Facebook" if post.fb == 1), ("Instagram" if post.ig == 1)]
+                [("Facebook" if post.fb == 1), ("Instagram" if post.ig == 1),("LinkedIn" if post.linkedin == 1)]
                 .compact.join(", ")
                 %>
             </p>
-
 
 
             <% if post.photo.attached? %>
