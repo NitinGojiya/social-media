@@ -1,26 +1,105 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["form", "imageUrl", "imageFile", "caption", "ig", "fb", "btnPost", "li","schedule","dateinput"]
+  static targets = ["form", "login", "imageUrl", "imageFile", "caption", "ig", "fb", "btnPost", "li", "schedule", "dateinput"]
 
   connect() {
     this.updateButtonLabel()
+    document.getElementById("previewSocialContainer").classList.add("hidden")
   }
+
+   previewPost(event) {
+    const isChecked = event.target.checked
+
+    if (isChecked) {
+      const postToIG = this.hasIgTarget ? this.igTarget.checked : false
+      const postToFB = this.hasFbTarget ? this.fbTarget.checked : false
+      const postToLI = this.hasLiTarget ? this.liTarget.checked : false
+      if (postToFB){
+        document.getElementById("facebookPreview").classList.remove("hidden")
+      }
+      if (postToIG){
+        document.getElementById("instagramPreview").classList.remove("hidden")
+      }
+      if (postToLI){
+        document.getElementById("linkedinPreview").classList.remove("hidden")
+      }
+      if (postToFB || postToIG || postToLI) {
+         this.previewPostData()
+        this.formTarget.classList.add("hidden")
+        document.getElementById("loginContainer").classList.add("hidden")
+        document.getElementById("previewSocialContainer").classList.remove("hidden")
+
+      } else {
+        alert("please select any one platform to preview")
+        event.target.checked = false
+      }
+
+    } else {
+      this.formTarget.classList.remove("hidden")
+      document.getElementById("loginContainer").classList.remove("hidden")
+      document.getElementById("previewSocialContainer").classList.add("hidden")
+
+    }
+  }
+
+async previewPostData() {
+  const imageUrl = this.imageUrlTarget.value.trim();
+  const fileInput = this.hasImageFileTarget ? this.imageFileTarget.files[0] : null;
+  const caption = this.captionTarget.value.trim();
+
+  const previewContainer = document.getElementById("previewContainer");
+  const previewCaption = document.querySelectorAll(".previewCaption");
+  const previewImages = document.querySelectorAll(".previewImage");
+  const previewPlaceholder = document.getElementById("previewPlaceholder");
+
+  previewCaption.forEach(captionElement => {
+    captionElement.textContent = caption || "No caption provided";
+  });
+
+  if (fileInput) {
+    const reader = new FileReader();
+    reader.onload = await function (e) {
+       previewImages.forEach(img => {
+        img.src = e.target.result;
+        img.classList.remove("hidden");
+      });
+      previewPlaceholder.classList.add("hidden");
+    };
+    reader.readAsDataURL(fileInput);
+  } else if (imageUrl) {
+    previewImages.forEach(img => {
+      img.src = imageUrl;
+      img.classList.remove("hidden");
+    });
+    previewPlaceholder.classList.add("hidden");
+  } else {
+    previewImages.forEach(img => {
+      img.src = "";
+      img.classList.add("hidden");
+    });
+    previewPlaceholder.classList.remove("hidden");
+  }
+
+  previewContainer.classList.remove("hidden");
+}
+
+
 
   updateButtonLabel() {
-  const is_schedule = this.scheduleTarget.checked;
+    const is_schedule = this.scheduleTarget.checked;
 
-  // Show or hide the date input
-  if (is_schedule) {
-    this.dateinputTarget.classList.remove("hidden");
-    console.log(document.getElementById("datetime").value)
-  } else {
-    this.dateinputTarget.classList.add("hidden");
+    // Show or hide the date input
+    if (is_schedule) {
+      this.dateinputTarget.classList.remove("hidden");
+      console.log(document.getElementById("datetime").value)
+    } else {
+      this.dateinputTarget.classList.add("hidden");
+    }
+
+    // Update button text
+    this.btnPostTarget.textContent = is_schedule ? "Schedule Post" : "Post Now";
   }
-
-  // Update button text
-  this.btnPostTarget.textContent = is_schedule ? "Schedule Post" : "Post Now";
-}
 
   dateChanged(event) {
     this.updateButtonLabel()
@@ -39,7 +118,7 @@ export default class extends Controller {
     if (postToLI) {
       await this.submitLinkedIn()
     }
-  window.location.reload()
+    window.location.reload()
   }
 
   async FbIgSubmit() {
@@ -73,10 +152,10 @@ export default class extends Controller {
     formData.append("post_to_fb", postToFB ? "1" : "0")
     formData.append("schedule_to_post", scheduleToPOST ? "1" : "0")
 
-   const rawDate = this.formTarget.querySelector("input[name='date']")?.value
+    const rawDate = this.formTarget.querySelector("input[name='date']")?.value
     // const datePart = rawDate || new Date().toISOString().slice(0, 10)
     // const formattedDate = `${datePart} 00:00:00.000000000 +0000`
-    formData.append("date",rawDate)
+    formData.append("date", rawDate)
 
     const csrfToken = document.querySelector("meta[name='csrf-token']").content
     const loader = document.getElementById("fullscreen-loader")

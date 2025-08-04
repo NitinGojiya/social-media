@@ -38,22 +38,32 @@ export default class extends Controller {
       },
 
       eventClick: function (info) {
-        info.jsEvent.preventDefault()
-        if (!info.event.extendedProps.holiday) {
-          const event = info.event
-          const title = event.title
-          const date = event.start.toLocaleString()
-          const isHoliday = event.extendedProps.holiday
-          const isPosted = event.extendedProps.posted
+  info.jsEvent.preventDefault()
+  if (!info.event.extendedProps.holiday) {
+    const event = info.event
+    const title = event.title
+    const date = event.start.toLocaleString()
+    const isHoliday = event.extendedProps.holiday
+    const isPosted = event.extendedProps.posted
+    const image = event.extendedProps.image
 
-          document.getElementById("event-modal-title").textContent = title
-          document.getElementById("event-modal-date").textContent = `Date: ${date}`
-          document.getElementById("event-modal-type").textContent =
-            isHoliday ? "Type: Holiday" : isPosted ? "Status: Posted" : "Status: Scheduled Post"
+    document.getElementById("event-modal-title").textContent = title
+    document.getElementById("event-modal-date").textContent = `Date: ${date}`
+    document.getElementById("event-modal-type").textContent =
+      isHoliday ? "Type: Holiday" : isPosted ? "Status: Posted" : "Status: Scheduled Post"
 
-          document.getElementById("event_details_modal").showModal()
-        }
-      }
+    const imageEl = document.getElementById("event-modal-image")
+    if (image) {
+      imageEl.src = image
+      imageEl.style.display = "block"
+    } else {
+      imageEl.style.display = "none" // Hide image if none
+    }
+
+    document.getElementById("event_details_modal").showModal()
+  }
+}
+
     })
 
     calendar.render()

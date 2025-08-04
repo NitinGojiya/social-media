@@ -11,6 +11,7 @@ class HomePagesController < ApplicationController
         id: post.id,
         title: post.caption,
         start: post.scheduled_at.iso8601,
+        image: post.photo_url,
         posted: post.status == 2  # true if posted
       }
     end
