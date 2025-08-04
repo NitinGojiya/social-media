@@ -25,6 +25,7 @@ export default class extends Controller {
         document.getElementById("linkedinPreview").classList.remove("hidden")
       }
       if (postToFB || postToIG || postToLI) {
+        document.getElementById("previewLabel").textContent = "Disable preview"
          this.previewPostData()
         this.formTarget.classList.add("hidden")
         document.getElementById("loginContainer").classList.add("hidden")
@@ -36,6 +37,7 @@ export default class extends Controller {
       }
 
     } else {
+      document.getElementById("previewLabel").textContent = "Enable preview"
       this.formTarget.classList.remove("hidden")
       document.getElementById("loginContainer").classList.remove("hidden")
       document.getElementById("previewSocialContainer").classList.add("hidden")
