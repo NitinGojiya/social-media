@@ -1,31 +1,59 @@
-<div class="flex justify-center items-center gap-2 flex-wrap mt-5">
+<div class="flex flex-col items-center justify-center min-h-screen">
+     <!-- Main Heading -->
+        <div class="text-center p-4">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-2">Post Universal</h1>
+            <p class="text-lg text-gray-600 max-w-2xl">
+                These platforms provide a single place to handle your social accounts and schedule your posts, so they are automatically published at your preferred time.
+            </p>
+        </div>
+     <div class="card-container w-full max-w-7xl">
 
-
-    <%= link_to "/auth/facebook" , class: "btn bg-[#1A77F2] text-white border-[#005fd8]" do %>
-        <svg aria-label="Facebook logo" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-            <path fill="white" d="M8 12h5V8c0-6 4-7 11-6v5c-4 0-5 0-5 3v2h5l-1 6h-4v12h-6V18H8z"></path>
-        </svg>
-        Login with Facebook
+        <!-- Meta Platforms Card -->
+         <%= link_to "/auth/facebook"  do %>
+        <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 p-6 flex flex-col items-center text-center">
+            <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-4">
+                <div class="flex items-center justify-center space-x-1">
+                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M22.675 0h-21.35c-0.732 0-1.325 0.593-1.325 1.325v21.351c0 0.732 0.593 1.324 1.325 1.324h11.495v-9.294h-3.136v-3.626h3.136v-2.615c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463 0.099 2.795 0.143v3.24l-1.921 0.001c-1.503 0-1.795 0.715-1.795 1.763v2.313h3.587l-0.467 3.626h-3.12v9.294h6.115c0.732 0 1.325-0.592 1.325-1.324v-21.351c0-0.732-0.593-1.325-1.325-1.325z"/>
+                    </svg>
+                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07c3.252.148 4.471 1.581 4.673 4.673.057 1.267.068 1.647.068 4.851 0 3.204-.012 3.584-.068 4.85-.202 3.092-1.42 4.311-4.673 4.673-1.267.058-1.647.07-4.85.07-3.204 0-3.584-.012-4.85-.07-3.252-.202-4.471-1.42-4.673-4.673-.058-1.267-.07-1.647-.07-4.851 0-3.204.012-3.584.07-4.85.202-3.092 1.42-4.311 4.673-4.673 1.267-.058 1.647-.07 4.85-.07zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.211-6.177 2.309-6.398 6.398-.058 1.281-.072 1.689-.072 4.947 0 3.259.014 3.667.072 4.947.211 4.089 2.44 5.955 6.398 6.398 1.28.058 1.689.072 4.947.072 3.259 0 3.667-.014 4.947-.072 4.089-.211 5.955-2.44 6.398-6.398.058-1.28.072-1.689.072-4.947 0-3.259-.014-3.667-.072-4.947-.211-4.089-2.309-6.177-6.398-6.398-1.281-.058-1.689-.072-4.947-.072zm0 8.831c-2.209 0-4 1.791-4 4s1.791 4 4 4 4-1.791 4-4-1.791-4-4-4zm0 6.169c-1.181 0-2.169-.988-2.169-2.169s.988-2.169 2.169-2.169 2.169.988 2.169 2.169-.988 2.169-2.169 2.169zm7.112-9.493c0 .584-.476 1.06-.827 1.06-.583 0-.827-.476-.827-1.06 0-.352.244-.827.827-.827.351 0 .827.475.827.827z"/>
+                    </svg>
+                </div>
+            </div>
+            <h3 class="text-2xl font-bold mb-2">Connect Now</h3>
+            <p class="text-gray-600">
+                Instantly connect with friends and family. Share photos and videos to build your network and stay up-to-date with your social circle.
+            </p>
+        </div>
         <%end%>
 
-            <!-- X -->
-            <button class="btn bg-black text-white border-black">
-                <svg aria-label="X logo" width="16" height="12" viewBox="0 0 300 271"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path fill="currentColor"
-                        d="m236 0h46l-101 115 118 156h-92.6l-72.5-94.8-83 94.8h-46l107-123-113-148h94.9l65.5 86.6zm-16.1 244h25.5l-165-218h-27.4z" />
+        <!-- LinkedIn Card -->
+         <%= link_to "/auth/linkedin" do %>
+        <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 p-6 flex flex-col items-center text-center">
+            <div class="w-16 h-16 bg-blue-700 rounded-full flex items-center justify-center mb-4">
+                <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.765s.784-1.765 1.75-1.765 1.75.79 1.75 1.765-.783 1.765-1.75 1.765zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
                 </svg>
-                Login with X
-            </button>
+            </div>
+            <h3 class="text-2xl font-bold mb-2">Connect Now</h3>
+            <p class="text-gray-600">
+                Publish professional content, share articles, and highlight your achievements to a targeted audience of industry peers.
+            </p>
+        </div>
+        <%end%>
 
-            <!-- LinkedIn -->
-            <%= link_to "/auth/linkedin",class:"btn bg-[#0967C2] text-white border-[#0059b3]" do %>
-                <svg aria-label="LinkedIn logo" width="16" height="16" xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 32 32">
-                    <path fill="white"
-                        d="M26.111,3H5.889c-1.595,0-2.889,1.293-2.889,2.889V26.111c0,1.595,1.293,2.889,2.889,2.889H26.111c1.595,0,2.889-1.293,2.889-2.889V5.889c0-1.595-1.293-2.889-2.889-2.889ZM10.861,25.389h-3.877V12.87h3.877v12.519Zm-1.957-14.158c-1.267,0-2.293-1.034-2.293-2.31s1.026-2.31,2.293-2.31,2.292,1.034,2.292,2.31-1.026,2.31-2.292,2.31Zm16.485,14.158h-3.858v-6.571c0-1.802-.685-2.809-2.111-2.809-1.551,0-2.362,1.048-2.362,2.809v6.571h-3.718V12.87h3.718v1.686s1.118-2.069,3.775-2.069,4.556,1.621,4.556,4.975v7.926Z"
-                        fill-rule="evenodd"></path>
-                </svg>
-                Login with LinkedIn
-                <%end%>
+        <!-- X (Twitter) Card -->
+        <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 p-6 flex flex-col items-center text-center">
+            <div class="w-16 h-16 bg-black rounded-full flex items-center justify-center mb-4">
+              <i class="fa-brands fa-square-x-twitter text-2xl text-white"></i>
+
+            </div>
+            <h3 class="text-2xl font-bold mb-2">Connect Now</h3>
+            <p class="text-gray-600">
+                Broadcast short, impactful messages to a global audience. Engage in real-time conversations and track what's trending instantly.
+            </p>
+        </div>
+
+    </div>
 </div>
