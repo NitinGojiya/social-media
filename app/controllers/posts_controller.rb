@@ -70,6 +70,11 @@ class PostsController < ApplicationController
 
     if post.fb_post_id.present?
       fb_service.delete_facebook_post(post.fb_post_id)
+      if post.fb == 1 && post.ig == 0
+        post.destroy
+        redirect_to posts_path, notice: "Post deleted successfully."
+        return
+      end
       post.update(fb_post_id: nil, fb: 0)
     end
 
