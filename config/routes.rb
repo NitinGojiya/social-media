@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   resources :passwords, param: :token
 
   resources :posts, only: [:new]
+  patch "scheduled_update/:id", to: "posts#scheduled_update", as: "scheduled_update"
   delete "/delete_post/:id", to: "posts#destroy", as: :delete_post
 
   get "post", to: "home_pages#post", as: "post"

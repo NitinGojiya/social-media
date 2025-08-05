@@ -46,9 +46,11 @@ class HomePagesController < ApplicationController
     render json: events + holiday_events
   end
 
-  def post
-     @posts_future = Current.session.user.posts.scheduled.order(scheduled_at: :asc)
-     @posts_posted = Current.session.user.posts.posted.order(created_at: :desc)
-     @user = Current.session.user
-  end
+def post
+  @posts_future = Current.session.user.posts.scheduled.order(scheduled_at: :asc)
+  @posts_posted = Current.session.user.posts.posted.order(created_at: :desc)
+  @user = Current.session.user
+  @new_post = Current.session.user.posts.new
+end
+
 end

@@ -72,6 +72,6 @@ Rails.application.configure do
 
   config.hosts << /.*\.ngrok-free\.app/
   # Rails.application.routes.default_url_options[:host] = ENV.fetch("APP_HOST")
-  Rails.application.routes.default_url_options[:host] = 'https://bf0da901063b.ngrok-free.app'
+  Rails.application.routes.default_url_options[:host] = 'https://a818a26a4f3e.ngrok-free.app'
 
 end

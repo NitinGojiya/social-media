@@ -4,7 +4,7 @@
         <!-- Header with New Post Button -->
         <div class="flex justify-between items-center mb-8">
             <div>
-                <h1 class="text-4xl font-extrabold text-gray-900">Your Feature Posts</h1>
+                <h1 class="text-4xl font-extrabold text-gray-900">Your scheduled Posts</h1>
             </div>
             <div class="flex flex-col md:flex-row gap-2">
                 <%=render 'calendar'%>
@@ -12,94 +12,16 @@
             </div>
         </div>
 
-        <!-- Posts Grid -->
-   <div class="overflow-x-auto">
-    <div class="flex space-x-8 px-2">
-        <% @posts_future.each do |post| %>
-        <div class="min-w-[300px] bg-white p-7 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out flex flex-col justify-between">
-            <div>
-
-            <h2 class="text-2xl font-bold text-gray-900 mb-3">
-                <%= truncate(post.caption, length: 60) %>
-            </h2>
-            <a class="text-gray-700 leading-relaxed mb-5">
-                Scheduled for <%= post.scheduled_at&.strftime("%B %d, %Y") %><br>
-                Platforms:
-                <%=
-                [("Facebook" if post.fb == 1), ("Instagram" if post.ig == 1),("LinkedIn" if post.linkedin == 1)]
-                .compact.join(", ")
-                %>
-            </p>
-
-
-            <% if post.photo.attached? %>
-            <%=link_to post.photo_url do%>
-                <img src="<%= url_for(post.photo) %>" alt="Post image" loading="lazy" class="mb-4 rounded-xl object-cover w-full h-48" />
-            <% end %>
-            <% end %>
-            </div>
-
-            <button
-            data-action="click->posts#publish"
-            data-post-id="<%= post.id %>"
-            class="publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">
-            Publish
-            </button>
-
-        </div>
-        <% end %>
-    </div>
-    </div>
+        <!--scheduled Posts Grid -->
+        <%= render 'scheduled_post' %>
 
 
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-4xl font-extrabold text-gray-900">Your Posts</h1>
-
         </div>
 
         <!-- Posts Grid -->
-           <div class="overflow-x-auto">
-    <div class="flex space-x-8 px-2">
-        <% @posts_posted.each do |post| %>
-      <div class="relative min-w-[300px] bg-white p-7 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out flex flex-col justify-between">
-
-  <% if post.fb_post_id %>
-    <div class="absolute top-2 right-2 z-10">
-      <%= button_to delete_post_path(post), method: :delete, data: { confirm: "Are you sure?" }, class: "bg-[#B12C00] hover:bg-[#c17962] text-white px-6 py-3 rounded-lg shadow-md  transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50" do %>
-        <i class="fa-brands fa-facebook"></i><i class="fa-solid fa-trash text-xl"></i>
-      <% end %>
-    </div>
-  <% end %>
-
-  <% if post.linkedin_post_urn %>
-    <div class="absolute top-2 right-2 z-10">
-      <%= button_to delete_linkedin_post_path(post), method: :delete, data: { confirm: "Are you sure?" }, class: "bg-[#B12C00] hover:bg-[#c17962] text-white px-6 py-3 rounded-lg shadow-md  transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50" do %>
-        <i class="fa-brands fa-linkedin"></i><i class="fa-solid fa-trash text-xl"></i>
-      <% end %>
-    </div>
-  <% end %>
-
-  <div>
-    <h2 class="text-2xl font-bold text-gray-900 mb-3">
-      <%= truncate(post.caption, length: 60) %>
-    </h2>
-    <p class="text-gray-700 leading-relaxed mb-5">
-      Published Date <%= post.scheduled_at&.strftime("%B %d, %Y") %><br>
-      Platforms:
-      <%= [("Facebook" if post.fb == 1), ("Instagram" if post.ig == 1),("LinkedIn" if post.linkedin == 1)].compact.join(", ") %>
-    </p>
-
-    <% if post.photo.attached? %>
-      <%= link_to post.photo_url do %>
-        <img src="<%= url_for(post.photo) %>" alt="Post image" loading="lazy" class="mb-4 rounded-xl object-cover w-full h-48" />
-      <% end %>
-    <% end %>
-  </div>
-</div>
-
-        <% end %>
-    </div>
-    </div>
+        <%= render 'posted_post' %>
 
     </main>
 
