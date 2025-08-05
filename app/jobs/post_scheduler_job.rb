@@ -18,9 +18,9 @@ class PostSchedulerJob < ApplicationJob
           image_url = generate_processed_image_url(post)
           Rails.logger.info("[PostSchedulerJob] IG image_url: #{image_url}")
 
-          next unless image_url  # ✅ skip if image couldn't be processed
+          next unless image_url  # skip if image couldn't be processed
 
-          res = post_to_instagram(user.ig_user_id, user.fb_token, image_url, post.caption)  # ✅ correctly inside begin
+          res = post_to_instagram(user.ig_user_id, user.fb_token, image_url, post.caption)
           post.update(ig_post_id: res[:id]) if res[:id]
           results << "Instagram: #{res[:message]}"
 
