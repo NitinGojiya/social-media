@@ -70,7 +70,9 @@ gem "tailwindcss-ruby", "~> 4.1"
 gem "tailwindcss-rails", "~> 4.3"
 
 gem 'omniauth-linkedin-oauth2'
-gem 'env'
+
+gem 'dotenv-rails'
+
 gem 'httparty'
 
 gem 'whenever', require: false
