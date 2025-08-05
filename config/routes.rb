@@ -29,4 +29,7 @@ Rails.application.routes.draw do
   delete "/delete_linkedin_post/:id", to: "posts#delete_linkedin_post", as: :delete_linkedin_post
 
 
+  # ai
+  post "/ai/generate_caption", to: "geminiai#generate_caption", as: :generate_caption
+
 end
