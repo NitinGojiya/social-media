@@ -146,27 +146,46 @@ class PostsController < ApplicationController
     end
   end
 
-def scheduled_update
-  @post = Current.session.user.posts.find(params[:id])
+  def scheduled_update
+    @post = Current.session.user.posts.find(params[:id])
 
-  if @post.update(post_params)
-    # Attach photo if provided (from top-level params)
-    if params[:photo].present?
-      @post.photo.purge if @post.photo.attached?
-      @post.photo.attach(params[:photo])
+    post_data = post_params
+
+    # Parse scheduled_at manually if it's present
+    if post_data[:scheduled_at].present?
+      begin
+        post_data[:scheduled_at] = Time.parse(post_data[:scheduled_at])
+      rescue ArgumentError
+        return redirect_to post_path(@post), alert: "Invalid scheduled date format."
+      end
     end
 
-    redirect_to post_path(@post), notice: "Post updated successfully!"
-  else
-    redirect_to post_path(@post), alert: "Failed to update post."
+    if @post.update(post_data)
+      # Attach photo if provided (from top-level params)
+      if params[:photo].present?
+        @post.photo.purge if @post.photo.attached?
+        @post.photo.attach(params[:photo])
+      end
+
+      redirect_to post_path(@post), notice: "Post updated successfully!"
+    else
+      redirect_to post_path(@post), alert: "Failed to update post."
+    end
   end
-end
 
-private
+  def scheduled_posts_delete
+    @post = Current.session.user.posts.find(params[:id])
+    if @post.destroy
+      redirect_to post_path, notice: "Post deleted successfully!"
+    else
+      redirect_to post_path, alert: "Failed to delete post."
+    end
+  end
+  private
 
-def post_params
-  params.require(:post).permit(:caption, :scheduled_at, :fb, :ig, :linkedin)
-end
+  def post_params
+    params.require(:post).permit(:caption, :scheduled_at, :fb, :ig, :linkedin)
+  end
 
   def delete_uploaded_file
     return unless @uploaded_file_path.present? && File.exist?(@uploaded_file_path)

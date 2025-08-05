@@ -6,35 +6,34 @@ class PostSchedulerJob < ApplicationJob
 
       today = Time.zone.today
       Post.where(status: 1, scheduled_at: ..Time.current).includes(:user, photo_attachment: :blob).find_each do |post|
-      user = post.user
+        user = post.user
       next unless user
 
       results = []
 
       # IG Posting
-      if post.ig == 1 && user.ig_user_id.present? && user.fb_token.present?
+     if post.ig == 1 && user.ig_user_id.present? && user.fb_token.present?
         begin
           Rails.logger.info("[PostSchedulerJob] Attempting Instagram post for Post##{post.id}")
           image_url = generate_processed_image_url(post)
+          Rails.logger.info("[PostSchedulerJob] IG image_url: #{image_url}")
 
-            Rails.logger.info("[PostSchedulerJob] IG image_url: #{image_url}")
+          next unless image_url  # ✅ skip if image couldn't be processed
 
-            # binding.pry
-          rescue => e
-          res = post_to_instagram(user.ig_user_id, user.fb_token, image_url, post.caption)
+          res = post_to_instagram(user.ig_user_id, user.fb_token, image_url, post.caption)  # ✅ correctly inside begin
+          post.update(ig_post_id: res[:id]) if res[:id]
+          results << "Instagram: #{res[:message]}"
 
-                    res = post_to_instagram(user.ig_user_id, user.fb_token, image_url, post.caption)
-
-                    post.update(ig_post_id: res[:id]) if res[:id] #  Store Instagram post ID
-                    results << "Instagram: #{res[:message]}"
-            Rails.logger.error("[PostSchedulerJob] IG post failed for Post##{post.id}:\n" \
-                              "User ID: #{user.ig_user_id}\n" \
-                              "Token: #{user.fb_token[0..10]}...\n" \
-                              "Image URL: #{image_url}\n" \
-                              "#{e.class} - #{e.message}\n#{e.backtrace.join("\n")}")
-            results << "Instagram failed"
+        rescue => e
+          Rails.logger.error("[PostSchedulerJob] IG post failed for Post##{post.id}:\n" \
+                            "User ID: #{user.ig_user_id}\n" \
+                            "Token: #{user.fb_token[0..10]}...\n" \
+                            "Image URL: #{image_url}\n" \
+                            "#{e.class} - #{e.message}\n#{e.backtrace.join("\n")}")
+          results << "Instagram failed"
         end
       end
+
 
       if post.fb == 1 && user.fb_page_id.present? && user.fb_page_token.present?
         begin
@@ -174,7 +173,7 @@ class PostSchedulerJob < ApplicationJob
     filepath = upload_dir.join(safe_filename)
     image.write(filepath)
 
-    base_url = ENV.fetch("APP_HOST", "https://bc91ba221f41.ngrok-free.app")
+    base_url = ENV.fetch("APP_HOST", "https://a818a26a4f3e.ngrok-free.app")
     "#{base_url}/uploads/#{safe_filename}"
   end
 end

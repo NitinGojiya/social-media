@@ -26,9 +26,18 @@ export default class extends Controller {
     document.getElementById("edit-modal").classList.add("hidden")
   }
 
-  formatDateTime(datetimeString) {
-    if (!datetimeString) return ""
-    const date = new Date(datetimeString)
-    return date.toISOString().slice(0, 16) // format as "YYYY-MM-DDTHH:mm"
-  }
+ formatDateTime(datetimeString) {
+  if (!datetimeString) return ""
+
+  const date = new Date(datetimeString)
+
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+
+  return `${year}-${month}-${day}T${hours}:${minutes}` // Local time format
+}
+
 }

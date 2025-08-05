@@ -1,8 +1,15 @@
  <div class="overflow-x-auto">
     <div class="flex space-x-8 px-2">
         <% @posts_future.each do |post| %>
-        <div class="min-w-[300px] bg-white p-7 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out flex flex-col justify-between">
+        <div class="relative min-w-[300px] bg-white p-7 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out flex flex-col justify-between">
             <div>
+
+            <div class="absolute top-2 right-2 z-10">
+              <%= button_to scheduled_posts_delete_path(post), method: :delete, data: { confirm: "Are you sure?" }, class: "bg-[#B12C00] hover:bg-[#c17962] text-white px-6 py-3 rounded-lg shadow-md  transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50" do %>
+                <i class="fa-solid fa-trash text-xl"></i>
+              <% end %>
+            </div>
+
 
             <h2 class="text-2xl font-bold text-gray-900 mb-3">
                 <%= truncate(post.caption, length: 60) %>
@@ -45,53 +52,53 @@
 
 
     <div id="edit-modal" class="fixed inset-0 top-[100px] z-50 hidden justify-centeritems-center justify-center overflow-y-auto" data-controller="modal">
-  <div class="bg-white p-4 sm:p-6 rounded-lg shadow-xl w-11/12 sm:max-w-lg mx-auto my-10">
-    <h2 class="text-2xl font-bold mb-4">Edit Post</h2>
+    <div class="bg-white p-4 sm:p-6 rounded-lg shadow-xl w-11/12 sm:max-w-lg mx-auto my-10">
+        <h2 class="text-2xl font-bold mb-4">Edit Post</h2>
 
-    <%= form_with url: scheduled_update_path(0), method: :patch, html: { id: "edit-form" }, data: { turbo: false } do |f| %>
-      <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-      <input type="hidden" name="id" id="post-id">
+        <%= form_with url: scheduled_update_path(0), method: :patch, html: { id: "edit-form" }, data: { turbo: false } do |f| %>
+        <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+        <input type="hidden" name="id" id="post-id">
 
-      <div class="mb-4">
-        <label class="block mb-1 font-semibold">Caption</label>
-        <textarea name="post[caption]" id="post-caption" class="w-full border p-2 rounded"></textarea>
-      </div>
+        <div class="mb-4">
+            <label class="block mb-1 font-semibold">Caption</label>
+            <textarea name="post[caption]" id="post-caption" class="w-full border p-2 rounded"></textarea>
+        </div>
 
-      <div class="mb-4">
-        <label class="block mb-1 font-semibold">Scheduled At</label>
-        <input type="datetime-local" name="post[scheduled_at]" id="post-scheduled-at" class="w-full border p-2 rounded">
-      </div>
+        <div class="mb-4">
+            <label class="block mb-1 font-semibold">Scheduled At</label>
+            <input type="datetime-local" name="post[scheduled_at]" id="post-scheduled-at" class="w-full border p-2 rounded">
+        </div>
 
-      <div class="mb-4">
-        <label class="block font-semibold mb-1">Platforms</label>
+        <div class="mb-4">
+            <label class="block font-semibold mb-1">Platforms</label>
 
-        <label>
-          <%= hidden_field_tag "post[fb]", 0 %>
-          <%= check_box_tag "post[fb]", 1, false, id: "post-fb" %> Facebook
-        </label><br>
+            <label>
+            <%= hidden_field_tag "post[fb]", 0 %>
+            <%= check_box_tag "post[fb]", 1, false, id: "post-fb" %> Facebook
+            </label><br>
 
-        <label>
-          <%= hidden_field_tag "post[ig]", 0 %>
-          <%= check_box_tag "post[ig]", 1, false, id: "post-ig" %> Instagram
-        </label><br>
+            <label>
+            <%= hidden_field_tag "post[ig]", 0 %>
+            <%= check_box_tag "post[ig]", 1, false, id: "post-ig" %> Instagram
+            </label><br>
 
-        <label>
-          <%= hidden_field_tag "post[linkedin]", 0 %>
-          <%= check_box_tag "post[linkedin]", 1, false, id: "post-linkedin" %> LinkedIn
-        </label>
-      </div>
+            <label>
+            <%= hidden_field_tag "post[linkedin]", 0 %>
+            <%= check_box_tag "post[linkedin]", 1, false, id: "post-linkedin" %> LinkedIn
+            </label>
+        </div>
 
-      <div>
+        <div>
 
-        <%= f.file_field :photo, id: "post-photo", accept: "image/*", class: "w-full border p-2 rounded" %>
-      </div>
+            <%= f.file_field :photo, id: "post-photo", accept: "image/*", class: "w-full border p-2 rounded" %>
+        </div>
 
-      <div class="flex justify-end gap-2">
-        <button type="button" data-action="modal#close" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
-        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Update</button>
-      </div>
-    <% end %>
-  </div>
-</div>
+        <div class="flex justify-end gap-2 mt-2">
+            <button type="button" data-action="modal#close" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+            <button type="submit" class="publish-btn bg-[#B12C00]  text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">Update</button>
+        </div>
+        <% end %>
+    </div>
+    </div>
 
 

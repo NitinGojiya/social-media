@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   resources :posts, only: [:new]
   patch "scheduled_update/:id", to: "posts#scheduled_update", as: "scheduled_update"
   delete "/delete_post/:id", to: "posts#destroy", as: :delete_post
+  delete "/scheduled_posts_delete/:id", to: "posts#scheduled_posts_delete", as: :scheduled_posts_delete
 
   get "post", to: "home_pages#post", as: "post"
   get "link_account", controller: "home_pages", as: "link_account"
