@@ -37,6 +37,11 @@ class LinkedinLinksController < ApplicationController
     linkedin_token: access_token,
     linkedin_id: linkedin_id
     )
+    linkedin_profile = user.linkedin_profiles.create!(
+      profile_name:userinfo["name"],
+      headline: userinfo["headline"],
+      profile_picture_url: userinfo["picture"],
+    )
     redirect_to post_path
   end
 end
