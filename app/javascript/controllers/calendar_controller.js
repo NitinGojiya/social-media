@@ -19,20 +19,7 @@ export default class extends Controller {
   plusBtn.classList.add("fc-add-button")
   plusBtn.setAttribute("type", "button") // prevent form submit
 
-  // Style the button
-  plusBtn.style.position = "absolute"
-  plusBtn.style.top = "2px"
-  plusBtn.style.left = "2px"
-  plusBtn.style.zIndex = "10"
-  plusBtn.style.border = "none"
-  plusBtn.style.background = "#007bff"
-  plusBtn.style.color = "white"
-  plusBtn.style.borderRadius = "50%"
-  plusBtn.style.width = "20px"
-  plusBtn.style.height = "20px"
-  plusBtn.style.cursor = "pointer"
-  plusBtn.style.fontSize = "14px"
-  plusBtn.style.display = "none" // 👈 Initially hidden
+
   plusBtn.title = "Add new post"
 
   // Ensure day cell is positioned

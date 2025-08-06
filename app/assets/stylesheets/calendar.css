@@ -1,0 +1,16 @@
+.fc-add-button {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  z-index: 10;
+  border: none;
+  background: #a83e29;
+  color: white;
+  border-radius: 20px;
+  width: 80%;
+  height: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 900;
+  display: none; /* hidden by default */
+}
