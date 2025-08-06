@@ -2,6 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["schedule", "dateinput"]
+
   connect() {
     const calendar = new window.FullCalendar.Calendar(this.element, {
       headerToolbar: {
@@ -12,77 +13,130 @@ export default class extends Controller {
 
       events: "/calendar_events",
 
-      // ✅ ADD "+" ICON TO EACH DAY CELL
-    dayCellDidMount: function (info) {
-  const plusBtn = document.createElement("button")
-  plusBtn.textContent = "+"
-  plusBtn.classList.add("fc-add-button")
-  plusBtn.setAttribute("type", "button") // prevent form submit
+      // Month view: "+" on each day cell
+      dayCellDidMount: function (info) {
+        const plusBtn = document.createElement("button")
+        plusBtn.textContent = "+"
+        plusBtn.classList.add("fc-add-button")
+        plusBtn.setAttribute("type", "button")
+        plusBtn.title = "Add new post"
+
+        info.el.style.position = "relative"
+        info.el.appendChild(plusBtn)
+
+        info.el.addEventListener("mouseenter", () => {
+          plusBtn.style.display = "inline-block"
+        })
+        info.el.addEventListener("mouseleave", () => {
+          plusBtn.style.display = "none"
+        })
+        info.el.addEventListener("touchstart", () => {
+          plusBtn.style.display = "inline-block"
+          setTimeout(() => {
+            plusBtn.style.display = "none"
+          }, 3000)
+        })
+
+        plusBtn.addEventListener("click", () => {
+          if (typeof my_modal_1 !== 'undefined' && typeof my_modal_1.showModal === 'function') {
+            my_modal_1.showModal()
+          }
+
+          const datetimeInput = document.getElementById("datetime")
+          if (datetimeInput) {
+            const date = new Date(info.date)
+            date.setHours(9)
+            date.setMinutes(0)
+            datetimeInput.value = formatDateForDatetimeLocal(date)
+            datetimeInput.classList.remove("hidden")
+            document.getElementById("postButton").innerHTML = "Schedule Post"
+          }
+
+          const checkbox = document.getElementById("schedule-checkbox")
+          if (checkbox) {
+            checkbox.checked = true
+          }
+        })
+      },
+
+      // Week/Day view: "+" on time slot hover
+      slotLaneDidMount: function (info) {
+        if (!["timeGridWeek", "timeGridDay"].includes(calendar.view.type)) return
+
+        const plusBtn = document.createElement("button")
+        plusBtn.textContent = "+"
+        plusBtn.classList.add("fc-add-button")
+        plusBtn.setAttribute("type", "button")
+        plusBtn.title = "Add new post"
 
 
-  plusBtn.title = "Add new post"
+        plusBtn.style.width = "100%"
+        plusBtn.style.height = "20px"
 
-  // Ensure day cell is positioned
-  info.el.style.position = "relative"
-  info.el.appendChild(plusBtn)
 
-  // Hover (desktop)
-  info.el.addEventListener("mouseenter", () => {
-    plusBtn.style.display = "inline-block"
-  })
-  info.el.addEventListener("mouseleave", () => {
-    plusBtn.style.display = "none"
-  })
+        info.el.style.position = "relative"
+        info.el.appendChild(plusBtn)
 
-  // Touch (mobile)
-  info.el.addEventListener("touchstart", () => {
-    plusBtn.style.display = "inline-block"
-    setTimeout(() => {
-      plusBtn.style.display = "none"
-    }, 3000) // auto-hide after 3s
-  })
+        info.el.addEventListener("mouseenter", () => {
+          plusBtn.style.display = "inline-block"
+        })
+        info.el.addEventListener("mouseleave", () => {
+          plusBtn.style.display = "none"
+        })
+        info.el.addEventListener("touchstart", () => {
+          plusBtn.style.display = "inline-block"
+          setTimeout(() => {
+            plusBtn.style.display = "none"
+          }, 3000)
+        })
 
-  // ✅ Button click action
-plusBtn.addEventListener("click", () => {
-  // Show modal
-  if (typeof my_modal_1 !== 'undefined' && typeof my_modal_1.showModal === 'function') {
-    my_modal_1.showModal()
-  }
+        plusBtn.addEventListener("click", () => {
+          if (typeof my_modal_1 !== 'undefined' && typeof my_modal_1.showModal === 'function') {
+            my_modal_1.showModal()
+          }
 
-  // Set the clicked date in the datetime-local input
-  const datetimeInput = document.getElementById("datetime")
-  if (datetimeInput) {
-    const date = new Date(info.date)
+          const datetimeInput = document.getElementById("datetime")
+          if (datetimeInput) {
+            const date = new Date(info.date)
+            datetimeInput.value = formatDateForDatetimeLocal(date)
+            datetimeInput.classList.remove("hidden")
+            document.getElementById("postButton").innerHTML = "Schedule Post"
+          }
 
-    // Optional: set default time to 09:00
-    date.setHours(9)
-    date.setMinutes(0)
+          const checkbox = document.getElementById("schedule-checkbox")
+          if (checkbox) {
+            checkbox.checked = true
+          }
+        })
+      },
 
-    // Format to "YYYY-MM-DDTHH:MM"
-    const formatted = date.toISOString().slice(0,16)
-    datetimeInput.value = formatted
-    datetimeInput.classList.remove("hidden")
-    document.getElementById("postButton").innerHTML = "Schedule Post"
-  }
+      dateClick: function (info) {
+        if (["timeGridWeek", "timeGridDay"].includes(calendar.view.type)) {
+          if (typeof my_modal_1 !== 'undefined' && typeof my_modal_1.showModal === 'function') {
+            my_modal_1.showModal()
+          }
 
-  // Check the checkbox
-  const checkbox = document.getElementById("schedule-checkbox")
-  if (checkbox) {
-    checkbox.checked = true
-  }
-})
+          const datetimeInput = document.getElementById("datetime")
+          if (datetimeInput) {
+            const date = new Date(info.date)
+            datetimeInput.value = formatDateForDatetimeLocal(date)
+            datetimeInput.classList.remove("hidden")
+            document.getElementById("postButton").innerHTML = "Schedule Post"
+          }
 
-}
-
-      ,
+          const checkbox = document.getElementById("schedule-checkbox")
+          if (checkbox) {
+            checkbox.checked = true
+          }
+        }
+      },
 
       eventDidMount: function (info) {
         const isHoliday = info.event.extendedProps.holiday
         const isPosted = info.event.extendedProps.posted
 
         const eventEl = info.el
-
-        // Dot
+        eventEl.style.cursor = "pointer"
         if (typeof isHoliday !== "undefined" || typeof isPosted !== "undefined") {
           const dot = document.createElement("div")
           dot.style.width = "10px"
@@ -104,7 +158,6 @@ plusBtn.addEventListener("click", () => {
           }
         }
 
-        // Hover button
         const button = document.createElement("button")
         button.textContent = "Details"
         button.style.display = "none"
@@ -146,10 +199,15 @@ plusBtn.addEventListener("click", () => {
         if (!info.event.extendedProps.holiday) {
           showModal(info.event)
         }
-      }
+      },
     })
 
     calendar.render()
+
+    function formatDateForDatetimeLocal(date) {
+      const pad = (n) => String(n).padStart(2, '0')
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
+    }
 
     function showModal(event) {
       const title = event.title
@@ -173,7 +231,5 @@ plusBtn.addEventListener("click", () => {
 
       document.getElementById("event_details_modal").showModal()
     }
-
-
   }
 }

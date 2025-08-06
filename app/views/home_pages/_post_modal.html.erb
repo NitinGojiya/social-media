@@ -23,7 +23,7 @@
   />
 </div>
 
-<div class="form-group mt-4">
+<div class="form-group mt-4 ">
   <label for="image-file-input" class="block text-lg font-medium text-gray-700 mb-2">Or Upload Image File</label>
   <input
     type="file"
@@ -31,7 +31,7 @@
     name="image_file"
     data-post-form-target="imageFile"
     accept="image/*"
-    class="block w-full text-lg text-gray-600 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
+    class="block w-full cursor-pointer text-lg text-gray-600 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
   />
 </div>
 
@@ -51,7 +51,7 @@
     <!-- Font Awesome icon (right aligned inside the input box) -->
     <button
       type="button"
-      class="absolute top-10 right-3 text-gray-500 hover:text-blue-600 focus:outline-none focus:text-blue-600"
+      class="absolute cursor-pointer top-10 right-3 text-gray-500 hover:text-blue-600 focus:outline-none focus:text-blue-600"
       data-action="click->post-form#generate"
       title="Generate Post Caption with AI"
       data-post-form-target="generateButton"
@@ -72,15 +72,16 @@
               data-action="change->post-form#updateButtonLabel"
               class="form-checkbox h-5 w-5 text-blue-600 rounded"
             />
-          Schedule Post
+          <span>Schedule Post</span>
         </label>
+
           <input
             type="datetime-local"
              name="date"
             id="datetime"
             data-post-form-target="dateinput"
             value="<%= Time.current.strftime('%Y-%m-%dT%H:%M') %>"
-            class="w-full hidden px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#B12C00] focus:border-[#B12C00] transition duration-150"
+            class="w-full hidden cursor-pointer px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#B12C00] focus:border-[#B12C00] transition duration-150"
           />
 
       </div>
@@ -138,7 +139,7 @@
         id="postButton"
         data-post-form-target="btnPost"
         data-action="click->post-form#submit"
-        class="publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50"
+        class="cursor-pointer publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50"
       >
         Post Now
       </button>

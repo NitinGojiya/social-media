@@ -14,3 +14,17 @@
   font-weight: 900;
   display: none; /* hidden by default */
 }
+
+
+.fc-daygrid-day-frame {
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Make the content inside scrollable */
+.fc-daygrid-day-events {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 2px; /* space for scrollbar */
+}
