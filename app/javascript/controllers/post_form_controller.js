@@ -1,32 +1,36 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["generateButton","form", "login", "imageUrl", "imageFile", "caption", "ig", "fb", "btnPost", "li", "schedule", "dateinput"]
+  static targets = ["generateButton", "form", "login", "imageUrl", "imageFile", "caption", "ig", "fb", "btnPost", "li", "schedule", "dateinput"]
 
   connect() {
     this.updateButtonLabel()
+    const is_schedule = this.scheduleTarget.checked;
+    if (is_schedule) {
+      this.updateButtonLabel()
+    }
     document.getElementById("previewSocialContainer").classList.add("hidden")
   }
 
-   previewPost(event) {
+  previewPost(event) {
     const isChecked = event.target.checked
 
     if (isChecked) {
       const postToIG = this.hasIgTarget ? this.igTarget.checked : false
       const postToFB = this.hasFbTarget ? this.fbTarget.checked : false
       const postToLI = this.hasLiTarget ? this.liTarget.checked : false
-      if (postToFB){
+      if (postToFB) {
         document.getElementById("facebookPreview").classList.remove("hidden")
       }
-      if (postToIG){
+      if (postToIG) {
         document.getElementById("instagramPreview").classList.remove("hidden")
       }
-      if (postToLI){
+      if (postToLI) {
         document.getElementById("linkedinPreview").classList.remove("hidden")
       }
       if (postToFB || postToIG || postToLI) {
         document.getElementById("previewLabel").textContent = "Disable preview"
-         this.previewPostData()
+        this.previewPostData()
         this.formTarget.classList.add("hidden")
         document.getElementById("loginContainer").classList.add("hidden")
         document.getElementById("previewSocialContainer").classList.remove("hidden")
@@ -45,48 +49,46 @@ export default class extends Controller {
     }
   }
 
-async previewPostData() {
-  const imageUrl = this.imageUrlTarget.value.trim();
-  const fileInput = this.hasImageFileTarget ? this.imageFileTarget.files[0] : null;
-  const caption = this.captionTarget.value.trim();
+  async previewPostData() {
+    const imageUrl = this.imageUrlTarget.value.trim();
+    const fileInput = this.hasImageFileTarget ? this.imageFileTarget.files[0] : null;
+    const caption = this.captionTarget.value.trim();
 
-  const previewContainer = document.getElementById("previewContainer");
-  const previewCaption = document.querySelectorAll(".previewCaption");
-  const previewImages = document.querySelectorAll(".previewImage");
-  const previewPlaceholder = document.getElementById("previewPlaceholder");
+    const previewContainer = document.getElementById("previewContainer");
+    const previewCaption = document.querySelectorAll(".previewCaption");
+    const previewImages = document.querySelectorAll(".previewImage");
+    const previewPlaceholder = document.getElementById("previewPlaceholder");
 
-  previewCaption.forEach(captionElement => {
-    captionElement.textContent = caption || "No caption provided";
-  });
+    previewCaption.forEach(captionElement => {
+      captionElement.textContent = caption || "No caption provided";
+    });
 
-  if (fileInput) {
-    const reader = new FileReader();
-    reader.onload = await function (e) {
-       previewImages.forEach(img => {
-        img.src = e.target.result;
+    if (fileInput) {
+      const reader = new FileReader();
+      reader.onload = await function (e) {
+        previewImages.forEach(img => {
+          img.src = e.target.result;
+          img.classList.remove("hidden");
+        });
+        previewPlaceholder.classList.add("hidden");
+      };
+      reader.readAsDataURL(fileInput);
+    } else if (imageUrl) {
+      previewImages.forEach(img => {
+        img.src = imageUrl;
         img.classList.remove("hidden");
       });
       previewPlaceholder.classList.add("hidden");
-    };
-    reader.readAsDataURL(fileInput);
-  } else if (imageUrl) {
-    previewImages.forEach(img => {
-      img.src = imageUrl;
-      img.classList.remove("hidden");
-    });
-    previewPlaceholder.classList.add("hidden");
-  } else {
-    previewImages.forEach(img => {
-      img.src = "";
-      img.classList.add("hidden");
-    });
-    previewPlaceholder.classList.remove("hidden");
+    } else {
+      previewImages.forEach(img => {
+        img.src = "";
+        img.classList.add("hidden");
+      });
+      previewPlaceholder.classList.remove("hidden");
+    }
+
+    previewContainer.classList.remove("hidden");
   }
-
-  previewContainer.classList.remove("hidden");
-}
-
-
 
   updateButtonLabel() {
     const is_schedule = this.scheduleTarget.checked;
@@ -245,40 +247,40 @@ async previewPostData() {
     }
   }
 
- async generate() {
-  const prompt = this.captionTarget.value || "Generate a caption for my post"
+  async generate() {
+    const prompt = this.captionTarget.value || "Generate a caption for my post"
 
-  // Show loader
-  this.captionTarget.disabled = true
-  const originalText = this.captionTarget.value
-  this.captionTarget.value = "Generating caption..."
-  this.generateButtonTarget.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`
-  try {
-    const response = await fetch("/ai/generate_caption", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-      },
-      body: JSON.stringify({ prompt: prompt })
-    })
+    // Show loader
+    this.captionTarget.disabled = true
+    const originalText = this.captionTarget.value
+    this.captionTarget.value = "Generating caption..."
+    this.generateButtonTarget.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`
+    try {
+      const response = await fetch("/ai/generate_caption", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ prompt: prompt })
+      })
 
-    if (response.ok) {
-      const data = await response.json()
-      this.captionTarget.value = data.caption
-    } else {
-      alert("Something went wrong generating the caption.")
+      if (response.ok) {
+        const data = await response.json()
+        this.captionTarget.value = data.caption
+      } else {
+        alert("Something went wrong generating the caption.")
+        this.captionTarget.value = originalText
+      }
+    } catch (error) {
+      console.error("Request failed:", error)
       this.captionTarget.value = originalText
+      this.generateButtonTarget.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i>`
+      // alert("Something went wrong.")
+    } finally {
+      this.captionTarget.disabled = false
+      this.generateButtonTarget.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i>`
     }
-  } catch (error) {
-    console.error("Request failed:", error)
-    this.captionTarget.value = originalText
-    this.generateButtonTarget.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i>`
-    // alert("Something went wrong.")
-  } finally {
-    this.captionTarget.disabled = false
-    this.generateButtonTarget.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i>`
   }
-}
 
 }

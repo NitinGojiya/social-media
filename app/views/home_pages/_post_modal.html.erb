@@ -67,6 +67,7 @@
             <input
               type="checkbox"
               name="is_schedule"
+              id="schedule-checkbox"
               data-post-form-target="schedule"
               data-action="change->post-form#updateButtonLabel"
             />
@@ -133,11 +134,12 @@
     <div class="form-group mt-3 flex items-center justify-center">
       <button
         type="button"
+        id="postButton"
         data-post-form-target="btnPost"
         data-action="click->post-form#submit"
         class="publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50"
       >
-        Create Now
+        Post Now
       </button>
 
     </div>
