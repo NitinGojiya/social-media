@@ -6,13 +6,13 @@
         <div class="flex items-center space-x-3 p-4">
             <!-- Profile Picture -->
             <div class="flex-shrink-0">
-                <img class="h-10 w-10 rounded-full" src="<%= @user.linkedin_profiles.first.profile_picture_url %>" alt="User Profile Picture">
+                <img class="h-10 w-10 rounded-full" src="<%= @user.linkedin_profiles.last.profile_picture_url %>" alt="User Profile Picture">
             </div>
 
             <!-- User Info and Timestamp -->
             <div class="flex-1 min-w-0">
-                <p class="text-sm font-semibold text-gray-900 truncate"><%= @user.linkedin_profiles.first.profile_name %></p>
-                <p class="text-xs text-gray-600 truncate"><%= @user.linkedin_profiles.first.headline %></p>
+                <p class="text-sm font-semibold text-gray-900 truncate"><%= @user.linkedin_profiles.last.profile_name %></p>
+                <p class="text-xs text-gray-600 truncate"><%= @user.linkedin_profiles.last.headline %></p>
                 <p class="text-xs text-gray-500 mt-1">Just now &bull; <span class="text-blue-600">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline-block" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M10 2a8 8 0 100 16 8 8 0 000-16z" />
