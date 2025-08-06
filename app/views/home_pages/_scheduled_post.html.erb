@@ -30,8 +30,9 @@
             <% end %>
             <% end %>
             </div>
+
             <button
-            data-controller="edit-modal"
+             data-controller="edit-modal"
             data-action="click->edit-modal#open"
             data-post-id="<%= post.id %>"
             data-post-caption="<%= post.caption %>"
@@ -39,9 +40,8 @@
             data-post-fb="<%= post.fb %>"
             data-post-ig="<%= post.ig %>"
             data-post-linkedin="<%= post.linkedin %>"
-            class="publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">
-            Edit
-            </button>
+            class="publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50"
+            onclick="edit.showModal()">open modal</button>
         </div>
         <% end %>
     </div>

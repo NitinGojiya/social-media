@@ -19,11 +19,12 @@ export default class extends Controller {
     form.action = form.action.replace("/scheduled_update/0", `/scheduled_update/${btn.dataset.postId}`);
 
     // Show the modal
-    document.getElementById("edit-modal").classList.remove("hidden")
+    document.getElementById("edit").classList.remove("hidden")
   }
 
   close() {
-    document.getElementById("edit-modal").classList.add("hidden")
+    document.getElementById('edit').close();
+
   }
 
  formatDateTime(datetimeString) {

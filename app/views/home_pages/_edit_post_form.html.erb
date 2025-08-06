@@ -1,6 +1,9 @@
-    <div id="edit-modal" class="fixed inset-0 top-[100px] z-50 hidden justify-centeritems-center justify-center overflow-y-auto" data-controller="edit-modal">
-    <div class="bg-neutral-300 p-4 sm:p-6 rounded-lg shadow-xl w-11/12 sm:max-w-lg mx-auto my-10 text-xl">
-        <h2 class="text-3xl font-bold mb-4">Edit Post</h2>
+
+<!-- Open the modal using ID.showModal() method -->
+
+<dialog id="edit" class="modal">
+  <div class="modal-box">
+   <h2 class="text-3xl font-bold mb-4">Edit Post</h2>
 
         <%= form_with url: scheduled_update_path(0), method: :patch, html: { id: "edit-form" }, data: { turbo: false } do |f| %>
         <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
@@ -8,7 +11,7 @@
 
         <div class="mb-4">
             <label class="block mb-1 font-semibold">Caption</label>
-            <textarea name="post[caption]" id="post-caption" class="w-full border p-2 rounded"></textarea>
+            <textarea name="post[caption]" id="post-caption" rows="10" class="w-full border p-2 rounded"></textarea>
         </div>
 
         <div class="mb-4">
@@ -41,9 +44,13 @@
         </div>
 
         <div class="flex justify-end gap-2 mt-2">
-            <button type="button" data-action="edit-modal#close" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+            <p class="text-red-500">*click outside for close</p>
             <button type="submit" class="publish-btn bg-[#B12C00]  text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">Update</button>
         </div>
         <% end %>
-    </div>
-    </div>
+
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
