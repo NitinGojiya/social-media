@@ -4,31 +4,43 @@ class FacebookService
   end
 
   # Support single or multiple images
-  def post_to_facebook(image_urls, caption)
-    image_urls = Array(image_urls)
+  def post_to_facebook(media_urls, caption)
+    media_urls = Array(media_urls)
 
-    if image_urls.size == 1
-      # Simple single image post
-      uri = URI("https://graph.facebook.com/v18.0/#{@user.fb_page_id}/photos")
-      res = Net::HTTP.post_form(uri, {
-        url: image_urls.first,
-        caption: caption,
-        access_token: @user.fb_page_token
-      })
-      return JSON.parse(res.body)
-    else
-      # Create multiple unpublished photos
-      photo_ids = image_urls.map do |image_url|
+    if media_urls.size == 1
+      media_url = media_urls.first
+      if media_url =~ /\.(mp4|mov)$/i
+        # VIDEO post
+        uri = URI("https://graph.facebook.com/v18.0/#{@user.fb_page_id}/videos")
+        res = Net::HTTP.post_form(uri, {
+          file_url: media_url,
+          description: caption,
+          access_token: @user.fb_page_token
+        })
+        return JSON.parse(res.body)
+      else
+        # IMAGE post
         uri = URI("https://graph.facebook.com/v18.0/#{@user.fb_page_id}/photos")
         res = Net::HTTP.post_form(uri, {
-          url: image_url,
+          url: media_url,
+          caption: caption,
+          access_token: @user.fb_page_token
+        })
+        return JSON.parse(res.body)
+      end
+    else
+      # Multiple images only (videos not supported in multi-upload)
+      photo_ids = media_urls.map do |url|
+        next if url =~ /\.(mp4|mov)$/i # skip videos
+        uri = URI("https://graph.facebook.com/v18.0/#{@user.fb_page_id}/photos")
+        res = Net::HTTP.post_form(uri, {
+          url: url,
           published: false,
           access_token: @user.fb_page_token
         })
         JSON.parse(res.body)["id"]
       end.compact
 
-      # Create a post with all images as attached_media
       uri = URI("https://graph.facebook.com/v18.0/#{@user.fb_page_id}/feed")
       form_data = {
         message: caption,
@@ -44,14 +56,24 @@ class FacebookService
     end
   end
 
-  def post_to_instagram(image_urls, caption)
-  image_urls = Array(image_urls)
+  def post_to_instagram(media_urls, caption)
+  media_urls = Array(media_urls)
 
-  if image_urls.size == 1
-    return post_single_instagram_image(image_urls.first, caption)
+  if media_urls.size == 1
+    url = media_urls.first
+
+    if url =~ /\.(mp4|mov)$/i
+      return post_instagram_reel(url, caption)
+    else
+      return post_single_instagram_image(url, caption)
+    end
   else
-    # Upload each image as carousel item
-    creation_ids = image_urls.map do |url|
+    # Carousel only supports images
+    if media_urls.any? { |url| url =~ /\.(mp4|mov)$/i }
+      return { error: "Instagram does not support video in carousel posts." }
+    end
+
+    creation_ids = media_urls.map do |url|
       res = Net::HTTP.post_form(
         URI("https://graph.facebook.com/v18.0/#{@user.ig_user_id}/media"),
         {
@@ -63,7 +85,10 @@ class FacebookService
       JSON.parse(res.body)["id"]
     end.compact
 
-    # Build the carousel post
+    if creation_ids.empty?
+      return { error: "No valid images for Instagram carousel post." }
+    end
+
     uri = URI("https://graph.facebook.com/v18.0/#{@user.ig_user_id}/media")
     req = Net::HTTP::Post.new(uri)
     req.set_form_data({
@@ -79,7 +104,6 @@ class FacebookService
     res = http.request(req)
     container_id = JSON.parse(res.body)["id"]
 
-    # Publish the carousel
     publish_res = Net::HTTP.post_form(
       URI("https://graph.facebook.com/v18.0/#{@user.ig_user_id}/media_publish"),
       {
@@ -90,7 +114,6 @@ class FacebookService
     JSON.parse(publish_res.body)
   end
 end
-
 
   def delete_facebook_post(post_id)
     uri = URI("https://graph.facebook.com/v18.0/#{post_id}?access_token=#{@user.fb_page_token}")
@@ -131,4 +154,90 @@ end
     )
     JSON.parse(publish_res.body)
   end
+
+ def post_instagram_reel(video_url, caption)
+  Rails.logger.info "Uploading Reel to IG: #{video_url}"
+
+  # Step 1: Download the video locally
+  original_tmp_path = Rails.root.join("tmp", "#{SecureRandom.uuid}_original.mp4").to_s
+  File.open(original_tmp_path, "wb") do |file|
+    URI.open(video_url) { |read_file| file.write(read_file.read) }
+  end
+
+  # Step 2: Convert it
+  converted_path = VideoProcessorHelper.convert_to_instagram_reel(original_tmp_path)
+  return { error: "Video conversion failed" } unless converted_path && File.exist?(converted_path)
+
+  # Step 3: Upload the converted file to your app/server
+  uploaded_file = ActiveStorage::Blob.create_and_upload!(
+    io: File.open(converted_path),
+    filename: "converted_video.mp4",
+    content_type: "video/mp4"
+  )
+
+  converted_url = Rails.application.routes.url_helpers.rails_blob_url(
+    uploaded_file,
+    only_path: false,  # ensure full URL for Instagram
+    host: ENV['APP_HOST']  # Use your app's host here
+  )
+
+  # Step 4: Create IG media container
+  creation_res = Net::HTTP.post_form(
+    URI("https://graph.facebook.com/v18.0/#{@user.ig_user_id}/media"),
+    {
+      video_url: converted_url,
+      caption: caption,
+      media_type: "REELS",
+      access_token: @user.fb_token
+    }
+  )
+
+  creation_data = JSON.parse(creation_res.body)
+  creation_id = creation_data["id"]
+
+  unless creation_id
+    Rails.logger.error("Instagram REEL Creation Failed: #{creation_data}")
+    return { error: creation_data["error"] || "Reel creation failed" }
+  end
+
+  # Step 5: Wait for media to be ready
+  # Step 5: Wait for media to be ready
+20.times do
+  status_res = Net::HTTP.get(
+    URI("https://graph.facebook.com/v18.0/#{creation_id}?fields=status_code&access_token=#{@user.fb_token}")
+  )
+  status_data = JSON.parse(status_res)
+
+  if status_data["status_code"] == "FINISHED"
+    break
+  else
+    Rails.logger.info("Waiting for media to finish processing... Status: #{status_data["status_code"]}")
+    sleep 5
+  end
+end
+
+  # Step 6: Publish the Reel
+  publish_res = Net::HTTP.post_form(
+    URI("https://graph.facebook.com/v18.0/#{@user.ig_user_id}/media_publish"),
+    {
+      creation_id: creation_id,
+      access_token: @user.fb_token
+    }
+  )
+
+
+
+  publish_data = JSON.parse(publish_res.body)
+
+  unless publish_data["id"]
+    Rails.logger.error("Instagram REEL Publish Failed: #{publish_data}")
+  end
+
+  publish_data
+ensure
+  File.delete(original_tmp_path) if File.exist?(original_tmp_path)
+  File.delete(converted_path) if converted_path && File.exist?(converted_path)
+end
+
+
 end

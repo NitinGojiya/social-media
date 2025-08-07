@@ -23,6 +23,11 @@ class PostsController < ApplicationController
       return
     end
 
+    if post_to_ig && image_urls.size > 1 && image_urls.any? { |url| url =~ /\.(mp4|mov)$/i }
+      render json: { error: "Instagram does not support videos in carousel posts. Please upload only images or limit to one video." }, status: :unprocessable_entity
+      return
+    end
+
     @post = user.posts.create!(
       caption: caption,
       ig: post_to_ig ? 1 : 0,
@@ -228,14 +233,17 @@ class PostsController < ApplicationController
   end
 
   def upload_image_and_get_url(file)
+  sanitized_name = file.original_filename.gsub(/[^\w.\-]/, "_")
+  filename = "#{SecureRandom.uuid}_#{sanitized_name}"
+  upload_dir = Rails.root.join("public", "uploads")
+  FileUtils.mkdir_p(upload_dir)
+  filepath = upload_dir.join(filename)
+
+  if file.content_type.start_with?("video/")
+    File.open(filepath, "wb") { |f| f.write(file.read) }
+  else
+    # Process image as before
     require "mini_magick"
-
-    sanitized_name = file.original_filename.gsub(/[^\w.\-]/, "_")
-    filename = "#{SecureRandom.uuid}_#{sanitized_name}"
-    upload_dir = Rails.root.join("public", "uploads")
-    FileUtils.mkdir_p(upload_dir)
-    filepath = upload_dir.join(filename)
-
     image = MiniMagick::Image.read(file)
     aspect_ratio = image.width.to_f / image.height
 
@@ -251,8 +259,10 @@ class PostsController < ApplicationController
 
     image.resize "1080x1350>"
     image.write(filepath)
-
-    base_url = ENV.fetch("APP_HOST", "https://your-app.com")
-    "#{base_url}/uploads/#{filename}"
   end
+
+  base_url = ENV.fetch("APP_HOST", "https://your-app.com")
+  "#{base_url}/uploads/#{filename}"
+end
+
 end

@@ -22,6 +22,7 @@ class Post < ApplicationRecord
     end
   end
 
+
   private
 
   def purge_photos
