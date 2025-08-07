@@ -1,75 +1,75 @@
 class PostsController < ApplicationController
   after_action :delete_uploaded_file, only: [:create]
 
- def create
-  uploaded_files  = params[:image_file] || [] # Expecting an array of files
-  image_urls      = params[:image_urls] || []  # Optional array of URLs
-  caption         = params[:caption]
-  post_to_ig      = params[:post_to_ig] == "1"
-  post_to_fb      = params[:post_to_fb] == "1"
-  schedule_to_post = params[:schedule_to_post] == "1"
-  selected_date   = schedule_to_post ? Time.parse(params[:date]) : Time.current
-  user            = Current.session.user
+  def create
+    uploaded_files  = params[:image_file] || [] # Expecting an array of files
+    image_urls      = params[:image_urls] || []  # Optional array of URLs
+    caption         = params[:caption]
+    post_to_ig      = params[:post_to_ig] == "1"
+    post_to_fb      = params[:post_to_fb] == "1"
+    schedule_to_post = params[:schedule_to_post] == "1"
+    selected_date   = schedule_to_post ? Time.parse(params[:date]) : Time.current
+    user            = Current.session.user
 
-  # Upload images and collect their URLs
-  uploaded_files.each do |file|
-    next unless file.present?
-    image_urls << upload_image_and_get_url(file)
-    file.rewind if file.respond_to?(:rewind)
-  end
+    # Upload images and collect their URLs
+    uploaded_files.each do |file|
+      next unless file.present?
+      image_urls << upload_image_and_get_url(file)
+      file.rewind if file.respond_to?(:rewind)
+    end
 
-  if image_urls.empty? || (!post_to_ig && !post_to_fb)
-    render json: { error: "Please select a platform and provide at least one image." }, status: :unprocessable_entity
-    return
-  end
+    if image_urls.empty? || (!post_to_ig && !post_to_fb)
+      render json: { error: "Please select a platform and provide at least one image." }, status: :unprocessable_entity
+      return
+    end
 
-  @post = user.posts.create!(
-    caption: caption,
-    ig: post_to_ig ? 1 : 0,
-    fb: post_to_fb ? 1 : 0,
-    scheduled_at: selected_date,
-    status: schedule_to_post ? 1 : 2
-  )
-
-  # Attach uploaded files
-  uploaded_files.each do |file|
-    next unless file.present? && file.respond_to?(:tempfile)
-    @post.photos.attach(
-      io: file.tempfile,
-      filename: file.original_filename,
-      content_type: file.content_type
+    @post = user.posts.create!(
+      caption: caption,
+      ig: post_to_ig ? 1 : 0,
+      fb: post_to_fb ? 1 : 0,
+      scheduled_at: selected_date,
+      status: schedule_to_post ? 1 : 2
     )
-  end
 
-  results = []
-
-  if !schedule_to_post
-    fb_service = FacebookService.new(user)
-
-    if post_to_ig
-      ig_res = fb_service.post_to_instagram(image_urls, caption) # Handle array of images
-      @post.update(ig_post_id: ig_res["id"]) if ig_res["id"]
-      results << "Instagram posted!" unless ig_res["error"]
+    # Attach uploaded files
+    uploaded_files.each do |file|
+      next unless file.present? && file.respond_to?(:tempfile)
+      @post.photos.attach(
+        io: file.tempfile,
+        filename: file.original_filename,
+        content_type: file.content_type
+      )
     end
 
-    if post_to_fb
-      fb_res = fb_service.post_to_facebook(image_urls, caption) # Handle array of images
-      @post.update(fb_post_id: fb_res["post_id"] || fb_res["id"]) if fb_res["post_id"] || fb_res["id"]
-      results << "Facebook posted!" unless fb_res["error"]
+    results = []
+
+    if !schedule_to_post
+      fb_service = FacebookService.new(user)
+
+      if post_to_ig
+        ig_res = fb_service.post_to_instagram(image_urls, caption) # Handle array of images
+        @post.update(ig_post_id: ig_res["id"]) if ig_res["id"]
+        results << "Instagram posted!" unless ig_res["error"]
+      end
+
+      if post_to_fb
+        fb_res = fb_service.post_to_facebook(image_urls, caption) # Handle array of images
+        @post.update(fb_post_id: fb_res["post_id"] || fb_res["id"]) if fb_res["post_id"] || fb_res["id"]
+        results << "Facebook posted!" unless fb_res["error"]
+      end
     end
+
+    flash[:success] = t(schedule_to_post ? "alerts.post_scheduled_created" : "alerts.post_created")
+
+    render json: {
+      success: true,
+      message: schedule_to_post ? "Post scheduled for #{selected_date}" : results.join(" | ")
+    }, status: :ok
+
+  rescue => e
+    Rails.logger.error("Post creation failed: #{e.message}")
+    render json: { error: "Something went wrong. #{e.message}" }, status: :unprocessable_entity
   end
-
-  flash[:success] = t(schedule_to_post ? "alerts.post_scheduled_created" : "alerts.post_created")
-
-  render json: {
-    success: true,
-    message: schedule_to_post ? "Post scheduled for #{selected_date}" : results.join(" | ")
-  }, status: :ok
-
-rescue => e
-  Rails.logger.error("Post creation failed: #{e.message}")
-  render json: { error: "Something went wrong. #{e.message}" }, status: :unprocessable_entity
-end
 
 
   def destroy
@@ -95,72 +95,72 @@ end
     redirect_to post_path, flash: { success: t("alerts.post_deleted") }
   end
 
- def create_linkedin_post
-  user = Current.session.user
-  uploaded_files = Array.wrap(params[:image_file])
-  caption = params[:caption] || "Posted via API"
-  schedule_to_post = params[:schedule_to_post] == "1"
-  selected_time = schedule_to_post ? Time.parse(params[:date]) : Time.current
+  def create_linkedin_post
+    user = Current.session.user
+    uploaded_files = Array.wrap(params[:image_file])
+    caption = params[:caption] || "Posted via API"
+    schedule_to_post = params[:schedule_to_post] == "1"
+    selected_time = schedule_to_post ? Time.parse(params[:date]) : Time.current
 
-  if uploaded_files.blank?
-    render json: { error: "No image files uploaded" }, status: :unprocessable_entity and return
-  end
-
-  if schedule_to_post
-    @post = user.posts.create!(
-      caption: caption,
-      scheduled_at: selected_time,
-      linkedin: 1,
-      status: 1
-    )
-
-    uploaded_files.each do |file|
-      next unless file.present? && file.respond_to?(:tempfile)
-
-      @post.photos.attach(
-        io: file.tempfile,
-        filename: file.original_filename,
-        content_type: file.content_type
-      )
+    if uploaded_files.blank?
+      render json: { error: "No image files uploaded" }, status: :unprocessable_entity and return
     end
 
-    flash[:success] = t("alerts.post_scheduled_created")
-    render json: { message: "Post scheduled for #{selected_time}" }
-
-  else
-    service = LinkedInService.new(user)
-    response = service.create_post(image_files: uploaded_files, caption: caption)
-
-    if response["id"].present?
+    if schedule_to_post
       @post = user.posts.create!(
         caption: caption,
-        scheduled_at: Time.current,
+        scheduled_at: selected_time,
         linkedin: 1,
-        status: 2,
-        linkedin_post_urn: response["id"]
+        status: 1
       )
 
       uploaded_files.each do |file|
-        file_clone = Tempfile.new([File.basename(file.original_filename, ".*"), File.extname(file.original_filename)])
-        file_clone.binmode
-        file.rewind
-        file_clone.write(file.read)
-        file_clone.rewind
+        next unless file.present? && file.respond_to?(:tempfile)
 
         @post.photos.attach(
-          io: file_clone,
+          io: file.tempfile,
           filename: file.original_filename,
           content_type: file.content_type
         )
       end
 
-      flash[:success] = t("alerts.post_created")
-      render json: { message: "Image post created!", response: response }
+      flash[:success] = t("alerts.post_scheduled_created")
+      render json: { message: "Post scheduled for #{selected_time}" }
+
     else
-      render json: { error: "Failed to post with image", response: response }, status: :unprocessable_entity
+      service = LinkedInService.new(user)
+      response = service.create_post(image_files: uploaded_files, caption: caption)
+
+      if response["id"].present?
+        @post = user.posts.create!(
+          caption: caption,
+          scheduled_at: Time.current,
+          linkedin: 1,
+          status: 2,
+          linkedin_post_urn: response["id"]
+        )
+
+        uploaded_files.each do |file|
+          file_clone = Tempfile.new([File.basename(file.original_filename, ".*"), File.extname(file.original_filename)])
+          file_clone.binmode
+          file.rewind
+          file_clone.write(file.read)
+          file_clone.rewind
+
+          @post.photos.attach(
+            io: file_clone,
+            filename: file.original_filename,
+            content_type: file.content_type
+          )
+        end
+
+        flash[:success] = t("alerts.post_created")
+        render json: { message: "Image post created!", response: response }
+      else
+        render json: { error: "Failed to post with image", response: response }, status: :unprocessable_entity
+      end
     end
   end
-end
 
 
   def delete_linkedin_post

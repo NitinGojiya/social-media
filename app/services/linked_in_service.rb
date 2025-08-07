@@ -61,28 +61,26 @@ class LinkedInService
   end
 
   def create_ugc_post(author_urn, media_assets, caption)
-  response = HTTParty.post(
-    "https://api.linkedin.com/v2/ugcPosts",
-    headers: auth_headers.merge("Content-Type" => "application/json"),
-    body: {
-      author: author_urn,
-      lifecycleState: "PUBLISHED",
-      specificContent: {
-        "com.linkedin.ugc.ShareContent": {
-          shareCommentary: { text: caption },
-          shareMediaCategory: "IMAGE",
-          media: media_assets
-        }
-      },
-      visibility: { "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC" }
-    }.to_json
-  )
+    response = HTTParty.post(
+      "https://api.linkedin.com/v2/ugcPosts",
+      headers: auth_headers.merge("Content-Type" => "application/json"),
+      body: {
+        author: author_urn,
+        lifecycleState: "PUBLISHED",
+        specificContent: {
+          "com.linkedin.ugc.ShareContent": {
+            shareCommentary: { text: caption },
+            shareMediaCategory: "IMAGE",
+            media: media_assets
+          }
+        },
+        visibility: { "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC" }
+      }.to_json
+    )
 
-  raise "LinkedIn post failed: #{response.body}" unless response.success?
-  JSON.parse(response.body)
-end
-
-
+    raise "LinkedIn post failed: #{response.body}" unless response.success?
+    JSON.parse(response.body)
+  end
 
   def auth_headers
     {
