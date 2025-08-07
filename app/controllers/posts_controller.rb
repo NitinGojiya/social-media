@@ -133,6 +133,18 @@ class PostsController < ApplicationController
       render json: { message: "Post scheduled for #{selected_time}" }
 
     else
+      # Detect type of uploaded files
+      is_video = false
+      uploaded_files.each do |file|
+        next unless file.present? && file.respond_to?(:tempfile)
+
+        mime_type = file.content_type
+        if mime_type.start_with?("video/")
+          is_video = true
+          break
+        end
+      end
+
       service = LinkedInService.new(user)
       response = service.create_post(image_files: uploaded_files, caption: caption)
 
@@ -160,11 +172,12 @@ class PostsController < ApplicationController
         end
 
         flash[:success] = t("alerts.post_created")
-        render json: { message: "Image post created!", response: response }
+        render json: { message: is_video ? "Video post created!" : "Image post created!", response: response }
       else
-        render json: { error: "Failed to post with image", response: response }, status: :unprocessable_entity
+        render json: { error: "Failed to post with #{is_video ? 'video' : 'image'}", response: response }, status: :unprocessable_entity
       end
     end
+
   end
 
 
