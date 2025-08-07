@@ -1,0 +1,18 @@
+<% flash.each do |type, message| %>
+  <% css_class = case type.to_sym
+    when :notice then 'info'
+    when :alert then 'warning'
+    when :success then 'success'
+    when :error then 'danger'
+    else 'secondary'
+  end %>
+
+<div
+data-controller="toaster" data-toaster-target="container"
+role="alert" class="alert alert-<%= css_class %> fixed top-[100px] right-0 m-4 w-[300px] z-50 transition-all duration-500 ease-in-out">
+   <button data-action="toaster#close" class="ml-4 text-xl leading-none">&times;</button><span><%= message %></span>
+</div>
+<% end %>
+
+
+

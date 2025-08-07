@@ -176,7 +176,7 @@ class PostsController < ApplicationController
   def scheduled_posts_delete
     @post = Current.session.user.posts.find(params[:id])
     if @post.destroy
-      redirect_to post_path, notice: "Post deleted successfully!"
+      redirect_to post_path, notice: t('alerts.post_scheduled_deleted')
     else
       redirect_to post_path, alert: "Failed to delete post."
     end
