@@ -1,5 +1,7 @@
 en:
   alerts:
+    post_created: "Post was successfully created."
+    post_scheduled_created: "Scheduled post was successfully created."
     post_deleted: "Post was successfully deleted."
     post_scheduled_deleted: "Scheduled post was successfully deleted."
     post_updated: "Post was successfully updated."

@@ -53,7 +53,8 @@ class PostsController < ApplicationController
         results << "Facebook posted!" unless fb_res["error"]
       end
     end
-
+    flash[:success] = t("alerts.post_scheduled_created") if schedule_to_post
+    flash[:success] = t("alerts.post_created") unless schedule_to_post
     render json: {
       success: true,
       message: schedule_to_post ? results.join(" | ") : "Post scheduled for #{selected_date}"
@@ -72,7 +73,7 @@ class PostsController < ApplicationController
       fb_service.delete_facebook_post(post.fb_post_id)
       if post.fb == 1 && post.ig == 0
         post.destroy
-        redirect_to post_path, notice: "Post deleted successfully."
+        redirect_to post_path, flash: { success: t("alerts.post_deleted") }
         return
       end
       post.update(fb_post_id: nil, fb: 0)
@@ -83,7 +84,7 @@ class PostsController < ApplicationController
       post.update(ig_post_id: nil, ig: 0)
     end
 
-    redirect_to post_path, notice: "Post deleted successfully."
+    redirect_to post_path, flash: { success: t("alerts.post_deleted") }
   end
 
   def create_linkedin_post
@@ -107,7 +108,7 @@ class PostsController < ApplicationController
       )
 
       @post.photo.attach(uploaded_file)
-
+      flash[:success] = t("alerts.post_scheduled_created")
       render json: { message: "Post scheduled for #{selected_time}" }
     else
       # Post immediately
@@ -124,7 +125,7 @@ class PostsController < ApplicationController
           linkedin_post_urn: linkedin_post_urn
         )
         @post.photo.attach(uploaded_file)
-
+        flash[:success] = t("alerts.post_created")
         render json: { message: "Image post created!", response: response }
       else
         render json: { error: "Failed to post with image", response: response }, status: :unprocessable_entity
@@ -140,7 +141,7 @@ class PostsController < ApplicationController
     if response.success?
       post.destroy
       # render json: { message: "LinkedIn post deleted." }
-      redirect_to post_path, notice: "Post deleted successfully."
+      redirect_to post_path, flash: { success: t("alerts.post_deleted") }
     else
       render json: { error: "Failed to delete LinkedIn post", response: response.parsed_response }, status: :unprocessable_entity
     end
@@ -176,9 +177,9 @@ class PostsController < ApplicationController
   def scheduled_posts_delete
     @post = Current.session.user.posts.find(params[:id])
     if @post.destroy
-      redirect_to post_path, notice: t('alerts.post_scheduled_deleted')
+      redirect_to post_path, flash: { success: t("alerts.post_scheduled_deleted") }
     else
-      redirect_to post_path, alert: "Failed to delete post."
+      redirect_to post_path, flash: { alert: "Failed to delete post." }
     end
   end
   private
