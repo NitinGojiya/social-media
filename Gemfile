@@ -88,3 +88,6 @@ gem "mini_magick"
 # Gemfile
 gem 'sidekiq'
 gem 'sidekiq-cron'
+
+
+gem 'streamio-ffmpeg'

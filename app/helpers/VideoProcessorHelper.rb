@@ -1,33 +1,33 @@
-require 'open3'
+require 'streamio-ffmpeg'
 
 module VideoProcessorHelper
   def self.convert_to_instagram_reel(original_path)
-    # Define output path
-    output_path = Rails.root.join("tmp", "reel_#{SecureRandom.uuid}.mp4")
+    movie = FFMPEG::Movie.new(original_path.to_s)
 
-    # FFmpeg command to convert
-    command = [
-      "ffmpeg", "-y", "-i", original_path.to_s,
-      "-c:v", "libx264",
-      "-profile:v", "baseline",
-      "-level", "3.1",
-      "-pix_fmt", "yuv420p",
-      "-vf", "scale=720:-2",
-      "-r", "30",                     # Frame rate
-      "-t", "90",                     # Max duration (seconds)
-      "-c:a", "aac",
-      "-b:a", "128k",
-      "-movflags", "+faststart",
-      output_path.to_s
-    ]
+    return nil unless movie.valid?
 
-    stdout, stderr, status = Open3.capture3(*command)
+    output_path = Rails.root.join("tmp", "reel_#{SecureRandom.uuid}.mp4").to_s
 
-    unless status.success?
-      Rails.logger.error("FFmpeg failed: #{stderr}")
-      return nil
-    end
+    options = {
+      video_codec: "libx264",
+      audio_codec: "aac",
+      custom: %w[
+        -profile:v baseline
+        -level 3.1
+        -pix_fmt yuv420p
+        -vf scale=720:-2
+        -r 30
+        -t 90
+        -b:a 128k
+        -movflags +faststart
+      ]
+    }
 
-    output_path
+    movie.transcode(output_path, options)
+
+    File.exist?(output_path) ? output_path : nil
+  rescue => e
+    Rails.logger.error("FFMPEG gem failed: #{e.message}")
+    nil
   end
 end
