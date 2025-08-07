@@ -132,8 +132,8 @@ export default class extends Controller {
     const postToIG = this.hasIgTarget ? this.igTarget.checked : false
     const postToFB = this.hasFbTarget ? this.fbTarget.checked : false
     const scheduleToPOST = this.hasScheduleTarget ? this.scheduleTarget.checked : false
-    const fileInput = this.hasImageFileTarget ? this.imageFileTarget.files[0] : null
 
+    const fileInput = this.hasImageFileTarget ? this.imageFileTarget.files : []
     if (!postToIG && !postToFB) {
       alert("Please select at least one platform.")
       return
@@ -146,7 +146,9 @@ export default class extends Controller {
 
     const formData = new FormData()
     if (fileInput) {
-      formData.append("image_file", fileInput)
+      Array.from(fileInput).forEach(file => {
+        formData.append("image_file[]", file)
+      })
     } else {
       formData.append("image_url", imageUrl)
     }
@@ -193,10 +195,11 @@ export default class extends Controller {
 
   async submitLinkedIn() {
     const caption = this.captionTarget.value.trim()
-    const fileInput = this.hasImageFileTarget ? this.imageFileTarget.files[0] : null
+    const files = this.hasImageFileTarget ? this.imageFileTarget.files : []
     const scheduleToPOST = this.hasScheduleTarget ? this.scheduleTarget.checked : false
-    if (!fileInput) {
-      alert("Please upload an image file for LinkedIn.")
+
+    if (!files.length) {
+      alert("Please upload at least one image file for LinkedIn.")
       return
     }
 
@@ -206,9 +209,11 @@ export default class extends Controller {
     }
 
     const formData = new FormData()
-    // formData.append("image_file", fileInput)
-    const fileClone = fileInput.slice(0, fileInput.size, fileInput.type)
-    formData.append("image_file", fileClone)
+
+    // Append all selected files
+    for (let i = 0; i < files.length; i++) {
+      formData.append("image_file[]", files[i]) // Notice the `[]`
+    }
 
     formData.append("caption", caption)
     formData.append("schedule_to_post", scheduleToPOST ? "1" : "0")
@@ -234,7 +239,6 @@ export default class extends Controller {
       loader.style.display = "none"
 
       if (response.ok) {
-        // this.formTarget.reset()
         this.updateButtonLabel()
         // window.location.reload()
       } else {
@@ -246,6 +250,8 @@ export default class extends Controller {
       alert("An unexpected error occurred.")
     }
   }
+
+
 
   async generate() {
     const prompt = this.captionTarget.value || "Generate a caption for my post"

@@ -29,11 +29,18 @@
               <%= [("Facebook" if post.fb == 1), ("Instagram" if post.ig == 1),("LinkedIn" if post.linkedin == 1)].compact.join(", ") %>
             </p>
 
-            <% if post.photo.attached? %>
-              <%= link_to post.photo_url do %>
-                <img src="<%= url_for(post.photo) %>" alt="Post image" loading="lazy" class="mb-4 rounded-xl object-cover w-full h-48" />
+       <% if post.photos.attached? %>
+        <div class="flex gap-1 overflow-x-auto">
+          <% post.photos.each do |photo| %>
+            <div class="min-w-[12rem]">
+              <%= link_to rails_blob_url(photo, host: Rails.application.routes.default_url_options[:host]) do %>
+                <img src="<%= url_for(photo) %>" alt="Post image" loading="lazy" class="rounded-xl object-cover w-full h-48" />
               <% end %>
-            <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
           </div>
         </div>
 

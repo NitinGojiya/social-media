@@ -6,13 +6,13 @@ class HomePagesController < ApplicationController
   def calendar_events
     posts = Current.session.user.posts
 
-    events = posts.map do |post|
+     events = posts.map do |post|
       {
         id: post.id,
         title: post.caption,
         start: post.scheduled_at.iso8601,
-        image: post.photo_url,
-        posted: post.status == 2  # true if posted
+        image: post.photos.attached? ? url_for(post.photos.first) : nil,
+        posted: post.status == 2
       }
     end
 
