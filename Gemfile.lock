@@ -521,6 +521,7 @@ DEPENDENCIES
   kamal
   mime-types
   mini_magick
+  oauth
   omniauth-facebook
   omniauth-linkedin-oauth2
   omniauth-twitter

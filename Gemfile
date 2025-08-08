@@ -94,3 +94,4 @@ gem 'streamio-ffmpeg'
 
 gem 'omniauth-twitter'
 gem 'twitter'
+gem 'oauth'

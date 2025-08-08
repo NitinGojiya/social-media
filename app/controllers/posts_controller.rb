@@ -193,7 +193,10 @@ class PostsController < ApplicationController
     end
   end
 
-  def create_twitter_post
+  require 'oauth'
+require 'json'
+
+def create_twitter_post
   user = Current.session.user
   twitter_profile = user.twitter_profile
 
@@ -201,31 +204,41 @@ class PostsController < ApplicationController
     return render json: { success: false, error: "Twitter profile not linked." }, status: :unauthorized
   end
 
-  client = Twitter::REST::Client.new do |config|
-    config.consumer_key        = ENV['TWITTER_API_KEY']
-    config.consumer_secret     = ENV['TWITTER_API_SECRET']
-    config.access_token        = twitter_profile.token
-    config.access_token_secret = twitter_profile.secret
-  end
+  consumer = OAuth::Consumer.new(
+    ENV['TWITTER_API_KEY'],
+    ENV['TWITTER_API_SECRET'],
+    site: 'https://api.twitter.com',
+    scheme: :header
+  )
+
+  access_token = OAuth::AccessToken.new(
+    consumer,
+    twitter_profile.token,
+    twitter_profile.secret
+  )
 
   caption = params[:caption].presence || "Hello from user API!"
-  images = params[:image_file] # Array of ActionDispatch::Http::UploadedFile
 
   begin
-    tweet = if images.present?
-      media_ids = images.map { |img| client.send(:upload, img.tempfile) }
-      client.update(caption, media_ids: media_ids)
-    else
-      client.update(caption)
-    end
+    response = access_token.post(
+      "https://api.twitter.com/2/tweets",
+      { text: caption }.to_json,
+      { "Content-Type" => "application/json" }
+    )
 
-    render json: {
-      success: true,
-      tweet_url: "https://twitter.com/#{tweet.user.screen_name}/status/#{tweet.id}"
-    }
-  rescue Twitter::Error => e
-    Rails.logger.error "Twitter post failed: #{e.message}"
-    render json: { success: false, error: e.message }, status: :unprocessable_entity
+    if response.code.to_i == 201
+      data = JSON.parse(response.body)
+      tweet_id = data["data"]["id"]
+
+      render json: {
+        success: true,
+        tweet_url: "https://twitter.com/#{twitter_profile.nickname}/status/#{tweet_id}"
+      }
+    else
+      error_msg = JSON.parse(response.body)["detail"] rescue "Unknown error"
+      Rails.logger.error "Twitter post failed: #{response.body}"
+      render json: { success: false, error: error_msg }, status: :unprocessable_entity
+    end
   rescue => e
     Rails.logger.error "Unexpected error: #{e.class} - #{e.message}"
     render json: { success: false, error: "Unexpected error occurred" }, status: :internal_server_error
