@@ -15,12 +15,11 @@
     <a href="/link_account" class="btn btn-ghost hover:bg-[#B12C00] hover:text-white rounded-lg hover:shadow-md">
       <i class="fa-solid fa-link"></i> Link Social Account
     </a>
-
+   <% if @user %>
     <a href="/calendar" class="bg-[#B12C00] hover:bg-[#c17962] text-white p-3 rounded-lg shadow-md  transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">
       <i class="fa-solid fa-calendar"></i> Calendar
     </a>
 
-    <% if @user %>
       <button id="newPostBtn" onclick="my_modal_1.showModal()" class="bg-[#B12C00] hover:bg-[#c17962] text-white p-3 rounded-lg shadow-md  transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">
         + New Post
       </button>
@@ -37,9 +36,11 @@
       <li><a href="/post"><i class="fa-solid fa-photo-film"></i> Post</a></li>
       <li><a href="/link_account"><i class="fa-solid fa-link"></i> Link Social Account</a></li>
       <li>
+         <%if @user%>
         <a href="/calendar" class="mt-2 bg-[#B12C00] hover:bg-[#c17962] text-white p-3 rounded-lg shadow-md  transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">
           <i class="fa-solid fa-calendar"></i> Calendar
         </a>
+        <%end%>
       </li>
       <%if @user%>
       <li>

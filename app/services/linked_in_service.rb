@@ -12,10 +12,18 @@ class LinkedInService
 
   author_urn = "urn:li:person:#{@linkedin_id}"
 
-  if files.first.content_type.start_with?("video/")
+  first_file = files.first
+  file_content_type = if first_file.respond_to?(:content_type)
+                        first_file.content_type
+                      else
+                        first_file[:content_type]
+                      end
+
+  if file_content_type.start_with?("video/")
     raise "Only one video allowed per post" if files.size > 1
+
     asset, upload_url = register_upload(author_urn, type: :video)
-    upload_video(upload_url, files.first)
+    upload_video(upload_url, first_file)
     media_asset = { status: "READY", media: asset }
     create_video_post(author_urn, media_asset, caption)
   else
@@ -30,6 +38,7 @@ end
 
 
 
+
   def delete_post(linkedin_post_urn)
     post_id = linkedin_post_urn.split(":").last
     HTTParty.delete(
@@ -41,70 +50,73 @@ end
   private
 
   def register_upload(author_urn, type:)
-  recipe = type == :video ? "urn:li:digitalmediaRecipe:feedshare-video" : "urn:li:digitalmediaRecipe:feedshare-image"
+    recipe = type == :video ? "urn:li:digitalmediaRecipe:feedshare-video" : "urn:li:digitalmediaRecipe:feedshare-image"
 
-  response = HTTParty.post(
-    "https://api.linkedin.com/v2/assets?action=registerUpload",
-    headers: auth_headers.merge("Content-Type" => "application/json"),
-    body: {
-      registerUploadRequest: {
-        owner: author_urn,
-        recipes: [recipe],
-        serviceRelationships: [
-          { identifier: "urn:li:userGeneratedContent", relationshipType: "OWNER" }
-        ]
-      }
-    }.to_json
-  )
-
-  upload_info = response.parsed_response
-  [
-    upload_info["value"]["asset"],
-    upload_info["value"]["uploadMechanism"]["com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest"]["uploadUrl"]
-  ]
-end
-
-def create_video_post(author_urn, media_asset, caption)
-  response = HTTParty.post(
-    "https://api.linkedin.com/v2/ugcPosts",
-    headers: auth_headers.merge("Content-Type" => "application/json"),
-    body: {
-      author: author_urn,
-      lifecycleState: "PUBLISHED",
-      specificContent: {
-        "com.linkedin.ugc.ShareContent": {
-          shareCommentary: { text: caption },
-          shareMediaCategory: "VIDEO",
-          media: [media_asset]
+    response = HTTParty.post(
+      "https://api.linkedin.com/v2/assets?action=registerUpload",
+      headers: auth_headers.merge("Content-Type" => "application/json"),
+      body: {
+        registerUploadRequest: {
+          owner: author_urn,
+          recipes: [recipe],
+          serviceRelationships: [
+            { identifier: "urn:li:userGeneratedContent", relationshipType: "OWNER" }
+          ]
         }
+      }.to_json
+    )
+
+    upload_info = response.parsed_response
+    [
+      upload_info["value"]["asset"],
+      upload_info["value"]["uploadMechanism"]["com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest"]["uploadUrl"]
+    ]
+  end
+
+  def create_video_post(author_urn, media_asset, caption)
+    response = HTTParty.post(
+      "https://api.linkedin.com/v2/ugcPosts",
+      headers: auth_headers.merge("Content-Type" => "application/json"),
+      body: {
+        author: author_urn,
+        lifecycleState: "PUBLISHED",
+        specificContent: {
+          "com.linkedin.ugc.ShareContent": {
+            shareCommentary: { text: caption },
+            shareMediaCategory: "VIDEO",
+            media: [media_asset]
+          }
+        },
+        visibility: {
+          "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
+        }
+      }.to_json
+    )
+
+    raise "LinkedIn video post failed: #{response.body}" unless response.success?
+    JSON.parse(response.body)
+  end
+
+  def upload_video(upload_url, file)
+    HTTParty.put(
+      upload_url,
+      headers: {
+        "Content-Type" => get_file_content_type(file)
       },
-      visibility: {
-        "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
-      }
-    }.to_json
-  )
-
-  raise "LinkedIn video post failed: #{response.body}" unless response.success?
-  JSON.parse(response.body)
-end
-
-def upload_video(upload_url, file)
-  HTTParty.put(
-    upload_url,
-    headers: {
-      "Content-Type" => file.content_type
-    },
-    body: file.read
-  )
-end
+      body: get_file_body(file)
+    )
+  end
 
 
   def upload_image(upload_url, file)
     HTTParty.put(
       upload_url,
-      headers: { "Content-Type" => file.content_type },
-      body: file.read
+      headers: { "Content-Type" => get_file_content_type(file) },
+body: get_file_body(file)
+
     )
+
+
   end
 
   def create_ugc_post(author_urn, media_assets, caption)
@@ -135,4 +147,21 @@ end
       "X-Restli-Protocol-Version" => "2.0.0"
     }
   end
+
+  def get_file_body(file)
+  if file.respond_to?(:read)
+    file.rewind
+    file.read
+  elsif file[:io].respond_to?(:read)
+    file[:io].rewind
+    file[:io].read
+  else
+    raise "Invalid file format for upload"
+  end
+end
+
+def get_file_content_type(file)
+  file.respond_to?(:content_type) ? file.content_type : file[:content_type]
+end
+
 end

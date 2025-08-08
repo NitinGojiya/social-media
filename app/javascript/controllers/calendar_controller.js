@@ -131,80 +131,80 @@ export default class extends Controller {
         }
       },
 
-     eventDidMount: function (info) {
-  const isHoliday = info.event.extendedProps.holiday
-  const isPosted = info.event.extendedProps.posted
-  const image = info.event.extendedProps.image
+      eventDidMount: function (info) {
+        const isHoliday = info.event.extendedProps.holiday
+        const isPosted = info.event.extendedProps.posted
+        const image = info.event.extendedProps.image
 
-  const eventEl = info.el
-  eventEl.style.cursor = "pointer"
+        const eventEl = info.el
+        eventEl.style.cursor = "pointer"
 
-  const titleEl = eventEl.querySelector('.fc-event-title')
-  if (titleEl) {
-    if (image) {
-      const img = document.createElement("img")
-      img.src = image
-      img.alt = "Event Image"
-      img.style.width = "50px"
-      img.style.height = "50px"
-      img.style.objectFit = "cover"
-      img.style.marginRight = "5px"
-      img.style.verticalAlign = "middle"
-      img.style.borderRadius = "4px"
-      titleEl.prepend(img)
-    }
+        const titleEl = eventEl.querySelector('.fc-event-title')
+        if (titleEl) {
+          if (image) {
+            const img = document.createElement("img")
+            img.src = image
+            img.alt = "Event Image"
+            img.style.width = "50px"
+            img.style.height = "50px"
+            img.style.objectFit = "cover"
+            img.style.marginRight = "5px"
+            img.style.verticalAlign = "middle"
+            img.style.borderRadius = "4px"
+            titleEl.prepend(img)
+          }
 
-    if (typeof isHoliday !== "undefined" || typeof isPosted !== "undefined") {
-      const dot = document.createElement("div")
-      dot.style.width = "10px"
-      dot.style.height = "10px"
-      dot.style.borderRadius = "50%"
-      dot.style.display = "inline-block"
-      dot.style.cursor = "pointer"
-      dot.style.marginRight = "5px"
-      dot.style.verticalAlign = "middle"
-      dot.style.backgroundColor = isHoliday
-        ? "red"
-        : isPosted
-          ? "green"
-          : "gray"
-      titleEl.prepend(dot)
-    }
-  }
+          if (typeof isHoliday !== "undefined" || typeof isPosted !== "undefined") {
+            const dot = document.createElement("div")
+            dot.style.width = "10px"
+            dot.style.height = "10px"
+            dot.style.borderRadius = "50%"
+            dot.style.display = "inline-block"
+            dot.style.cursor = "pointer"
+            dot.style.marginRight = "5px"
+            dot.style.verticalAlign = "middle"
+            dot.style.backgroundColor = isHoliday
+              ? "red"
+              : isPosted
+                ? "green"
+                : "gray"
+            titleEl.prepend(dot)
+          }
+        }
 
-  const button = document.createElement("button")
-  button.textContent = "Details"
-  button.style.display = "none"
-  button.style.marginLeft = "10px"
-  button.style.padding = "2px 6px"
-  button.style.fontSize = "12px"
-  button.style.cursor = "pointer"
-  button.classList.add("event-detail-button")
+        const button = document.createElement("button")
+        button.textContent = "Details"
+        button.style.display = "none"
+        button.style.marginLeft = "10px"
+        button.style.padding = "2px 6px"
+        button.style.fontSize = "12px"
+        button.style.cursor = "pointer"
+        button.classList.add("event-detail-button")
 
-  button.addEventListener("click", function (e) {
-    e.stopPropagation()
-    e.preventDefault()
-    if (!info.event.extendedProps.holiday) {
-      showModal(info.event)
-    }
-  })
+        button.addEventListener("click", function (e) {
+          e.stopPropagation()
+          e.preventDefault()
+          if (!info.event.extendedProps.holiday) {
+            showModal(info.event)
+          }
+        })
 
-  const contentEl = titleEl || eventEl
-  contentEl.appendChild(button)
+        const contentEl = titleEl || eventEl
+        contentEl.appendChild(button)
 
-  eventEl.addEventListener("mouseenter", () => {
-    button.style.display = "inline-block"
-  })
-  eventEl.addEventListener("mouseleave", () => {
-    button.style.display = "none"
-  })
-  eventEl.addEventListener("touchstart", () => {
-    button.style.display = "inline-block"
-    setTimeout(() => {
-      button.style.display = "none"
-    }, 3000)
-  })
-},
+        eventEl.addEventListener("mouseenter", () => {
+          button.style.display = "inline-block"
+        })
+        eventEl.addEventListener("mouseleave", () => {
+          button.style.display = "none"
+        })
+        eventEl.addEventListener("touchstart", () => {
+          button.style.display = "inline-block"
+          setTimeout(() => {
+            button.style.display = "none"
+          }, 3000)
+        })
+      },
 
 
       eventClick: function (info) {

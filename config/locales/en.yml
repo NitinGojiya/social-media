@@ -8,3 +8,5 @@ en:
     user_logged_out: "You have been logged out."
     user_logged_in: "You have been logged in."
     twitter_linked: "Twitter account successfully linked."
+    linkedin_linked: "LinkedIn account successfully linked for %{profile_name}."
+    facebook_linked: "Facebook account successfully linked for %{profile_name}."

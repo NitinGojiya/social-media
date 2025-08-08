@@ -1,9 +1,11 @@
 class PostsController < ApplicationController
   after_action :delete_uploaded_file, only: [:create]
+  require 'oauth'
+  require 'json'
 
   def create
     uploaded_files  = params[:image_file] || [] # Expecting an array of files
-    image_urls      = params[:image_urls] || []  # Optional array of URLs
+    image_urls      = params[:image_urls] || []  # for featured array of URLs
     caption         = params[:caption]
     post_to_ig      = params[:post_to_ig] == "1"
     post_to_fb      = params[:post_to_fb] == "1"
@@ -193,59 +195,54 @@ class PostsController < ApplicationController
     end
   end
 
-  require 'oauth'
-require 'json'
+  def create_twitter_post
+    user = Current.session.user
+    twitter_profile = user.twitter_profile
 
-def create_twitter_post
-  user = Current.session.user
-  twitter_profile = user.twitter_profile
+    if twitter_profile.blank?
+      return render json: { success: false, error: "Twitter profile not linked." }, status: :unauthorized
+    end
 
-  if twitter_profile.blank?
-    return render json: { success: false, error: "Twitter profile not linked." }, status: :unauthorized
-  end
-
-  consumer = OAuth::Consumer.new(
-    ENV['TWITTER_API_KEY'],
-    ENV['TWITTER_API_SECRET'],
-    site: 'https://api.twitter.com',
-    scheme: :header
-  )
-
-  access_token = OAuth::AccessToken.new(
-    consumer,
-    twitter_profile.token,
-    twitter_profile.secret
-  )
-
-  caption = params[:caption].presence || "Hello from user API!"
-
-  begin
-    response = access_token.post(
-      "https://api.twitter.com/2/tweets",
-      { text: caption }.to_json,
-      { "Content-Type" => "application/json" }
+    consumer = OAuth::Consumer.new(
+      ENV['TWITTER_API_KEY'],
+      ENV['TWITTER_API_SECRET'],
+      site: 'https://api.twitter.com',
+      scheme: :header
     )
 
-    if response.code.to_i == 201
-      data = JSON.parse(response.body)
-      tweet_id = data["data"]["id"]
+    access_token = OAuth::AccessToken.new(
+      consumer,
+      twitter_profile.token,
+      twitter_profile.secret
+    )
 
-      render json: {
-        success: true,
-        tweet_url: "https://twitter.com/#{twitter_profile.nickname}/status/#{tweet_id}"
-      }
-    else
-      error_msg = JSON.parse(response.body)["detail"] rescue "Unknown error"
-      Rails.logger.error "Twitter post failed: #{response.body}"
-      render json: { success: false, error: error_msg }, status: :unprocessable_entity
+    caption = params[:caption].presence || "Hello from user API!"
+
+    begin
+      response = access_token.post(
+        "https://api.twitter.com/2/tweets",
+        { text: caption }.to_json,
+        { "Content-Type" => "application/json" }
+      )
+
+      if response.code.to_i == 201
+        data = JSON.parse(response.body)
+        tweet_id = data["data"]["id"]
+
+        render json: {
+          success: true,
+          tweet_url: "https://twitter.com/#{twitter_profile.nickname}/status/#{tweet_id}"
+        }
+      else
+        error_msg = JSON.parse(response.body)["detail"] rescue "Unknown error"
+        Rails.logger.error "Twitter post failed: #{response.body}"
+        render json: { success: false, error: error_msg }, status: :unprocessable_entity
+      end
+    rescue => e
+      Rails.logger.error "Unexpected error: #{e.class} - #{e.message}"
+      render json: { success: false, error: "Unexpected error occurred" }, status: :internal_server_error
     end
-  rescue => e
-    Rails.logger.error "Unexpected error: #{e.class} - #{e.message}"
-    render json: { success: false, error: "Unexpected error occurred" }, status: :internal_server_error
   end
-end
-
-
 
   def scheduled_update
     @post = Current.session.user.posts.find(params[:id])
@@ -282,6 +279,7 @@ end
       redirect_to post_path, flash: { alert: "Failed to delete post." }
     end
   end
+
   private
 
   def post_params
@@ -298,19 +296,19 @@ end
   end
 
   def upload_image_and_get_url(file)
-  sanitized_name = file.original_filename.gsub(/[^\w.\-]/, "_")
-  filename = "#{SecureRandom.uuid}_#{sanitized_name}"
-  upload_dir = Rails.root.join("public", "uploads")
-  FileUtils.mkdir_p(upload_dir)
-  filepath = upload_dir.join(filename)
+    sanitized_name = file.original_filename.gsub(/[^\w.\-]/, "_")
+    filename = "#{SecureRandom.uuid}_#{sanitized_name}"
+    upload_dir = Rails.root.join("public", "uploads")
+    FileUtils.mkdir_p(upload_dir)
+    filepath = upload_dir.join(filename)
 
-  if file.content_type.start_with?("video/")
-    File.open(filepath, "wb") { |f| f.write(file.read) }
-  else
-    # Process image as before
-    require "mini_magick"
-    image = MiniMagick::Image.read(file)
-    aspect_ratio = image.width.to_f / image.height
+    if file.content_type.start_with?("video/")
+      File.open(filepath, "wb") { |f| f.write(file.read) }
+    else
+      # Process image as before
+      require "mini_magick"
+      image = MiniMagick::Image.read(file)
+      aspect_ratio = image.width.to_f / image.height
 
     if aspect_ratio < 0.8
       new_height = (image.width / 0.8).round
@@ -322,12 +320,11 @@ end
       image.crop("#{new_width}x#{image.height}+#{offset}+0")
     end
 
-    image.resize "1080x1350>"
-    image.write(filepath)
+      image.resize "1080x1350>"
+      image.write(filepath)
+    end
+
+    base_url = ENV.fetch("APP_HOST", "https://your-app.com")
+    "#{base_url}/uploads/#{filename}"
   end
-
-  base_url = ENV.fetch("APP_HOST", "https://your-app.com")
-  "#{base_url}/uploads/#{filename}"
-end
-
 end

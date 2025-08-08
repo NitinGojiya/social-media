@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_08_055043) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_08_111657) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -63,6 +63,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_08_055043) do
     t.string "fb_post_id"
     t.string "ig_post_id"
     t.string "linkedin_post_urn"
+    t.datetime "posted_at"
+    t.text "error_message"
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 

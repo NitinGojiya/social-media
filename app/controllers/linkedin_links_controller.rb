@@ -10,7 +10,6 @@ class LinkedinLinksController < ApplicationController
 
   def callback
     code = params[:code]
-
     response = HTTParty.post("https://www.linkedin.com/oauth/v2/accessToken", {
       body: {
         grant_type: 'authorization_code',
@@ -42,6 +41,6 @@ class LinkedinLinksController < ApplicationController
       headline: userinfo["headline"],
       profile_picture_url: userinfo["picture"],
     )
-    redirect_to post_path
+    redirect_to post_path, flash: { notice: t('alerts.linkedin_linked', profile_name: userinfo["name"]) }
   end
 end

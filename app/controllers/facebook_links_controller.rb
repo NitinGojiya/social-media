@@ -32,6 +32,6 @@ class FacebookLinksController < ApplicationController
       ig_user_id: ig_user_id
     )
 
-    redirect_to post_path, notice: "Connected to Facebook Page: #{first_page["name"]}"
+    redirect_to post_path, flash: { notice: t('alerts.facebook_linked', profile_name: first_page["name"]) }
   end
 end

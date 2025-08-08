@@ -5,6 +5,7 @@ class Post < ApplicationRecord
   belongs_to :user
   has_many_attached :photos
 
+
   scope :scheduled, -> { where(status: 1) }
   scope :posted,    -> { where(status: 2) }
 
