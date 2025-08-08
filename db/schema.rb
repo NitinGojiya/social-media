@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_06_061508) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_08_055043) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -75,6 +75,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_06_061508) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "twitter_profiles", force: :cascade do |t|
+    t.string "name"
+    t.string "nickname"
+    t.string "image"
+    t.string "token"
+    t.string "secret"
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_twitter_profiles_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email_address", null: false
     t.string "password_digest", null: false
@@ -94,4 +106,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_06_061508) do
   add_foreign_key "linkedin_profiles", "users"
   add_foreign_key "posts", "users"
   add_foreign_key "sessions", "users"
+  add_foreign_key "twitter_profiles", "users"
 end
