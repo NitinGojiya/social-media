@@ -91,3 +91,6 @@ gem 'sidekiq-cron'
 
 
 gem 'streamio-ffmpeg'
+
+gem 'omniauth-twitter'
+gem 'twitter'

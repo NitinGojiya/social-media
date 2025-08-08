@@ -32,4 +32,8 @@ Rails.application.routes.draw do
   # ai
   post "/ai/generate_caption", to: "geminiai#generate_caption", as: :generate_caption
 
+
+  # twitter
+  get '/auth/twitter/callback', to: 'twitter_links#create'
+  get '/auth/failure', to: redirect('/')
 end
