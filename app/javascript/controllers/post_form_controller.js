@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["generateButton", "form", "login", "imageUrl", "imageFile", "caption", "ig", "fb", "btnPost", "li", "schedule", "dateinput"]
+  static targets = ["generateButton", "form", "login", "imageUrl", "imageFile", "caption", "ig", "fb", "btnPost", "li", "twitter", "schedule", "dateinput"]
 
   connect() {
       document.getElementById('image-file-input').addEventListener('change', function (event) {
@@ -124,6 +124,7 @@ export default class extends Controller {
     const postToIG = this.hasIgTarget ? this.igTarget.checked : false
     const postToFB = this.hasFbTarget ? this.fbTarget.checked : false
     const postToLI = this.hasLiTarget ? this.liTarget.checked : false
+    const postToTwitter = this.hasTwitterTarget ? this.twitterTarget.checked : false
 
     document.getElementById('my_modal_1').close()
     if (postToIG || postToFB) {
@@ -131,6 +132,9 @@ export default class extends Controller {
     }
     if (postToLI) {
       await this.submitLinkedIn()
+    }
+    if (postToTwitter) {
+      await this.submitTwitter()
     }
     window.location.reload()
   }
@@ -260,6 +264,66 @@ export default class extends Controller {
       alert("An unexpected error occurred.")
     }
   }
+
+  async submitTwitter() {
+  const caption = this.captionTarget.value.trim()
+  const files = this.hasImageFileTarget ? this.imageFileTarget.files : []
+  const scheduleToPOST = this.hasScheduleTarget ? this.scheduleTarget.checked : false
+
+  if (!caption) {
+    alert("Please enter a caption for the Twitter post.")
+    return
+  }
+
+  // Optional: Validate Twitter's image limit (e.g. 4)
+  if (files.length > 4) {
+    alert("Twitter allows up to 4 images.")
+    return
+  }
+
+  const formData = new FormData()
+
+  for (let i = 0; i < files.length; i++) {
+    formData.append("image_file[]", files[i])
+  }
+
+  formData.append("caption", caption)
+  formData.append("schedule_to_post", scheduleToPOST ? "1" : "0")
+
+  const rawDate = this.formTarget.querySelector("input[name='date']")?.value
+  formData.append("date", rawDate)
+
+  const csrfToken = document.querySelector("meta[name='csrf-token']").content
+  const loader = document.getElementById("fullscreen-loader")
+  loader.style.display = "flex"
+
+  try {
+    const response = await fetch("/twitter/create_twitter_post", {
+      method: "POST",
+      headers: {
+        "X-CSRF-Token": csrfToken,
+        "Accept": "application/json"
+      },
+      body: formData
+    })
+
+    const data = await response.json()
+    loader.style.display = "none"
+
+    if (response.ok) {
+      this.updateButtonLabel()
+      // Optionally reload or redirect
+      // window.location.reload()
+      alert("Twitter post created successfully!")
+    } else {
+      alert("Failed: " + (data.error || "Unknown error"))
+    }
+  } catch (err) {
+    loader.style.display = "none"
+    console.error("Unexpected Error:", err)
+    alert("An unexpected error occurred.")
+  }
+}
 
 
 

@@ -131,6 +131,20 @@
             <span class="ml-3 text-lg font-medium text-gray-800">Linkedin</span>
           </label>
         <% end %>
+
+        <% if @user.twitter_profile %>
+          <label class="flex items-center p-3 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50">
+            <input
+              type="checkbox"
+              name="post_to_twitter"
+              value="1"
+              data-post-form-target="twitter"
+              class="form-checkbox h-5 w-5 text-blue-600 rounded"
+            />
+            <span class="ml-3 text-2xl"><i class="fa-brands fa-square-x-twitter"></i></span>
+            <span class="ml-3 text-lg font-medium text-gray-800">Twitter</span>
+          </label>
+        <% end %>
       </div>
     </div>
 

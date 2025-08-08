@@ -36,4 +36,5 @@ Rails.application.routes.draw do
   # twitter
   get '/auth/twitter/callback', to: 'twitter_links#create'
   get '/auth/failure', to: redirect('/')
+  post 'twitter/create_twitter_post', to: 'posts#create_twitter_post', as: :create_twitter_post
 end

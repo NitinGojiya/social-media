@@ -76,7 +76,6 @@ class PostsController < ApplicationController
     render json: { error: "Something went wrong. #{e.message}" }, status: :unprocessable_entity
   end
 
-
   def destroy
     post = Current.session.user.posts.find(params[:id])
     user = Current.session.user
@@ -180,7 +179,6 @@ class PostsController < ApplicationController
 
   end
 
-
   def delete_linkedin_post
     post = Current.session.user.posts.find(params[:id])
     service = LinkedInService.new(Current.session.user)
@@ -194,6 +192,47 @@ class PostsController < ApplicationController
       render json: { error: "Failed to delete LinkedIn post", response: response.parsed_response }, status: :unprocessable_entity
     end
   end
+
+  def create_twitter_post
+  user = Current.session.user
+  twitter_profile = user.twitter_profile
+
+  if twitter_profile.blank?
+    return render json: { success: false, error: "Twitter profile not linked." }, status: :unauthorized
+  end
+
+  client = Twitter::REST::Client.new do |config|
+    config.consumer_key        = ENV['TWITTER_API_KEY']
+    config.consumer_secret     = ENV['TWITTER_API_SECRET']
+    config.access_token        = twitter_profile.token
+    config.access_token_secret = twitter_profile.secret
+  end
+
+  caption = params[:caption].presence || "Hello from user API!"
+  images = params[:image_file] # Array of ActionDispatch::Http::UploadedFile
+
+  begin
+    tweet = if images.present?
+      media_ids = images.map { |img| client.send(:upload, img.tempfile) }
+      client.update(caption, media_ids: media_ids)
+    else
+      client.update(caption)
+    end
+
+    render json: {
+      success: true,
+      tweet_url: "https://twitter.com/#{tweet.user.screen_name}/status/#{tweet.id}"
+    }
+  rescue Twitter::Error => e
+    Rails.logger.error "Twitter post failed: #{e.message}"
+    render json: { success: false, error: e.message }, status: :unprocessable_entity
+  rescue => e
+    Rails.logger.error "Unexpected error: #{e.class} - #{e.message}"
+    render json: { success: false, error: "Unexpected error occurred" }, status: :internal_server_error
+  end
+end
+
+
 
   def scheduled_update
     @post = Current.session.user.posts.find(params[:id])
