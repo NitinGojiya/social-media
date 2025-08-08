@@ -1,6 +1,7 @@
 class FacebookService
   def initialize(user)
     @user = user
+    @fb_page_token = user.fb_page_token
   end
 
   # Support single or multiple images
@@ -57,63 +58,63 @@ class FacebookService
   end
 
   def post_to_instagram(media_urls, caption)
-  media_urls = Array(media_urls)
+    media_urls = Array(media_urls)
 
-  if media_urls.size == 1
-    url = media_urls.first
+    if media_urls.size == 1
+      url = media_urls.first
 
-    if url =~ /\.(mp4|mov)$/i
-      return post_instagram_reel(url, caption)
+      if url =~ /\.(mp4|mov)$/i
+        return post_instagram_reel(url, caption)
+      else
+        return post_single_instagram_image(url, caption)
+      end
     else
-      return post_single_instagram_image(url, caption)
-    end
-  else
-    # Carousel only supports images
-    if media_urls.any? { |url| url =~ /\.(mp4|mov)$/i }
-      return { error: "Instagram does not support video in carousel posts." }
-    end
+      # Carousel only supports images
+      if media_urls.any? { |url| url =~ /\.(mp4|mov)$/i }
+        return { error: "Instagram does not support video in carousel posts." }
+      end
 
-    creation_ids = media_urls.map do |url|
-      res = Net::HTTP.post_form(
-        URI("https://graph.facebook.com/v18.0/#{@user.ig_user_id}/media"),
+      creation_ids = media_urls.map do |url|
+        res = Net::HTTP.post_form(
+          URI("https://graph.facebook.com/v18.0/#{@user.ig_user_id}/media"),
+          {
+            image_url: url,
+            is_carousel_item: true,
+            access_token: @user.fb_token
+          }
+        )
+        JSON.parse(res.body)["id"]
+      end.compact
+
+      if creation_ids.empty?
+        return { error: "No valid images for Instagram carousel post." }
+      end
+
+      uri = URI("https://graph.facebook.com/v18.0/#{@user.ig_user_id}/media")
+      req = Net::HTTP::Post.new(uri)
+      req.set_form_data({
+        caption: caption,
+        media_type: "CAROUSEL",
+        access_token: @user.fb_token
+      }.merge(
+        creation_ids.each_with_index.map { |id, i| ["children[#{i}]", id] }.to_h
+      ))
+
+      http = Net::HTTP.new(uri.hostname, uri.port)
+      http.use_ssl = true
+      res = http.request(req)
+      container_id = JSON.parse(res.body)["id"]
+
+      publish_res = Net::HTTP.post_form(
+        URI("https://graph.facebook.com/v18.0/#{@user.ig_user_id}/media_publish"),
         {
-          image_url: url,
-          is_carousel_item: true,
+          creation_id: container_id,
           access_token: @user.fb_token
         }
       )
-      JSON.parse(res.body)["id"]
-    end.compact
-
-    if creation_ids.empty?
-      return { error: "No valid images for Instagram carousel post." }
+      JSON.parse(publish_res.body)
     end
-
-    uri = URI("https://graph.facebook.com/v18.0/#{@user.ig_user_id}/media")
-    req = Net::HTTP::Post.new(uri)
-    req.set_form_data({
-      caption: caption,
-      media_type: "CAROUSEL",
-      access_token: @user.fb_token
-    }.merge(
-      creation_ids.each_with_index.map { |id, i| ["children[#{i}]", id] }.to_h
-    ))
-
-    http = Net::HTTP.new(uri.hostname, uri.port)
-    http.use_ssl = true
-    res = http.request(req)
-    container_id = JSON.parse(res.body)["id"]
-
-    publish_res = Net::HTTP.post_form(
-      URI("https://graph.facebook.com/v18.0/#{@user.ig_user_id}/media_publish"),
-      {
-        creation_id: container_id,
-        access_token: @user.fb_token
-      }
-    )
-    JSON.parse(publish_res.body)
   end
-end
 
   def delete_facebook_post(post_id)
     uri = URI("https://graph.facebook.com/v18.0/#{post_id}?access_token=#{@user.fb_page_token}")
@@ -131,6 +132,34 @@ end
     end
   end
 
+  def delete_platform_posts(post)
+    delete_facebook_post(post.fb_post_id) if post.fb_post_id.present?
+    delete_instagram_post(post.ig_post_id) if post.ig_post_id.present?
+  end
+
+  def delete_facebook_post(fb_post_id)
+    return unless @fb_page_token && fb_post_id
+
+    url = "https://graph.facebook.com/v18.0/#{fb_post_id}?access_token=#{@fb_page_token}"
+    response = HTTParty.delete(url)
+    Rails.logger.info("Deleted Facebook post: #{fb_post_id}, response: #{response.body}")
+    response
+  rescue => e
+    Rails.logger.error("Failed to delete Facebook post: #{e.message}")
+    nil
+  end
+
+  def delete_instagram_post(ig_post_id)
+    return unless @fb_page_token && ig_post_id
+
+    url = "https://graph.facebook.com/v18.0/#{ig_post_id}?access_token=#{@fb_page_token}"
+    response = HTTParty.delete(url)
+    Rails.logger.info("Deleted Instagram post: #{ig_post_id}, response: #{response.body}")
+    response
+  rescue => e
+    Rails.logger.error("Failed to delete Instagram post: #{e.message}")
+    nil
+  end
   private
 
   def post_single_instagram_image(image_url, caption)
@@ -225,8 +254,6 @@ end
     }
   )
 
-
-
   publish_data = JSON.parse(publish_res.body)
 
   unless publish_data["id"]
@@ -238,6 +265,5 @@ ensure
   File.delete(original_tmp_path) if File.exist?(original_tmp_path)
   File.delete(converted_path) if converted_path && File.exist?(converted_path)
 end
-
 
 end

@@ -7,37 +7,34 @@ class LinkedInService
   end
 
   def create_post(image_files:, caption:)
-  files = Array(image_files)
-  raise "Maximum 9 images or 1 video allowed" if files.size > 9
+    files = Array(image_files)
+    raise "Maximum 9 images or 1 video allowed" if files.size > 9
 
-  author_urn = "urn:li:person:#{@linkedin_id}"
+    author_urn = "urn:li:person:#{@linkedin_id}"
 
-  first_file = files.first
-  file_content_type = if first_file.respond_to?(:content_type)
-                        first_file.content_type
-                      else
-                        first_file[:content_type]
-                      end
+    first_file = files.first
+    file_content_type = if first_file.respond_to?(:content_type)
+                          first_file.content_type
+                        else
+                          first_file[:content_type]
+                        end
 
-  if file_content_type.start_with?("video/")
-    raise "Only one video allowed per post" if files.size > 1
+    if file_content_type.start_with?("video/")
+      raise "Only one video allowed per post" if files.size > 1
 
-    asset, upload_url = register_upload(author_urn, type: :video)
-    upload_video(upload_url, first_file)
-    media_asset = { status: "READY", media: asset }
-    create_video_post(author_urn, media_asset, caption)
-  else
-    media_assets = files.map do |file|
-      asset, upload_url = register_upload(author_urn, type: :image)
-      upload_image(upload_url, file)
-      { status: "READY", media: asset }
+      asset, upload_url = register_upload(author_urn, type: :video)
+      upload_video(upload_url, first_file)
+      media_asset = { status: "READY", media: asset }
+      create_video_post(author_urn, media_asset, caption)
+    else
+      media_assets = files.map do |file|
+        asset, upload_url = register_upload(author_urn, type: :image)
+        upload_image(upload_url, file)
+        { status: "READY", media: asset }
+      end
+      create_ugc_post(author_urn, media_assets, caption)
     end
-    create_ugc_post(author_urn, media_assets, caption)
   end
-end
-
-
-
 
   def delete_post(linkedin_post_urn)
     post_id = linkedin_post_urn.split(":").last
@@ -112,11 +109,8 @@ end
     HTTParty.put(
       upload_url,
       headers: { "Content-Type" => get_file_content_type(file) },
-body: get_file_body(file)
-
+      body: get_file_body(file)
     )
-
-
   end
 
   def create_ugc_post(author_urn, media_assets, caption)
@@ -149,19 +143,18 @@ body: get_file_body(file)
   end
 
   def get_file_body(file)
-  if file.respond_to?(:read)
-    file.rewind
-    file.read
-  elsif file[:io].respond_to?(:read)
-    file[:io].rewind
-    file[:io].read
-  else
-    raise "Invalid file format for upload"
+    if file.respond_to?(:read)
+      file.rewind
+      file.read
+    elsif file[:io].respond_to?(:read)
+      file[:io].rewind
+      file[:io].read
+    else
+      raise "Invalid file format for upload"
+    end
   end
-end
 
-def get_file_content_type(file)
-  file.respond_to?(:content_type) ? file.content_type : file[:content_type]
-end
-
+  def get_file_content_type(file)
+    file.respond_to?(:content_type) ? file.content_type : file[:content_type]
+  end
 end

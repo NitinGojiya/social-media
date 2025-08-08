@@ -10,3 +10,4 @@ en:
     twitter_linked: "Twitter account successfully linked."
     linkedin_linked: "LinkedIn account successfully linked for %{profile_name}."
     facebook_linked: "Facebook account successfully linked for %{profile_name}."
+    tweet_created: "Tweet was successfully created."
