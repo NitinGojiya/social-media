@@ -313,8 +313,8 @@ export default class extends Controller {
     if (response.ok) {
       this.updateButtonLabel()
       // Optionally reload or redirect
-      // window.location.reload()
-      alert("Twitter post created successfully!")
+      window.location.reload()
+      // alert("Twitter post created successfully!")
     } else {
       alert("Failed: " + (data.error || "Unknown error"))
     }

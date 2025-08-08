@@ -1,4 +1,5 @@
 # app/services/twitter_service.rb
+require 'ostruct'
 class TwitterService
   def initialize(twitter_profile)
     @consumer = OAuth::Consumer.new(

@@ -104,7 +104,6 @@ class LinkedInService
     )
   end
 
-
   def upload_image(upload_url, file)
     HTTParty.put(
       upload_url,

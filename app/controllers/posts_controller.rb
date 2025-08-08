@@ -1,7 +1,9 @@
 class PostsController < ApplicationController
   after_action :delete_uploaded_file, only: [:create]
   require 'oauth'
-ALLOWED_CONTENT_TYPES = %w[image/jpeg image/png image/gif video/mp4 video/quicktime]
+
+  ALLOWED_CONTENT_TYPES = %w[image/jpeg image/png image/gif video/mp4 video/quicktime]
+
   def create
     user             = Current.session.user
     uploaded_files   = Array(params[:image_file])
@@ -109,6 +111,7 @@ ALLOWED_CONTENT_TYPES = %w[image/jpeg image/png image/gif video/mp4 video/quickt
     response = TwitterService.new(profile).post_tweet(params[:caption])
     if response.success?
       user.posts.create!(caption: params[:caption], twitter: 1, status: 2, scheduled_at: Time.current)
+     flash[:success] = t("alerts.tweet_created")
       render json: { success: true, tweet_url: response.url }
     else
       render_error(response.error)
@@ -141,8 +144,6 @@ ALLOWED_CONTENT_TYPES = %w[image/jpeg image/png image/gif video/mp4 video/quickt
     params.require(:post).permit(:caption, :scheduled_at, :fb, :ig, :linkedin)
   end
 
-
-
   def attach_photos(post, files)
     files.each do |file|
       next unless file.present? && file.respond_to?(:tempfile)
@@ -156,7 +157,6 @@ ALLOWED_CONTENT_TYPES = %w[image/jpeg image/png image/gif video/mp4 video/quickt
       )
     end
   end
-
 
   def attach_single_photo(post, file)
     post.photo.purge if post.photo.attached?
