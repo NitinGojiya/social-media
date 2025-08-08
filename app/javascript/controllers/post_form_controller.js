@@ -4,6 +4,16 @@ export default class extends Controller {
   static targets = ["generateButton", "form", "login", "imageUrl", "imageFile", "caption", "ig", "fb", "btnPost", "li", "schedule", "dateinput"]
 
   connect() {
+      document.getElementById('image-file-input').addEventListener('change', function (event) {
+    const files = Array.from(event.target.files);
+    const images = files.filter(file => file.type.startsWith('image/'));
+    const videos = files.filter(file => file.type.startsWith('video/'));
+
+    if (images.length > 20 || videos.length > 1) {
+      alert('You can select only 1 video and up to 20 images.');
+      event.target.value = ''; // Clear selection
+    }
+  });
     this.updateButtonLabel()
     const is_schedule = this.scheduleTarget.checked;
     if (is_schedule) {
