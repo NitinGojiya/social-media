@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   mount Sidekiq::Web => '/sidekiq'
   resource :session
   resources :passwords, param: :token
+  resources :users, only: [:new, :create]
+  get "/auth/:provider/callback", to: "sessions#omniauth"
 
   resources :posts, only: [:new]
   patch "scheduled_update/:id", to: "posts#scheduled_update", as: "scheduled_update"
@@ -37,4 +39,11 @@ Rails.application.routes.draw do
   get '/auth/twitter/callback', to: 'twitter_links#create'
   get '/auth/failure', to: redirect('/')
   post 'twitter/create_twitter_post', to: 'posts#create_twitter_post', as: :create_twitter_post
+
+
+  # latter opening
+  if Rails.env.development?
+    mount LetterOpenerWeb::Engine, at: "/letter_opener"
+  end
+
 end

@@ -90,4 +90,20 @@ Rails.application.configure do
 
 #  Rails.application.routes.default_url_options[:host] = ENV.fetch("APP_HOST", "http://localhost:3000")
   Rails.application.routes.default_url_options[:host] = ENV['APP_HOST']
+
+  Rails.application.configure do
+  config.action_mailer.default_url_options = { host: 'yourdomain.com', protocol: 'https' }
+
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address:              "smtp.gmail.com",
+    port:                 587,
+    domain:               "yourdomain.com",
+    user_name:            ENV["GMAIL_USERNAME"], # your Gmail address
+    password:             ENV["GMAIL_APP_PASSWORD"], # your Gmail app password
+    authentication:       "plain",
+    enable_starttls_auto: true
+  }
+end
+
 end

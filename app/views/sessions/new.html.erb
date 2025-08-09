@@ -1,5 +1,7 @@
-<div class="mx-auto md:w-2/3 w-full">
-  <h1 class="font-bold text-4xl">Sign in</h1>
+<div class="mx-auto md:w-2/3 max-w-md mt-5">
+  <div class="flex items-center justify-center">
+    <h1 class="font-bold text-4xl">Sign in</h1>
+  </div>
 
   <%= form_with url: session_url, class: "contents" do |form| %>
     <div class="my-5">
@@ -12,7 +14,11 @@
 
     <div class="col-span-6 sm:flex sm:items-center sm:gap-4">
       <div class="inline">
-        <%= form.submit "Sign in", class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+        <%= form.submit "Sign in", class: "cursor-pointer publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50" %>
+      </div>
+
+      <div class="mt-4 text-sm text-gray-500 sm:mt-0">
+        <%= link_to "sign up", new_user_path, class: "text-gray-700 underline hover:no-underline" %>
       </div>
 
       <div class="mt-4 text-sm text-gray-500 sm:mt-0">
@@ -20,4 +26,21 @@
       </div>
     </div>
   <% end %>
+
+  <!-- Divider with OR -->
+  <div class="flex items-center my-6">
+    <div class="flex-grow border-t border-gray-300"></div>
+    <span class="mx-3 text-gray-500 text-sm uppercase font-medium">or</span>
+    <div class="flex-grow border-t border-gray-300"></div>
+  </div>
+
+  <!-- Google Sign-In Button -->
+  <div class="my-5">
+    <a href="/auth/google_oauth2"
+       class="flex items-center justify-center gap-3 w-full rounded-md px-3.5 py-2.5 bg-[#B12C00] hover:bg-[#c17962] text-white font-medium shadow-sm transition">
+      <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google logo" class="w-5 h-5 bg-white rounded-full p-0.5">
+      <span>Sign in with Google</span>
+    </a>
+  </div>
 </div>
+

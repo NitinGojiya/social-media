@@ -95,3 +95,10 @@ gem 'streamio-ffmpeg'
 gem 'omniauth-twitter'
 gem 'twitter'
 gem 'oauth'
+
+gem 'omniauth-google-oauth2'
+
+group :development do
+  gem 'letter_opener'
+  gem 'letter_opener_web'
+end

@@ -73,5 +73,20 @@ Rails.application.configure do
   config.hosts << /.*\.ngrok-free\.app/
   # Rails.application.routes.default_url_options[:host] = ENV.fetch("APP_HOST")
   Rails.application.routes.default_url_options[:host] = ENV['APP_HOST']
+  config.action_mailer.delivery_method = :letter_opener
+  config.action_mailer.perform_deliveries = true
+
+  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+
+config.action_mailer.delivery_method = :smtp
+config.action_mailer.smtp_settings = {
+  address:              'smtp.gmail.com',
+  port:                 587,
+  domain:               'gmail.com',
+  user_name:            ENV['GMAIL_USERNAME'], # your Gmail
+  password:             ENV['GMAIL_APP_PASSWORD'], # Gmail app password
+  authentication:       'plain',
+  enable_starttls_auto: true
+}
 
 end
