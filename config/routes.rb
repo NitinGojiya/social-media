@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
   resources :users, only: [:new, :create]
+  get "profile", to: "users#profile", as: "profile"
   get "/auth/:provider/callback", to: "sessions#omniauth"
 
   resources :posts, only: [:new]

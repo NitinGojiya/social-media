@@ -64,10 +64,13 @@
         tabindex="0"
         class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
         <li>
-          <a class="justify-between">
-            Profile
-            <span class="badge">New</span>
-          </a>
+          <%= link_to profile_path do %>
+            <a class="justify-between">
+              Profile
+              <span class="badge">New</span>
+            </a>
+          <% end %>
+
         </li>
         <li><a href="/link_account">Linked Account</a></li>
         <li><%= button_to "Log out", session_path, method: :delete if authenticated? %></li>
@@ -77,4 +80,4 @@
 </div>
 
 
-<%=render "post_modal" if authenticated? && @user %>
+<%=render "home_pages/post_modal" if authenticated? %>

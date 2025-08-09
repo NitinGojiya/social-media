@@ -14,6 +14,13 @@ class UsersController < ApplicationController
     end
   end
 
+  def profile
+    @user = Current.session.user
+  end
+
+  def profile_create
+  end
+
   private
     def user_params
       params.require(:user).permit(:email_address, :password, :password_confirmation)
