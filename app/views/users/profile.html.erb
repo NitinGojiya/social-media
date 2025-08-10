@@ -1,3 +1,97 @@
-<p>
-  <strong>Email:</strong> <%= @user.email_address %>
-</p>
+<div class="w-full  bg-white  p-6">
+
+  <!-- Title -->
+  <h1 class="text-2xl font-bold text-gray-800">Settings</h1>
+  <a href="#" class="text-blue-500 text-sm hover:underline">Manage your account</a>
+
+  <!-- Account Management -->
+  <div class="mt-6">
+    <h2 class="text-lg font-semibold text-gray-700">Account Management</h2>
+
+    <div class="mt-4 flex justify-between items-center py-3 border-b">
+      <div class="flex items-center gap-3">
+        <i class="fa-regular fa-user text-gray-600 text-lg"></i>
+        <div>
+          <p class="font-medium text-gray-800">Account</p>
+          <p class="text-sm text-gray-500">Permanently delete your account</p>
+        </div>
+      </div>
+          <%= button_to "Delete Account", delete_profile_path, method: :delete, class: "px-4 py-1 bg-gray-100 text-black rounded-md text-sm font-medium hover:bg-red-600 hover:text-white" %>
+    </div>
+
+    <!-- Profile Photo Upload Form -->
+    <%= form_with model: @user, url: profile_create_path, method: :patch, local: true, html: { class: "flex justify-between items-center py-3" } do |f| %>
+      <div class="flex items-center gap-3">
+        <i class="fa-regular fa-image text-gray-600 text-lg"></i>
+        <div>
+          <p class="font-medium text-gray-800">Profile Photo</p>
+          <p class="text-sm text-gray-500">Set or change your profile photo</p>
+
+          <% if @user.profile_photo.attached? %>
+            <div class="mt-2">
+              <p class="text-xs text-gray-500 mb-1">Current photo:</p>
+              <%= image_tag @user.profile_photo.variant(resize_to_limit: [150, 150]), class: "rounded-lg shadow" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <%= f.file_field :profile_photo, class: "hidden", id: "profile_photo_input" %>
+        <label for="profile_photo_input" class="px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200 cursor-pointer">Choose</label>
+        <%= f.submit "Save", class: "px-4 py-1 bg-[#B12C00] text-white rounded-md text-sm font-medium hover:bg-[#c17962]" %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Linked Accounts -->
+  <div class="mt-8">
+    <h2 class="text-lg font-semibold text-gray-700">Linked accounts</h2>
+    <div class="mt-4 space-y-4">
+
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-3">
+          <i class="fab fa-instagram text-pink-500 text-lg"></i>
+          <div>
+            <p class="font-medium text-gray-800">Instagram</p>
+            <p class="text-sm text-gray-500">Share your posts on Instagram</p>
+          </div>
+        </div>
+        <button class="px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200"><% if @user.ig_user_id? %>Unlink<% else %>Link<% end %></button>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-3">
+          <i class="fab fa-facebook text-blue-600 text-lg"></i>
+          <div>
+            <p class="font-medium text-gray-800">Facebook</p>
+            <p class="text-sm text-gray-500">Share your posts on Facebook</p>
+          </div>
+        </div>
+        <button class="px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200"><% if @user.fb_page_id? %>Unlink<% else %>Link<% end %></button>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-3">
+          <i class="fab fa-linkedin text-blue-700 text-lg"></i>
+          <div>
+            <p class="font-medium text-gray-800">LinkedIn</p>
+            <p class="text-sm text-gray-500">Share your posts on LinkedIn</p>
+          </div>
+        </div>
+        <button class="px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200"><% if @user.linkedin_id? %>Unlink<% else %>Link<% end %></button>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-3">
+          <i class="fab fa-twitter text-sky-500 text-lg"></i>
+          <div>
+            <p class="font-medium text-gray-800">Twitter</p>
+            <p class="text-sm text-gray-500">Share your posts on Twitter</p>
+          </div>
+        </div>
+        <button class="px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200"><% if @user.twitter_profile %>Unlink<% else %>Link<% end %></button>
+      </div>
+
+    </div>
+  </div>
+</div>

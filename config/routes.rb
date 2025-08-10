@@ -6,6 +6,8 @@ Rails.application.routes.draw do
   resources :passwords, param: :token
   resources :users, only: [:new, :create]
   get "profile", to: "users#profile", as: "profile"
+  patch "/profile",        to: "users#profile_create", as: :profile_create
+  delete "/profile/delete", to: "users#delete_profile", as: :delete_profile
   get "/auth/:provider/callback", to: "sessions#omniauth"
 
   resources :posts, only: [:new]

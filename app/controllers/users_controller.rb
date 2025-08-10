@@ -18,11 +18,32 @@ class UsersController < ApplicationController
     @user = Current.session.user
   end
 
-  def profile_create
+def profile_create
+  @user = Current.session.user
+  if @user.update(profile_params)
+    redirect_to profile_path, notice: "Profile updated successfully!"
+  else
+    flash.now[:alert] = "Failed to update profile."
+    render :profile, status: :unprocessable_entity
+  end
+end
+
+  def delete_profile
+    @user = Current.session.user
+    if @user.destroy
+      redirect_to root_path, notice: "Profile deleted successfully!"
+    else
+      flash.now[:alert] = "Failed to delete profile."
+      render :profile, status: :unprocessable_entity
+    end
   end
 
   private
     def user_params
       params.require(:user).permit(:email_address, :password, :password_confirmation)
     end
+    def profile_params
+  params.require(:user).permit(:profile_photo)
+end
+
 end

@@ -15,7 +15,7 @@
     <a href="/link_account" class="btn btn-ghost hover:bg-[#B12C00] hover:text-white rounded-lg hover:shadow-md">
       <i class="fa-solid fa-link"></i> Link Social Account
     </a>
-   <% if @user %>
+   <% if authenticated? %>
     <a href="/calendar" class="bg-[#B12C00] hover:bg-[#c17962] text-white p-3 rounded-lg shadow-md  transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">
       <i class="fa-solid fa-calendar"></i> Calendar
     </a>
@@ -55,29 +55,43 @@
 </div>
 
     <div class="dropdown dropdown-end">
+       <% if authenticated? %>
       <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-        <div class="w-10 rounded-full border-2 border-[#B12C00]">
-          <span class="text-3xl">U</span>
-        </div>
+          <% if @user.profile_photo.attached? %>
+            <%= image_tag @user.profile_photo.variant(resize_to_limit: [150, 150]),class:"w-10 h-10 rounded-full" %>
+          <% else %>
+          <i class="fa-solid fa-user text-2xl"></i>
+          <% end %>
       </div>
+
       <ul
         tabindex="0"
         class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-        <li>
-          <%= link_to profile_path do %>
-            <a class="justify-between">
-              Profile
-              <span class="badge">New</span>
-            </a>
-          <% end %>
+       <li>
+        <%= link_to profile_path, class: "justify-between" do %>
+          Profile
+          <span class="badge">New</span>
+        <% end %>
+      </li>
 
-        </li>
         <li><a href="/link_account">Linked Account</a></li>
         <li><%= button_to "Log out", session_path, method: :delete if authenticated? %></li>
       </ul>
+      <% else %>
+            <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar flex items-center justify-center">
+              <i class="fa-solid fa-user-plus text-2xl"></i>
+            </div>
+
+        <ul
+          tabindex="0"
+          class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+          <li><%= link_to "Sign in", new_session_path %></li>
+          <li><%= link_to "Sign up", new_user_path %></li>
+        </ul>
+      <% end %>
     </div>
   </div>
 </div>
 
 
-<%=render "home_pages/post_modal" if authenticated? %>
+<%=render "home_pages/post_modal" if authenticated? && @user %>
