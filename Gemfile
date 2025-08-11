@@ -94,6 +94,8 @@ gem 'streamio-ffmpeg'
 
 gem 'omniauth-twitter'
 gem 'twitter'
+gem 'omniauth-twitter2'
+
 gem 'oauth'
 
 gem 'omniauth-google-oauth2'
@@ -104,3 +106,5 @@ group :development do
 end
 
 gem "image_processing"
+
+gem 'multipart-post'

@@ -1,30 +1,25 @@
 class TwitterLinksController < ApplicationController
   def create
-    user = Current.session.user  # ✅ assumes you’re using `Current` pattern
+    user = Current.session.user
     auth = request.env['omniauth.auth']
 
     return redirect_to root_path, alert: 'Twitter auth failed' if auth.nil?
+profile_attrs = {
+  name:         auth.info.name,
+  nickname:     auth.info.nickname,
+  image:        auth.info.image,
+  token:        auth.credentials.token,   # still OAuth1
+  secret:       auth.credentials.secret,  # still OAuth1
+  bearer_token: auth.credentials.token    # from OAuth 2.0 flow
+}
+
 
     if user.twitter_profile.present?
-      # If profile exists, update it instead of trying to create it again
-      user.twitter_profile.update!(
-        name:     auth.info.name,
-        nickname: auth.info.nickname,
-        image:    auth.info.image,
-        token:    auth.credentials.token,
-        secret:   auth.credentials.secret
-      )
+      user.twitter_profile.update!(profile_attrs)
     else
-      #  If no profile yet, create one
-      user.create_twitter_profile!(
-        name:     auth.info.name,
-        nickname: auth.info.nickname,
-        image:    auth.info.image,
-        token:    auth.credentials.token,
-        secret:   auth.credentials.secret
-      )
+      user.create_twitter_profile!(profile_attrs)
     end
 
-    redirect_to root_path, notice: t('alerts.twitter_linked')
+    redirect_to root_path, notice: 'Twitter account linked successfully!'
   end
 end

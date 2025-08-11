@@ -37,13 +37,13 @@ class PostsController < ApplicationController
     attach_photos(@post, uploaded_files) # attach BEFORE save
 
     if @post.save
-    results = schedule_post ? [] : publish_to_platforms(user, post_to_ig, post_to_fb, image_urls, caption)
+      results = schedule_post ? [] : publish_to_platforms(user, post_to_ig, post_to_fb, image_urls, caption)
 
-    flash[:success] = t(schedule_post ? "alerts.post_scheduled_created" : "alerts.post_created")
-    render json: {
-      success: true,
-      message: schedule_post ? "Post scheduled for #{scheduled_date}" : results.join(" | ")
-    }
+      flash[:success] = t(schedule_post ? "alerts.post_scheduled_created" : "alerts.post_created")
+      render json: {
+        success: true,
+        message: schedule_post ? "Post scheduled for #{scheduled_date}" : results.join(" | ")
+      }
     else
       flash[:error] = @post.errors.full_messages.to_sentence
       render json: { success: false, error: @post.errors.full_messages.to_sentence }, status: :unprocessable_entity
@@ -63,11 +63,11 @@ class PostsController < ApplicationController
     redirect_to post_path, flash: { success: t("alerts.post_deleted") }
   end
 
-  def create_linkedin_post
+ def create_linkedin_post
   user     = Current.session.user
   files    = Array.wrap(params[:image_file])
   caption  = params[:caption].presence || "Posted via API"
-    schedule = params[:schedule_to_post] == "1"
+  schedule = params[:schedule_to_post] == "1"
   time     = schedule ? Time.parse(params[:date]) : Time.current
 
   return render json: { success: false, error: "No image files uploaded" }, status: :unprocessable_entity if files.blank?
@@ -81,7 +81,7 @@ class PostsController < ApplicationController
 
   attach_photos(post, files)
 
-    if schedule
+  if schedule
     if post.save
       flash[:success] = "Post scheduled for #{time}"
       render json: { success: true, message: "Post scheduled for #{time}" }
@@ -123,20 +123,20 @@ end
     end
   end
 
-  def create_twitter_post
-    user = Current.session.user
-    profile = user.twitter_profile
-    return render_error("Twitter profile not linked.", status: :unauthorized) unless profile
+ def create_twitter_post
+  twitter_profile = Current.session.user.twitter_profile
+  service = TwitterService.new(twitter_profile)
+  result = service.post_tweet(params[:caption], params[:image_file])
 
-    response = TwitterService.new(profile).post_tweet(params[:caption])
-    if response.success?
-      user.posts.create!(caption: params[:caption], twitter: 1, status: 2, scheduled_at: Time.current)
-     flash[:success] = t("alerts.tweet_created")
-      render json: { success: true, tweet_url: response.url }
-    else
-      render_error(response.error)
-    end
+  if result.success?
+    render json: { status: "ok", url: result.url }
+  else
+    render json: { status: "error", error: result.error }, status: 422
   end
+end
+
+
+
 
   def scheduled_update
     post = Current.session.user.posts.find(params[:id])
@@ -164,8 +164,8 @@ end
     params.require(:post).permit(:caption, :scheduled_at, :fb, :ig, :linkedin)
   end
 
-  def attach_photos(post, files)
-    files.each do |file|
+ def attach_photos(post, files)
+  files.each do |file|
     next unless file.present?
     next unless file.respond_to?(:content_type) && ALLOWED_CONTENT_TYPES.include?(file.content_type)
 

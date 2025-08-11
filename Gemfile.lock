@@ -299,6 +299,9 @@ GEM
     omniauth-twitter (1.4.0)
       omniauth-oauth (~> 1.1)
       rack
+    omniauth-twitter2 (1.0.0)
+      omniauth
+      omniauth-oauth2 (~> 1.0)
     ostruct (0.6.3)
     parallel (1.27.0)
     parser (3.3.9.0)
@@ -374,7 +377,7 @@ GEM
     rdoc (6.14.2)
       erb
       psych (>= 4.0.0)
-    redis-client (0.25.1)
+    redis-client (0.25.2)
       connection_pool
     regexp_parser (2.11.1)
     reline (0.6.2)
@@ -398,7 +401,7 @@ GEM
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
       rubocop-ast (>= 1.38.0, < 2.0)
-    rubocop-rails (2.32.0)
+    rubocop-rails (2.33.0)
       activesupport (>= 4.2.0)
       lint_roller (~> 1.1)
       rack (>= 1.1)
@@ -548,11 +551,13 @@ DEPENDENCIES
   letter_opener_web
   mime-types
   mini_magick
+  multipart-post
   oauth
   omniauth-facebook
   omniauth-google-oauth2
   omniauth-linkedin-oauth2
   omniauth-twitter
+  omniauth-twitter2
   propshaft
   pry
   pry-byebug
