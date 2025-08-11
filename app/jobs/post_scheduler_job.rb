@@ -71,10 +71,44 @@ class PostSchedulerJob < ApplicationJob
         end
       end
 
+      # Twitter
+      if post.twitter?
+        twitter_profile = user.twitter_profile
+        raise "Twitter profile not connected" unless twitter_profile.present?
+
+        twitter_service = TwitterService.new(twitter_profile)
+
+        # Convert media_files hash to objects expected by TwitterService (like UploadedFile or OpenStruct)
+        twitter_media_files = post.photos.map do |photo|
+          blob = photo.blob
+          OpenStruct.new(
+            tempfile: Tempfile.new.tap { |f| f.binmode; f.write(blob.download); f.rewind },
+            content_type: blob.content_type,
+            original_filename: blob.filename.to_s,
+            size: blob.byte_size
+          )
+        end
+
+        result = twitter_service.post_tweet(caption, twitter_media_files)
+
+        if result.success?
+          post.update!(twitter_post_id: result.url.split('/').last)
+        else
+          raise "Twitter post failed: #{result.error}"
+        end
+      end
+
       post.update!(status: 2, posted_at: Time.current) # Mark as posted
     rescue => e
       Rails.logger.error("[PostSchedulerJob] Failed for Post ##{post.id}: #{e.message}")
       post.update!(status: 3, error_message: e.message) # Mark as failed
+    ensure
+      # Close and unlink tempfiles created for twitter_media_files
+      if twitter_media_files.present?
+        twitter_media_files.each do |file|
+          file.tempfile.close!
+        end
+      end
     end
   end
 end
