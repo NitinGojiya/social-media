@@ -61,6 +61,7 @@ export default class extends Controller {
       document.getElementById("loginContainer").classList.remove("hidden")
       document.getElementById("previewSocialContainer").classList.add("hidden")
 
+
     }
   }
 
