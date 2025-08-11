@@ -133,44 +133,52 @@ export default class extends Controller {
 
       eventDidMount: function (info) {
         const isHoliday = info.event.extendedProps.holiday
-        const isPosted = info.event.extendedProps.posted
-        const image = info.event.extendedProps.image
+  const isPosted = info.event.extendedProps.posted
+  const image = info.event.extendedProps.image
+  const isVideo = info.event.extendedProps.video // new flag
 
-        const eventEl = info.el
-        eventEl.style.cursor = "pointer"
+  const eventEl = info.el
+  eventEl.style.cursor = "pointer"
 
-        const titleEl = eventEl.querySelector('.fc-event-title')
-        if (titleEl) {
-          if (image) {
-            const img = document.createElement("img")
-            img.src = image
-            img.alt = "Event Image"
-            img.style.width = "50px"
-            img.style.height = "50px"
-            img.style.objectFit = "cover"
-            img.style.marginRight = "5px"
-            img.style.verticalAlign = "middle"
-            img.style.borderRadius = "4px"
-            titleEl.prepend(img)
-          }
+  const titleEl = eventEl.querySelector('.fc-event-title')
+  if (titleEl) {
+    if (image || isVideo) {
+      const img = document.createElement("img")
 
-          if (typeof isHoliday !== "undefined" || typeof isPosted !== "undefined") {
-            const dot = document.createElement("div")
-            dot.style.width = "10px"
-            dot.style.height = "10px"
-            dot.style.borderRadius = "50%"
-            dot.style.display = "inline-block"
-            dot.style.cursor = "pointer"
-            dot.style.marginRight = "5px"
-            dot.style.verticalAlign = "middle"
-            dot.style.backgroundColor = isHoliday
-              ? "red"
-              : isPosted
-                ? "green"
-                : "gray"
-            titleEl.prepend(dot)
-          }
-        }
+      if (isVideo) {
+        img.src = "https://images.unsplash.com/photo-1637592156141-d41fb6234e71?q=80&w=1253&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" // your static video icon path
+        img.alt = "Video"
+      } else {
+        img.src = image
+        img.alt = "Event Image"
+      }
+
+      img.style.width = "50px"
+      img.style.height = "50px"
+      img.style.objectFit = "cover"
+      img.style.marginRight = "5px"
+      img.style.verticalAlign = "middle"
+      img.style.borderRadius = "4px"
+      titleEl.prepend(img)
+    }
+
+    if (typeof isHoliday !== "undefined" || typeof isPosted !== "undefined") {
+      const dot = document.createElement("div")
+      dot.style.width = "10px"
+      dot.style.height = "10px"
+      dot.style.borderRadius = "50%"
+      dot.style.display = "inline-block"
+      dot.style.cursor = "pointer"
+      dot.style.marginRight = "5px"
+      dot.style.verticalAlign = "middle"
+      dot.style.backgroundColor = isHoliday
+        ? "red"
+        : isPosted
+          ? "green"
+          : "gray"
+      titleEl.prepend(dot)
+    }
+  }
 
         const button = document.createElement("button")
         button.textContent = "Details"
@@ -221,28 +229,43 @@ export default class extends Controller {
       const pad = (n) => String(n).padStart(2, '0')
       return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
     }
+function showModal(event) {
+  const title = event.title
+  const date = event.start.toLocaleString()
+  const isHoliday = event.extendedProps.holiday
+  const isPosted = event.extendedProps.posted
+  const image = event.extendedProps.image
+  const isVideo = event.extendedProps.video // from backend
 
-    function showModal(event) {
-      const title = event.title
-      const date = event.start.toLocaleString()
-      const isHoliday = event.extendedProps.holiday
-      const isPosted = event.extendedProps.posted
-      const image = event.extendedProps.image
+  document.getElementById("event-modal-title").textContent = title
+  document.getElementById("event-modal-date").textContent = `Date: ${date}`
+  document.getElementById("event-modal-type").textContent =
+    isHoliday ? "Type: Holiday" : isPosted ? "Status: Posted" : "Status: Scheduled Post"
 
-      document.getElementById("event-modal-title").textContent = title
-      document.getElementById("event-modal-date").textContent = `Date: ${date}`
-      document.getElementById("event-modal-type").textContent =
-        isHoliday ? "Type: Holiday" : isPosted ? "Status: Posted" : "Status: Scheduled Post"
+  const imageEl = document.getElementById("event-modal-image")
+  const videoEl = document.getElementById("event-modal-video")
+  const videoSrc = document.getElementById("event-modal-video-src")
 
-      const imageEl = document.getElementById("event-modal-image")
-      if (image) {
-        imageEl.src = image
-        imageEl.style.display = "block"
-      } else {
-        imageEl.style.display = "none"
-      }
+  if (isVideo) {
+    // Hide image, show video
+    imageEl.style.display = "none"
+    videoEl.style.display = "block"
+    videoSrc.src = image // here 'image' contains the direct video URL
+    videoEl.load()
+  } else if (image) {
+    // Show image, hide video
+    imageEl.src = image
+    imageEl.alt = "Event Image"
+    imageEl.style.display = "block"
+    videoEl.style.display = "none"
+  } else {
+    // No media
+    imageEl.style.display = "none"
+    videoEl.style.display = "none"
+  }
 
-      document.getElementById("event_details_modal").showModal()
-    }
+  document.getElementById("event_details_modal").showModal()
+}
+
   }
 }

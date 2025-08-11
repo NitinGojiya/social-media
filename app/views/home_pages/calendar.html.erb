@@ -18,17 +18,26 @@
 
 
 <!-- post view modal -->
-
 <dialog id="event_details_modal" class="modal">
   <div class="modal-box">
     <h3 id="event-modal-title" class="font-bold text-lg">Event Title</h3>
     <p id="event-modal-date" class="py-2">Date Info</p>
     <p id="event-modal-type" class="py-1">Status</p>
-    <img id="event-modal-image" src="" alt="Post image" loading="lazy" class="mb-4 rounded-xl object-cover w-full h-48" />
+
+    <img id="event-modal-image" src="" alt="Post image"
+      loading="lazy" class="mb-4 rounded-xl object-cover w-full h-48" />
+
+    <video id="event-modal-video" controls
+      class="mb-4 rounded-xl object-cover w-full h-48" style="display: none;">
+      <source id="event-modal-video-src" src="" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
 
     <div class="modal-action">
       <form method="dialog">
-        <button class="btn rounded-full w-[100px] bg-[#B12C00] hover:bg-[#c17962] text-white"><i class="fa-solid fa-xmark"></i></button>
+        <button class="btn rounded-full w-[100px] bg-[#B12C00] hover:bg-[#c17962] text-white">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       </form>
     </div>
   </div>

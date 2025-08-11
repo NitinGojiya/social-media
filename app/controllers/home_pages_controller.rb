@@ -13,9 +13,11 @@ class HomePagesController < ApplicationController
         title: post.caption,
         start: post.scheduled_at.iso8601,
         image: post.photos.attached? ? url_for(post.photos.first) : nil,
-        posted: post.status == 2
+        posted: post.status == 2,
+        video: post.photos.attached? && post.photos.first.content_type.start_with?('video/')
       }
     end
+
 
     # For holiday on calendar
     api_response = fetch_calendarific_data

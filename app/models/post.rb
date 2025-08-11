@@ -25,6 +25,7 @@ class Post < ApplicationRecord
 
   before_validation :validate_media_count_and_type
   before_validation :validate_file_size
+  validate :scheduled_at_must_be_in_future, if: -> { status == 1 && scheduled_at.present? }
 
   def photo_urls
     return [] unless photos.attached?
@@ -34,6 +35,11 @@ class Post < ApplicationRecord
   end
 
   private
+  def scheduled_at_must_be_in_future
+    if scheduled_at < Time.zone.now
+      errors.add(:scheduled_at, "must be in the future")
+    end
+  end
 
   def purge_photos
     photos.purge_later
