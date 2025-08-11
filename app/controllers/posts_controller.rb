@@ -63,52 +63,50 @@ class PostsController < ApplicationController
     redirect_to post_path, flash: { success: t("alerts.post_deleted") }
   end
 
- def create_linkedin_post
-  user     = Current.session.user
-  files    = Array.wrap(params[:image_file])
-  caption  = params[:caption].presence || "Posted via API"
-  schedule = params[:schedule_to_post] == "1"
-  time     = schedule ? Time.parse(params[:date]) : Time.current
+  def create_linkedin_post
+    user     = Current.session.user
+    files    = Array.wrap(params[:image_file])
+    caption  = params[:caption].presence || "Posted via API"
+    schedule = params[:schedule_to_post] == "1"
+    time     = schedule ? Time.parse(params[:date]) : Time.current
 
-  return render json: { success: false, error: "No image files uploaded" }, status: :unprocessable_entity if files.blank?
+    return render json: { success: false, error: "No image files uploaded" }, status: :unprocessable_entity if files.blank?
 
-  post = user.posts.new(
-    caption: caption,
-    linkedin: 1,
-    status: schedule ? 1 : 2,
-    scheduled_at: time
-  )
+    post = user.posts.new(
+      caption: caption,
+      linkedin: 1,
+      status: schedule ? 1 : 2,
+      scheduled_at: time
+    )
 
-  attach_photos(post, files)
+    attach_photos(post, files)
 
-  if schedule
-    if post.save
-      flash[:success] = "Post scheduled for #{time}"
-      render json: { success: true, message: "Post scheduled for #{time}" }
-    else
-      flash[:error] = post.errors.full_messages.to_sentence
-      render json: { success: false, error: post.errors.full_messages.to_sentence }, status: :unprocessable_entity
-    end
-  else
-    if post.valid?
-      response = LinkedInService.new(user).create_post(image_files: files, caption: caption)
-      if response["id"].present?
-        post.linkedin_post_urn = response["id"]
-        post.save
-        flash[:success] = "Post created!"
-        render json: { success: true, message: "Post created!", response: response }
+    if schedule
+      if post.save
+        flash[:success] = "Post scheduled for #{time}"
+        render json: { success: true, message: "Post scheduled for #{time}" }
       else
-        flash[:error] = "Failed to post"
-        render json: { success: false, error: "Failed to post" }, status: :unprocessable_entity
+        flash[:error] = post.errors.full_messages.to_sentence
+        render json: { success: false, error: post.errors.full_messages.to_sentence }, status: :unprocessable_entity
       end
     else
-      flash[:error] = post.errors.full_messages.to_sentence
-      render json: { success: false, error: post.errors.full_messages.to_sentence }, status: :unprocessable_entity
+      if post.valid?
+        response = LinkedInService.new(user).create_post(image_files: files, caption: caption)
+        if response["id"].present?
+          post.linkedin_post_urn = response["id"]
+          post.save
+          flash[:success] = "Post created!"
+          render json: { success: true, message: "Post created!", response: response }
+        else
+          flash[:error] = "Failed to post"
+          render json: { success: false, error: "Failed to post" }, status: :unprocessable_entity
+        end
+      else
+        flash[:error] = post.errors.full_messages.to_sentence
+        render json: { success: false, error: post.errors.full_messages.to_sentence }, status: :unprocessable_entity
+      end
     end
   end
-end
-
-
 
   def delete_linkedin_post
     post = Current.session.user.posts.find(params[:id])
@@ -123,20 +121,80 @@ end
     end
   end
 
- def create_twitter_post
-  twitter_profile = Current.session.user.twitter_profile
-  service = TwitterService.new(twitter_profile)
-  result = service.post_tweet(params[:caption], params[:image_file])
+  def create_twitter_post
+    user = Current.session.user
+    twitter_profile = user.twitter_profile
+    service = TwitterService.new(twitter_profile)
 
-  if result.success?
-    render json: { status: "ok", url: result.url }
+    media_files = Array(params[:image_file]) # always array
+    caption = params[:caption].presence
+    schedule = params[:schedule_to_post] == "1"
+    time = schedule ? Time.parse(params[:date]) : Time.current
+
+    # Return error if no media files provided when not scheduling
+    if media_files.blank? && !schedule
+      return render json: { success: false, error: "No media files uploaded" }, status: :unprocessable_entity
+    end
+
+    # Build post object
+    post = user.posts.new(
+      caption: caption,
+      twitter: 1,
+      status: schedule ? 1 : 2,      # 1 = scheduled, 2 = posted
+      scheduled_at: time
+    )
+
+    # Attach media files (implement attach_photos or similar for Twitter)
+    attach_photos(post, media_files)
+
+    if schedule
+      # Just save scheduled post, no API call
+      if post.save
+        flash[:success] = "Twitter post scheduled for #{time}"
+        render json: { success: true, message: "Twitter post scheduled for #{time}" }
+      else
+        flash[:error] = post.errors.full_messages.to_sentence
+        render json: { success: false, error: post.errors.full_messages.to_sentence }, status: :unprocessable_entity
+      end
+    else
+      # Post immediately
+      if post.valid?
+        result = service.post_tweet(caption, media_files)
+
+        if result.success?
+          post.twitter_post_id = result.url.split('/').last
+          post.save
+          flash[:success] = "Twitter post created!"
+          render json: { success: true, message: "Twitter post created!", url: result.url }
+        else
+          flash[:error] = result.error
+          render json: { success: false, error: result.error }, status: :unprocessable_entity
+        end
+      else
+        flash[:error] = post.errors.full_messages.to_sentence
+        render json: { success: false, error: post.errors.full_messages.to_sentence }, status: :unprocessable_entity
+      end
+    end
+  end
+
+def delete_twitter_post
+  post = Current.session.user.posts.find(params[:id])
+  twitter_profile = Current.session.user.twitter_profile
+
+  # Rails.logger.info("Deleting Tweet ID: #{post.twitter_post_id}")
+  # Rails.logger.info("OAuth Token: #{twitter_profile.token}")
+  # Rails.logger.info("OAuth Token Secret: #{twitter_profile.secret}")
+
+  service = TwitterService.new(twitter_profile)
+  success = service.delete_tweet(post.twitter_post_id)
+
+  if success
+    post.destroy
+    redirect_to post_path, flash: { success: "Post deleted successfully!" }
   else
-    render json: { status: "error", error: result.error }, status: 422
+    render_error("Failed to delete Twitter post", "Could not authenticate or delete the tweet.")
   end
 end
-
-
-
 
   def scheduled_update
     post = Current.session.user.posts.find(params[:id])
@@ -151,6 +209,7 @@ end
       redirect_to post_path(post), alert: "Failed to update post."
     end
   end
+
 
   def scheduled_posts_delete
     post = Current.session.user.posts.find(params[:id])
@@ -203,8 +262,12 @@ end
     post.photo.attach(file)
   end
 
+  # def render_error(message, data = {}, status: :unprocessable_entity)
+  #   render json: { error: message, **data }, status: status
+  # end
   def render_error(message, data = {}, status: :unprocessable_entity)
-    render json: { error: message, **data }, status: status
+    error_data = data.is_a?(Hash) ? data : { message: data.to_s }
+    render json: { error: message, **error_data }, status: status
   end
 
   def log_and_render_error(message)

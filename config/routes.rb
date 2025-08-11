@@ -41,7 +41,7 @@ Rails.application.routes.draw do
   # twitter
 
   post 'twitter/create_twitter_post', to: 'posts#create_twitter_post', as: :create_twitter_post
-
+  delete 'twitter/delete_tweet/:id', to: 'posts#delete_twitter_post', as: :delete_tweet
 
   get  "/auth/twitter/callback", to: "twitter_links#create"
   post "/auth/twitter/callback", to: "twitter_links#create"
