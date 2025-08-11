@@ -1,11 +1,26 @@
 class PostSchedulerJob < ApplicationJob
   queue_as :default
 
-  def perform(post_id)
-    post = Post.find_by(id: post_id)
+  def perform(post_id = nil)
+    posts =
+      if post_id
+        [Post.find_by(id: post_id)].compact
+      else
+        Post.where(status: 1)
+            .where("scheduled_at <= ?", Time.current)
+      end
+
+    posts.each do |post|
+      process_post(post)
+    end
+  end
+
+  private
+
+  def process_post(post)
     return unless post && post.status == 1 && post.scheduled_at.present? && post.scheduled_at <= Time.current
 
-    user = post.user
+    user    = post.user
     caption = post.caption
 
     begin
@@ -58,7 +73,7 @@ class PostSchedulerJob < ApplicationJob
 
       post.update!(status: 2, posted_at: Time.current) # Mark as posted
     rescue => e
-      Rails.logger.error("[PostSchedulerJob] Failed: #{e.message}")
+      Rails.logger.error("[PostSchedulerJob] Failed for Post ##{post.id}: #{e.message}")
       post.update!(status: 3, error_message: e.message) # Mark as failed
     end
   end

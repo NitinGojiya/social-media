@@ -73,8 +73,6 @@
           <span class="badge">New</span>
         <% end %>
       </li>
-
-        <li><a href="/link_account">Linked Account</a></li>
         <li><%= button_to "Log out", session_path, method: :delete if authenticated? %></li>
       </ul>
       <% else %>

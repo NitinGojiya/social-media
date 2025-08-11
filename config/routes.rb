@@ -8,7 +8,7 @@ Rails.application.routes.draw do
   get "profile", to: "users#profile", as: "profile"
   patch "/profile",        to: "users#profile_create", as: :profile_create
   delete "/profile/delete", to: "users#delete_profile", as: :delete_profile
-  get "/auth/:provider/callback", to: "sessions#omniauth"
+  get  "/auth/google_oauth2/callback", to: "sessions#omniauth"
 
   resources :posts, only: [:new]
   patch "scheduled_update/:id", to: "posts#scheduled_update", as: "scheduled_update"
@@ -39,10 +39,13 @@ Rails.application.routes.draw do
 
 
   # twitter
-  get '/auth/twitter/callback', to: 'twitter_links#create'
-  get '/auth/failure', to: redirect('/')
+
   post 'twitter/create_twitter_post', to: 'posts#create_twitter_post', as: :create_twitter_post
 
+
+  get  "/auth/twitter/callback", to: "twitter_links#create"
+  post "/auth/twitter/callback", to: "twitter_links#create"
+  get  '/auth/failure', to: redirect('/')
 
   # latter opening
   if Rails.env.development?

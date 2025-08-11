@@ -26,8 +26,7 @@ class PostsController < ApplicationController
     if post_to_ig && image_urls.size > 1 && contains_video?(image_urls)
       return render_error("Instagram does not support videos in carousel posts.")
     end
-
-    @post = user.posts.create!(
+    @post = user.posts.new(
       caption: caption,
       ig: post_to_ig ? 1 : 0,
       fb: post_to_fb ? 1 : 0,
@@ -35,16 +34,21 @@ class PostsController < ApplicationController
       status: schedule_post ? 1 : 2
     )
 
-    attach_photos(@post, uploaded_files)
+    attach_photos(@post, uploaded_files) # attach BEFORE save
 
+    if @post.save
     results = schedule_post ? [] : publish_to_platforms(user, post_to_ig, post_to_fb, image_urls, caption)
 
     flash[:success] = t(schedule_post ? "alerts.post_scheduled_created" : "alerts.post_created")
-
     render json: {
       success: true,
       message: schedule_post ? "Post scheduled for #{scheduled_date}" : results.join(" | ")
     }
+    else
+      flash[:error] = @post.errors.full_messages.to_sentence
+      render json: { success: false, error: @post.errors.full_messages.to_sentence }, status: :unprocessable_entity
+    end
+
   rescue => e
     log_and_render_error("Post creation failed: #{e.message}")
   end
@@ -60,35 +64,51 @@ class PostsController < ApplicationController
   end
 
   def create_linkedin_post
-    user = Current.session.user
-    files = Array.wrap(params[:image_file])
-    caption = params[:caption].presence || "Posted via API"
+  user     = Current.session.user
+  files    = Array.wrap(params[:image_file])
+  caption  = params[:caption].presence || "Posted via API"
     schedule = params[:schedule_to_post] == "1"
-    time = schedule ? Time.parse(params[:date]) : Time.current
+  time     = schedule ? Time.parse(params[:date]) : Time.current
 
-    return render_error("No image files uploaded") if files.blank?
+  return render json: { success: false, error: "No image files uploaded" }, status: :unprocessable_entity if files.blank?
+
+  post = user.posts.new(
+    caption: caption,
+    linkedin: 1,
+    status: schedule ? 1 : 2,
+    scheduled_at: time
+  )
+
+  attach_photos(post, files)
 
     if schedule
-      post = user.posts.create!(caption: caption, scheduled_at: time, linkedin: 1, status: 1)
-      attach_photos(post, files)
-      render json: { message: "Post scheduled for #{time}" }
+    if post.save
+      flash[:success] = "Post scheduled for #{time}"
+      render json: { success: true, message: "Post scheduled for #{time}" }
     else
+      flash[:error] = post.errors.full_messages.to_sentence
+      render json: { success: false, error: post.errors.full_messages.to_sentence }, status: :unprocessable_entity
+    end
+  else
+    if post.valid?
       response = LinkedInService.new(user).create_post(image_files: files, caption: caption)
       if response["id"].present?
-        post = user.posts.create!(
-          caption: caption,
-          linkedin: 1,
-          status: 2,
-          scheduled_at: Time.current,
-          linkedin_post_urn: response["id"]
-        )
-        attach_photos(post, files)
-        render json: { message: "Post created!", response: response }
+        post.linkedin_post_urn = response["id"]
+        post.save
+        flash[:success] = "Post created!"
+        render json: { success: true, message: "Post created!", response: response }
       else
-        render_error("Failed to post", response)
+        flash[:error] = "Failed to post"
+        render json: { success: false, error: "Failed to post" }, status: :unprocessable_entity
       end
+    else
+      flash[:error] = post.errors.full_messages.to_sentence
+      render json: { success: false, error: post.errors.full_messages.to_sentence }, status: :unprocessable_entity
     end
   end
+end
+
+
 
   def delete_linkedin_post
     post = Current.session.user.posts.find(params[:id])
@@ -146,17 +166,37 @@ class PostsController < ApplicationController
 
   def attach_photos(post, files)
     files.each do |file|
-      next unless file.present? && file.respond_to?(:tempfile)
-      next unless ALLOWED_CONTENT_TYPES.include?(file.content_type)
+    next unless file.present?
+    next unless file.respond_to?(:content_type) && ALLOWED_CONTENT_TYPES.include?(file.content_type)
 
+    # Ensure we can read from the start
+    if file.respond_to?(:rewind)
+      file.rewind
+    elsif file.respond_to?(:tempfile) && file.tempfile.respond_to?(:rewind)
       file.tempfile.rewind
+    end
+
+    # Attach directly if possible
+    if file.respond_to?(:path)
+      post.photos.attach(
+        io: File.open(file.path),
+        filename: file.respond_to?(:original_filename) ? file.original_filename : File.basename(file.path),
+        content_type: file.content_type
+      )
+    elsif file.respond_to?(:tempfile)
       post.photos.attach(
         io: file.tempfile,
         filename: file.original_filename,
         content_type: file.content_type
       )
     end
+  rescue ActiveStorage::IntegrityError => e
+    Rails.logger.error("Photo attachment failed: #{e.message}")
+    post.errors.add(:photos, "file #{file.try(:original_filename)} failed integrity check")
   end
+end
+
+
 
   def attach_single_photo(post, file)
     post.photo.purge if post.photo.attached?

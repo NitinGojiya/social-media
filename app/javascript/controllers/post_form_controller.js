@@ -198,7 +198,8 @@ export default class extends Controller {
         // this.formTarget.reset()
         this.updateButtonLabel()
       } else {
-        alert("Failed: " + (data.error || "Unknown error"))
+      //  alert("Failed: " + (data.error || data.errors?.join(", ") || "Unknown error"))
+
       }
     } catch (err) {
       loader.style.display = "none"
@@ -252,16 +253,16 @@ export default class extends Controller {
       const data = await response.json()
       loader.style.display = "none"
 
-      if (response.ok) {
+        if (response.ok) {
         this.updateButtonLabel()
-        // window.location.reload()
       } else {
-        alert("Failed: " + (data.error || "Unknown error"))
+        // alert("Failed: " + (data.error || data.errors?.join(", ") || "Unknown error"))
       }
+
     } catch (err) {
       loader.style.display = "none"
       console.error("Unexpected Error:", err)
-      alert("An unexpected error occurred.")
+      alert("An unexpected error occurred: " + err.message)
     }
   }
 
@@ -321,7 +322,7 @@ export default class extends Controller {
   } catch (err) {
     loader.style.display = "none"
     console.error("Unexpected Error:", err)
-    alert("An unexpected error occurred.")
+    alert("An unexpected error occurred: " + err.message)
   }
 }
 
