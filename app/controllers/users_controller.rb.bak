@@ -10,7 +10,7 @@ class UsersController < ApplicationController
       redirect_to after_authentication_url, notice: "Welcome new user, #{@user.email_address}!"
     else
       flash.now[:alert] = "Create account failed"
-      render :new, status: :unprocessable_content
+      render :new, status: :unprocessable_entity
     end
   end
 
@@ -24,7 +24,7 @@ def profile_create
     redirect_to profile_path, notice: "Profile updated successfully!"  # Redirect here
   else
     flash.now[:alert] = "Failed to update profile."
-    render :profile, status: :unprocessable_content
+    render :profile, status: :unprocessable_entity
   end
 end
 
@@ -35,7 +35,7 @@ end
       redirect_to root_path, notice: "Profile deleted successfully!"
     else
       flash.now[:alert] = "Failed to delete profile."
-      render :profile, status: :unprocessable_content
+      render :profile, status: :unprocessable_entity
     end
   end
 
