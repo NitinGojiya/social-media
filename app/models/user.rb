@@ -12,10 +12,17 @@ class User < ApplicationRecord
 
   validates :email_address, uniqueness: { case_sensitive: false }
 
-  # Only require password when creating a new user
-  validates :password, presence: true, on: :create
-  validates :password, format: {
-    with: /\A(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}\z/,
-    message: "must be at least 8 characters long and include one uppercase letter, one lowercase letter, and one symbol"
-  }, allow_nil: true # allow_nil lets profile updates pass without new password
+  validates :password,
+            presence: true,
+            format: {
+              with: /\A(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}\z/,
+              message: "must be at least 8 characters long and include one uppercase letter, one lowercase letter, and one symbol"
+            },
+            if: :password_required?
+
+  private
+
+  def password_required?
+    new_record? || password.present?
+  end
 end

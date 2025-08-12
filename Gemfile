@@ -108,3 +108,10 @@ end
 gem "image_processing"
 
 gem 'multipart-post'
+
+
+group :development, :test do
+  gem 'rspec-rails'
+end
+
+gem 'shoulda-matchers', '~> 5.0'

@@ -21,12 +21,13 @@ class UsersController < ApplicationController
 def profile_create
   @user = Current.session.user
   if @user.update(profile_params)
-    redirect_to profile_path, notice: "Profile updated successfully!"
+    redirect_to profile_path, notice: "Profile updated successfully!"  # Redirect here
   else
     flash.now[:alert] = "Failed to update profile."
     render :profile, status: :unprocessable_entity
   end
 end
+
 
   def delete_profile
     @user = Current.session.user

@@ -11,10 +11,6 @@ class Post < ApplicationRecord
   scope :scheduled, -> { where(status: 1) }
   scope :posted,    -> { where(status: 2) }
 
-  scope :for_today,           -> { where(scheduled_at: Time.zone.today.all_day) }
-  scope :future,              -> { where("scheduled_at > ?", Time.zone.now) }
-  scope :scheduled_for_today, -> { where(status: 1, scheduled_at: Date.today) }
-
   before_destroy :purge_photos
 
   MAX_IMAGES = 9
