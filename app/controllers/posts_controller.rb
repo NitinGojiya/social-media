@@ -1,6 +1,6 @@
 class PostsController < ApplicationController
-  after_action :delete_uploaded_file, only: [:create]
-  require 'oauth'
+  after_action :delete_uploaded_file, only: [ :create ]
+  require "oauth"
 
   ALLOWED_CONTENT_TYPES = %w[image/jpeg image/png image/gif video/mp4 video/quicktime]
 
@@ -162,7 +162,7 @@ class PostsController < ApplicationController
         result = service.post_tweet(caption, media_files)
 
         if result.success?
-          post.twitter_post_id = result.url.split('/').last
+          post.twitter_post_id = result.url.split("/").last
           post.save
           flash[:success] = "Twitter post created!"
           render json: { success: true, message: "Twitter post created!", url: result.url }

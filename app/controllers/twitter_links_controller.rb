@@ -1,9 +1,9 @@
 class TwitterLinksController < ApplicationController
   def create
     user = Current.session.user
-    auth = request.env['omniauth.auth']
+    auth = request.env["omniauth.auth"]
 
-    return redirect_to root_path, alert: 'Twitter auth failed' if auth.nil?
+    return redirect_to root_path, alert: "Twitter auth failed" if auth.nil?
     profile_attrs = {
       name:         auth.info.name,
       nickname:     auth.info.nickname,
@@ -19,6 +19,6 @@ class TwitterLinksController < ApplicationController
       user.create_twitter_profile!(profile_attrs)
     end
 
-    redirect_to root_path, notice: 'Twitter account linked successfully!'
+    redirect_to root_path, notice: "Twitter account linked successfully!"
   end
 end

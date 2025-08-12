@@ -46,5 +46,4 @@ end
     def profile_params
   params.require(:user).permit(:profile_photo)
 end
-
 end

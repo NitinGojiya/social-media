@@ -1,4 +1,4 @@
-require 'streamio-ffmpeg'
+require "streamio-ffmpeg"
 
 module VideoProcessorHelper
   def self.convert_to_instagram_reel(original_path)

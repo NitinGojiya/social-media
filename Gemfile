@@ -62,60 +62,60 @@ group :test do
   gem "selenium-webdriver"
 end
 
-gem 'omniauth-facebook'
-gem 'mime-types'
+gem "omniauth-facebook"
+gem "mime-types"
 
 gem "tailwindcss-ruby", "~> 4.1"
 
 gem "tailwindcss-rails", "~> 4.3"
 
-gem 'omniauth-linkedin-oauth2'
+gem "omniauth-linkedin-oauth2"
 
-gem 'dotenv-rails'
+gem "dotenv-rails"
 
-gem 'httparty'
+gem "httparty"
 
-gem 'whenever', require: false
+gem "whenever", require: false
 
 group :development, :test do
-  gem 'pry'
-  gem 'pry-rails'      # Enables pry in Rails console
-  gem 'pry-byebug'     # Adds step-by-step debugging
+  gem "pry"
+  gem "pry-rails"      # Enables pry in Rails console
+  gem "pry-byebug"     # Adds step-by-step debugging
 end
 
 gem "mini_magick"
 
 # Gemfile
-gem 'sidekiq'
-gem 'sidekiq-cron'
+gem "sidekiq"
+gem "sidekiq-cron"
 
 
-gem 'streamio-ffmpeg'
+gem "streamio-ffmpeg"
 
-gem 'omniauth-twitter'
-gem 'twitter'
-gem 'omniauth-twitter2'
+gem "omniauth-twitter"
+gem "twitter"
+gem "omniauth-twitter2"
 
-gem 'oauth'
+gem "oauth"
 
-gem 'omniauth-google-oauth2'
+gem "omniauth-google-oauth2"
 
 group :development do
-  gem 'letter_opener'
-  gem 'letter_opener_web'
+  gem "letter_opener"
+  gem "letter_opener_web"
 end
 
 gem "image_processing"
 
-gem 'multipart-post'
+gem "multipart-post"
 
 
 group :development, :test do
-  gem 'rspec-rails'
-  gem 'factory_bot_rails'
+  gem "rspec-rails"
+  gem "factory_bot_rails"
 end
 
-gem 'shoulda-matchers', '~> 5.0'
+gem "shoulda-matchers", "~> 5.0"
 
 group :test do
   gem "rails-controller-testing"

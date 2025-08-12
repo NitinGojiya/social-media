@@ -1,10 +1,10 @@
-require 'net/http'
-require 'uri'
-require 'net/http/post/multipart'  # for multipart upload
-require 'ostruct'
-require 'stringio'
-require 'tempfile'
-require 'json'
+require "net/http"
+require "uri"
+require "net/http/post/multipart"  # for multipart upload
+require "ostruct"
+require "stringio"
+require "tempfile"
+require "json"
 
 class TwitterService
   MAX_IMAGE_SIZE = 5 * 1024 * 1024    # 5MB max for images
@@ -164,18 +164,18 @@ end
   end
 
   def convert_video_to_twitter_format(file)
-    converted_tempfile = Tempfile.new(['converted', '.mp4'])
+    converted_tempfile = Tempfile.new([ "converted", ".mp4" ])
     converted_tempfile.binmode
 
     input_path = file.tempfile.path
     output_path = converted_tempfile.path
 
     ffmpeg_command = [
-      'ffmpeg', '-i', input_path,
-      '-c:v', 'libx264', '-profile:v', 'baseline', '-level', '3.0', '-pix_fmt', 'yuv420p',
-      '-c:a', 'aac', '-b:a', '128k',
-      '-movflags', '+faststart',
-      '-y', output_path
+      "ffmpeg", "-i", input_path,
+      "-c:v", "libx264", "-profile:v", "baseline", "-level", "3.0", "-pix_fmt", "yuv420p",
+      "-c:a", "aac", "-b:a", "128k",
+      "-movflags", "+faststart",
+      "-y", output_path
     ]
 
     # Run ffmpeg
@@ -188,7 +188,7 @@ end
     # Wrap converted tempfile to mimic uploaded file interface
     OpenStruct.new(
       tempfile: converted_tempfile,
-      content_type: 'video/mp4',
+      content_type: "video/mp4",
       original_filename: "converted_#{file.original_filename}",
       size: File.size(output_path)
     )
@@ -233,7 +233,7 @@ end
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     init_res = http.request(init_req)
-    unless [200, 201, 202].include?(init_res.code.to_i)
+    unless [ 200, 201, 202 ].include?(init_res.code.to_i)
       raise "INIT failed: #{init_res.body}"
     end
     media_id = JSON.parse(init_res.body)["media_id_string"]
@@ -267,7 +267,7 @@ end
     )
     @consumer.sign!(finalize_req, @access_token)
     finalize_res = http.request(finalize_req)
-    unless [200, 201].include?(finalize_res.code.to_i)
+    unless [ 200, 201 ].include?(finalize_res.code.to_i)
       raise "FINALIZE failed: #{finalize_res.body}"
     end
 

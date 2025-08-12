@@ -17,7 +17,7 @@ RSpec.describe "home_pages/_post_modal.html.erb", type: :view do
       fb_page_id: fb_id,
       linkedin_id: li_id,
       twitter_profile: twitter_profile,
-      linkedin_profiles: li_id ? [linkedin_profile_double] : []
+      linkedin_profiles: li_id ? [ linkedin_profile_double ] : []
     )
   end
 

@@ -4,7 +4,7 @@ class PostSchedulerJob < ApplicationJob
   def perform(post_id = nil)
     posts =
       if post_id
-        [Post.find_by(id: post_id)].compact
+        [ Post.find_by(id: post_id) ].compact
       else
         Post.where(status: 1)
             .where("scheduled_at <= ?", Time.current)
@@ -92,7 +92,7 @@ class PostSchedulerJob < ApplicationJob
         result = twitter_service.post_tweet(caption, twitter_media_files)
 
         if result.success?
-          post.update!(twitter_post_id: result.url.split('/').last)
+          post.update!(twitter_post_id: result.url.split("/").last)
         else
           raise "Twitter post failed: #{result.error}"
         end

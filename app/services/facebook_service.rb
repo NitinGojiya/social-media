@@ -18,7 +18,7 @@ class FacebookService
           description: caption,
           access_token: @user.fb_page_token
         })
-        return JSON.parse(res.body)
+        JSON.parse(res.body)
       else
         # IMAGE post
         uri = URI("https://graph.facebook.com/v18.0/#{@user.fb_page_id}/photos")
@@ -27,7 +27,7 @@ class FacebookService
           caption: caption,
           access_token: @user.fb_page_token
         })
-        return JSON.parse(res.body)
+        JSON.parse(res.body)
       end
     else
       # Multiple images only (videos not supported in multi-upload)
@@ -64,9 +64,9 @@ class FacebookService
       url = media_urls.first
 
       if url =~ /\.(mp4|mov)$/i
-        return post_instagram_reel(url, caption)
+        post_instagram_reel(url, caption)
       else
-        return post_single_instagram_image(url, caption)
+        post_single_instagram_image(url, caption)
       end
     else
       # Carousel only supports images
@@ -97,7 +97,7 @@ class FacebookService
         media_type: "CAROUSEL",
         access_token: @user.fb_token
       }.merge(
-        creation_ids.each_with_index.map { |id, i| ["children[#{i}]", id] }.to_h
+        creation_ids.each_with_index.map { |id, i| [ "children[#{i}]", id ] }.to_h
       ))
 
       http = Net::HTTP.new(uri.hostname, uri.port)
@@ -207,7 +207,7 @@ class FacebookService
   converted_url = Rails.application.routes.url_helpers.rails_blob_url(
     uploaded_file,
     only_path: false,  # ensure full URL for Instagram
-    host: ENV['APP_HOST']  # Use your app's host here
+    host: ENV["APP_HOST"]  # Use your app's host here
   )
 
   # Step 4: Create IG media container
@@ -229,8 +229,8 @@ class FacebookService
     return { error: creation_data["error"] || "Reel creation failed" }
   end
 
-  # Step 5: Wait for media to be ready
-  # Step 5: Wait for media to be ready
+# Step 5: Wait for media to be ready
+# Step 5: Wait for media to be ready
 20.times do
   status_res = Net::HTTP.get(
     URI("https://graph.facebook.com/v18.0/#{creation_id}?fields=status_code&access_token=#{@user.fb_token}")
@@ -265,5 +265,4 @@ ensure
   File.delete(original_tmp_path) if File.exist?(original_tmp_path)
   File.delete(converted_path) if converted_path && File.exist?(converted_path)
 end
-
 end

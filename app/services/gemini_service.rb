@@ -1,6 +1,6 @@
 class GeminiService
   include HTTParty
-  base_uri 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent'
+  base_uri "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 
   def initialize(api_key)
     @api_key = api_key
@@ -11,10 +11,10 @@ class GeminiService
     retries = 3
     begin
       response = self.class.post(
-        '',
+        "",
         headers: {
-          'Content-Type' => 'application/json',
-          'X-goog-api-key' => @api_key
+          "Content-Type" => "application/json",
+          "X-goog-api-key" => @api_key
         },
         body: {
           contents: [
@@ -41,7 +41,7 @@ class GeminiService
       )
 
       if response.success?
-        return response["candidates"][0]["content"]["parts"][0]["text"]
+        response["candidates"][0]["content"]["parts"][0]["text"]
       else
         handle_error(response)
       end

@@ -6,7 +6,7 @@ class GeminiaiController < ApplicationController
 
     begin
       caption = gemini.generate_post_and_hashtags(prompt)
-      caption.gsub!( /^post:\s*/i, "")
+      caption.gsub!(/^post:\s*/i, "")
 
       render json: { caption: caption }, status: :ok
 

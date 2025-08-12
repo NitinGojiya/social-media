@@ -15,9 +15,9 @@ class LinkedInService
     first_file = files.first
     file_content_type = if first_file.respond_to?(:content_type)
                           first_file.content_type
-                        else
+    else
                           first_file[:content_type]
-                        end
+    end
 
     if file_content_type.start_with?("video/")
       raise "Only one video allowed per post" if files.size > 1
@@ -55,7 +55,7 @@ class LinkedInService
       body: {
         registerUploadRequest: {
           owner: author_urn,
-          recipes: [recipe],
+          recipes: [ recipe ],
           serviceRelationships: [
             { identifier: "urn:li:userGeneratedContent", relationshipType: "OWNER" }
           ]
@@ -81,7 +81,7 @@ class LinkedInService
           "com.linkedin.ugc.ShareContent": {
             shareCommentary: { text: caption },
             shareMediaCategory: "VIDEO",
-            media: [media_asset]
+            media: [ media_asset ]
           }
         },
         visibility: {

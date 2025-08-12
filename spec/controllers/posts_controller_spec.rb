@@ -32,7 +32,7 @@ RSpec.describe PostsController, type: :controller do
       it "creates a post and publishes immediately" do
         expect {
           post :create, params: {
-            image_file: [uploaded_file],
+            image_file: [ uploaded_file ],
             caption: "Hello world",
             post_to_ig: "1",
             post_to_fb: "0"
@@ -66,7 +66,7 @@ RSpec.describe PostsController, type: :controller do
 
     it "creates and posts immediately" do
       post :create_linkedin_post, params: {
-        image_file: [uploaded_file],
+        image_file: [ uploaded_file ],
         caption: "LinkedIn post"
       }
 
@@ -79,7 +79,7 @@ RSpec.describe PostsController, type: :controller do
     it "schedules a post" do
       expect {
         post :create_linkedin_post, params: {
-          image_file: [uploaded_file],
+          image_file: [ uploaded_file ],
           caption: "Scheduled post",
           schedule_to_post: "1",
           date: 1.day.from_now.iso8601
@@ -103,7 +103,7 @@ RSpec.describe PostsController, type: :controller do
 
     it "posts immediately" do
       post :create_twitter_post, params: {
-        image_file: [uploaded_file],
+        image_file: [ uploaded_file ],
         caption: "Tweet now"
       }
 
@@ -113,7 +113,7 @@ RSpec.describe PostsController, type: :controller do
 
     it "schedules a post" do
       post :create_twitter_post, params: {
-        image_file: [uploaded_file],
+        image_file: [ uploaded_file ],
         caption: "Schedule tweet",
         schedule_to_post: "1",
         date: 2.days.from_now.iso8601

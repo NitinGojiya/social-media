@@ -14,7 +14,7 @@ class SessionsController < ApplicationController
     end
   end
   def omniauth
-    auth = request.env['omniauth.auth']
+    auth = request.env["omniauth.auth"]
     email = auth.info.email
 
     user = User.find_by(email_address: email)
@@ -50,11 +50,11 @@ class SessionsController < ApplicationController
       params.permit(:email_address, :password)
     end
     def strong_random_password(length = 12)
-      lowercase = ('a'..'z').to_a.sample
-      uppercase = ('A'..'Z').to_a.sample
-      symbol    = ['!', '@', '#', '$', '%', '^', '&', '*'].sample
-      others    = Array.new(length - 3) { [('a'..'z'), ('A'..'Z'), ('0'..'9'), ['!', '@', '#', '$', '%', '^', '&', '*']].flat_map(&:to_a).sample }
+      lowercase = ("a".."z").to_a.sample
+      uppercase = ("A".."Z").to_a.sample
+      symbol    = [ "!", "@", "#", "$", "%", "^", "&", "*" ].sample
+      others    = Array.new(length - 3) { [ ("a".."z"), ("A".."Z"), ("0".."9"), [ "!", "@", "#", "$", "%", "^", "&", "*" ] ].flat_map(&:to_a).sample }
 
-      (others + [lowercase, uppercase, symbol]).shuffle.join
+      (others + [ lowercase, uppercase, symbol ]).shuffle.join
     end
 end
