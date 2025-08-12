@@ -112,6 +112,11 @@ gem 'multipart-post'
 
 group :development, :test do
   gem 'rspec-rails'
+  gem 'factory_bot_rails'
 end
 
 gem 'shoulda-matchers', '~> 5.0'
+
+group :test do
+  gem "rails-controller-testing"
+end

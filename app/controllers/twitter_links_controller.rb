@@ -4,15 +4,14 @@ class TwitterLinksController < ApplicationController
     auth = request.env['omniauth.auth']
 
     return redirect_to root_path, alert: 'Twitter auth failed' if auth.nil?
-profile_attrs = {
-  name:         auth.info.name,
-  nickname:     auth.info.nickname,
-  image:        auth.info.image,
-  token:        auth.credentials.token,   # still OAuth1
-  secret:       auth.credentials.secret,  # still OAuth1
-  bearer_token: auth.credentials.token    # from OAuth 2.0 flow
-}
-
+    profile_attrs = {
+      name:         auth.info.name,
+      nickname:     auth.info.nickname,
+      image:        auth.info.image,
+      token:        auth.credentials.token,   # still OAuth1
+      secret:       auth.credentials.secret,  # still OAuth1
+      bearer_token: auth.credentials.token    # from OAuth 2.0 flow
+    }
 
     if user.twitter_profile.present?
       user.twitter_profile.update!(profile_attrs)

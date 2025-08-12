@@ -1,0 +1,125 @@
+require "rails_helper"
+
+RSpec.describe PostsController, type: :controller do
+  let(:user) do
+    User.create!(
+      email_address: "test@example.com",
+      password: "Password@123"
+    )
+  end
+  let(:session) { double("Session", user: user) }
+
+  before do
+    allow(Current).to receive(:session).and_return(session)
+  end
+
+  describe "POST #create" do
+    let(:uploaded_file) do
+      fixture_file_upload(Rails.root.join("spec", "fixtures", "files", "test_image.jpg"), "image/jpeg")
+    end
+    let(:image_url) { "http://example.com/test_image.jpg" }
+
+    before do
+      allow_any_instance_of(MediaUploaderService)
+        .to receive(:upload_and_get_url)
+        .and_return(image_url)
+
+      allow(FacebookService).to receive(:new)
+        .and_return(double(post_to_instagram: { "id" => "ig123" }, post_to_facebook: { "id" => "fb123" }))
+    end
+
+    context "when valid params are given" do
+      it "creates a post and publishes immediately" do
+        expect {
+          post :create, params: {
+            image_file: [uploaded_file],
+            caption: "Hello world",
+            post_to_ig: "1",
+            post_to_fb: "0"
+          }
+        }.to change(Post, :count).by(1)
+
+        expect(response).to have_http_status(:ok)
+        expect(JSON.parse(response.body)["success"]).to be true
+      end
+    end
+
+    context "when missing image and platform" do
+      it "returns an error" do
+        post :create, params: { caption: "No image", post_to_ig: "0", post_to_fb: "0" }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(JSON.parse(response.body)["error"]).to match(/Select a platform/)
+      end
+    end
+  end
+
+  describe "POST #create_linkedin_post" do
+    let(:uploaded_file) do
+      fixture_file_upload(Rails.root.join("spec", "fixtures", "files", "test_image.jpg"), "image/jpeg")
+    end
+    let(:linkedin_service) { double(create_post: { "id" => "urn:li:activity:123" }) }
+
+    before do
+      allow(LinkedInService).to receive(:new).and_return(linkedin_service)
+    end
+
+    it "creates and posts immediately" do
+      post :create_linkedin_post, params: {
+        image_file: [uploaded_file],
+        caption: "LinkedIn post"
+      }
+
+      expect(response).to have_http_status(:ok)
+      body = JSON.parse(response.body)
+      expect(body["success"]).to be true
+      expect(body["message"]).to eq("Post created!")
+    end
+
+    it "schedules a post" do
+      expect {
+        post :create_linkedin_post, params: {
+          image_file: [uploaded_file],
+          caption: "Scheduled post",
+          schedule_to_post: "1",
+          date: 1.day.from_now.iso8601
+        }
+      }.to change(Post, :count).by(1)
+
+      expect(JSON.parse(response.body)["message"]).to match(/scheduled/)
+    end
+  end
+
+  describe "POST #create_twitter_post" do
+    let(:uploaded_file) do
+      fixture_file_upload(Rails.root.join("spec", "fixtures", "files", "test_image.jpg"), "image/jpeg")
+    end
+    let(:twitter_service) { double(post_tweet: double(success?: true, url: "https://twitter.com/user/status/12345")) }
+
+    before do
+      allow_any_instance_of(User).to receive(:twitter_profile).and_return(double)
+      allow(TwitterService).to receive(:new).and_return(twitter_service)
+    end
+
+    it "posts immediately" do
+      post :create_twitter_post, params: {
+        image_file: [uploaded_file],
+        caption: "Tweet now"
+      }
+
+      expect(response).to have_http_status(:ok)
+      expect(JSON.parse(response.body)["message"]).to match(/created/)
+    end
+
+    it "schedules a post" do
+      post :create_twitter_post, params: {
+        image_file: [uploaded_file],
+        caption: "Schedule tweet",
+        schedule_to_post: "1",
+        date: 2.days.from_now.iso8601
+      }
+
+      expect(JSON.parse(response.body)["message"]).to match(/scheduled/)
+    end
+  end
+end

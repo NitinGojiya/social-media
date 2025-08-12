@@ -253,9 +253,7 @@ end
     Rails.logger.error("Photo attachment failed: #{e.message}")
     post.errors.add(:photos, "file #{file.try(:original_filename)} failed integrity check")
   end
-end
-
-
+  end
 
   def attach_single_photo(post, file)
     post.photo.purge if post.photo.attached?
