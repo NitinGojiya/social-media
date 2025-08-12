@@ -7,3 +7,9 @@ Sidekiq::Cron::Job.load_from_hash!({
     "class" => "PostSchedulerJob"
   }
 })
+
+# skip for test
+if Rails.env.test?
+  require 'sidekiq/testing'
+  Sidekiq::Testing.fake!
+end
