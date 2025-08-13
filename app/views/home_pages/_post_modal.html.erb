@@ -1,233 +1,242 @@
 <!-- Button to trigger modal -->
-
 <dialog id="my_modal_1" class="modal" data-controller="post">
-  <div class="modal-box">
-<h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">Create New Post</h2>
-
-<%= tag.div data: { controller: "post-form" } do %>
-  <form
-    id="postForm"
-    data-post-form-target="form"
-    class="post-form flex flex-col gap-2"
-  >
-
-  <div class="form-group hidden">
-  <label for="image-url-input" class="block text-lg font-medium text-gray-700 mb-2">Image URL</label>
-  <input
-    type="text"
-    id="image-url-input"
-    name="image_url"
-    data-post-form-target="imageUrl"
-    class="hidden mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-lg outline-none"
-    placeholder="https://example.com/image.jpg"
-  />
-</div>
-
-<div class="form-group mt-4 ">
-  <label for="image-file-input" class="block text-lg font-medium text-gray-700 mb-2">Or Upload Image File</label>
-  <input
-    type="file"
-    id="image-file-input"
-    name="image_file"
-    data-post-form-target="imageFile"
-    accept="image/*,video/*"
-    multiple
-    class="block w-full cursor-pointer text-lg text-gray-600 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
-  />
-</div>
-
-
-  <div class="form-group relative">
-    <label for="caption-input" class="block text-lg font-medium text-gray-700 mb-2">Caption</label>
-
-    <textarea
-      id="caption-input"
-      name="caption"
-      rows="3"
-      data-post-form-target="caption"
-      class="mt-1 block w-full px-4 py-3 pr-10 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-lg outline-none"
-      placeholder="Write a caption..."
-    ></textarea>
-
-    <!-- Font Awesome icon (right aligned inside the input box) -->
-    <button
-      type="button"
-      class="absolute cursor-pointer top-10 right-3 text-gray-500 hover:text-blue-600 focus:outline-none focus:text-blue-600"
-      data-action="click->post-form#generate"
-      title="Generate Post Caption with AI"
-      data-post-form-target="generateButton"
-    >
-      <i class="fa-solid fa-wand-magic-sparkles"></i>
-    </button>
-  </div>
-
-
-      <div class="form-group">
-        <div class="mb-4">
-        <label for="date" class="block text-xl font-medium text-gray-700 mb-1">
-            <input
-              type="checkbox"
-              name="is_schedule"
-              id="schedule-checkbox"
-              data-post-form-target="schedule"
-              data-action="change->post-form#updateButtonLabel"
-              class="form-checkbox h-5 w-5 text-blue-600 rounded"
-            />
-          <span>Schedule Post</span>
-        </label>
-
-          <input
-            type="datetime-local"
-             name="date"
-            id="datetime"
-            data-post-form-target="dateinput"
-            value="<%= Time.current.strftime('%Y-%m-%dT%H:%M') %>"
-            class="w-full hidden cursor-pointer px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#B12C00] focus:border-[#B12C00] transition duration-150"
-          />
-
-      </div>
-      </div>
-    <div>
-      <p class="block text-lg font-medium text-gray-700 mb-3">Select Social Media Platforms:</p>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <% if @user.ig_user_id %>
-          <label class="flex items-center p-3 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50">
-            <input
-              type="checkbox"
-              name="post_to_ig"
-              value="1"
-              data-post-form-target="ig"
-              class="form-checkbox h-5 w-5 text-blue-600 rounded"
-            />
-            <span class="ml-3 text-2xl"><i class="fab fa-instagram text-danger"></i></span>
-            <span class="ml-3 text-lg font-medium text-gray-800">Instagram</span>
-          </label>
-        <% end %>
-
-        <% if @user.fb_page_id %>
-          <label class="flex items-center p-3 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50">
-            <input
-              type="checkbox"
-              name="post_to_fb"
-              value="1"
-              data-post-form-target="fb"
-              class="form-checkbox h-5 w-5 text-blue-600 rounded"
-            />
-            <span class="ml-3 text-2xl"><i class="fab fa-facebook text-primary"></i></span>
-            <span class="ml-3 text-lg font-medium text-gray-800">Facebook</span>
-          </label>
-        <% end %>
-
-        <% if @user.linkedin_id %>
-          <label class="flex items-center p-3 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50">
-            <input
-              type="checkbox"
-              name="post_to_li"
-              value="1"
-              data-post-form-target="li"
-              class="form-checkbox h-5 w-5 text-blue-600 rounded"
-            />
-            <span class="ml-3 text-2xl"><i class="fa-brands fa-linkedin"></i></span>
-            <span class="ml-3 text-lg font-medium text-gray-800">Linkedin</span>
-          </label>
-        <% end %>
-
-        <% if @user.twitter_profile %>
-          <label class="flex items-center p-3 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50">
-            <input
-              type="checkbox"
-              name="post_to_twitter"
-              value="1"
-              data-post-form-target="twitter"
-              class="form-checkbox h-5 w-5 text-blue-600 rounded"
-            />
-            <span class="ml-3 text-2xl"><i class="fa-brands fa-square-x-twitter"></i></span>
-            <span class="ml-3 text-lg font-medium text-gray-800">Twitter</span>
-          </label>
-        <% end %>
-      </div>
-    </div>
-
-    <div class="form-group mt-3 flex items-center justify-center">
+  <div class="modal-box relative">
+     <form method="dialog" class="absolute top-2 right-2">
       <button
-        type="button"
-        id="postButton"
-        data-post-form-target="btnPost"
-        data-action="click->post-form#submit"
-        class="cursor-pointer publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50"
+        class="btn rounded-full w-[40px] h-[40px] bg-[#B12C00] hover:bg-[#c17962] text-white flex items-center justify-center shadow-md"
       >
-        Post Now
+        <i class="fa-solid fa-xmark"></i>
       </button>
+    </form>
+    <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">Create New Post</h2>
 
-    </div>
-  </form>
+    <%= tag.div data: { controller: "post-form" } do %>
+      <form
+        id="postForm"
+        data-post-form-target="form"
+        class="post-form flex flex-col gap-2"
+      >
+        <!-- Image URL (Hidden) -->
+        <div class="form-group hidden">
+          <label for="image-url-input" class="block text-lg font-medium text-gray-700 mb-2">Image URL</label>
+          <input
+            type="text"
+            id="image-url-input"
+            name="image_url"
+            data-post-form-target="imageUrl"
+            class="hidden mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-lg outline-none"
+            placeholder="https://example.com/image.jpg"
+          />
+        </div>
 
-        <div class="form-group absolute  top-[59px] z-10">
-          <%= render "home_pages/preview_checkbox" %>
+        <!-- Image File Upload -->
+        <div class="form-group mt-4">
+          <label for="image-file-input" class="block text-lg font-medium text-gray-700 mb-2">Or Upload Image File</label>
+          <input
+            type="file"
+            id="image-file-input"
+            name="image_file"
+            data-post-form-target="imageFile"
+            accept="image/*,video/*"
+            multiple
+            class="block w-full cursor-pointer text-lg text-gray-600 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
+          />
+        </div>
+
+        <!-- Caption -->
+        <div class="form-group relative">
+          <label for="caption-input" class="block text-lg font-medium text-gray-700 mb-2">Caption</label>
+          <textarea
+            id="caption-input"
+            name="caption"
+            rows="3"
+            data-post-form-target="caption"
+            class="mt-1 block w-full px-4 py-3 pr-10 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-lg outline-none"
+            placeholder="Write a caption..."
+          ></textarea>
+
+          <!-- AI Generate Button -->
+          <button
+            type="button"
+            class="absolute cursor-pointer top-10 right-3 text-gray-500 hover:text-blue-600 focus:outline-none focus:text-blue-600"
+            data-action="click->post-form#generate"
+            title="Generate Post Caption with AI"
+            data-post-form-target="generateButton"
+          >
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+          </button>
+        </div>
+
+        <!-- Schedule Post -->
+        <div class="form-group">
+          <div class="mb-4">
+            <label for="date" class="block text-xl font-medium text-gray-700 mb-1">
+              <input
+                type="checkbox"
+                name="is_schedule"
+                id="schedule-checkbox"
+                data-post-form-target="schedule"
+                data-action="change->post-form#updateButtonLabel"
+                class="form-checkbox h-5 w-5 text-blue-600 rounded"
+              />
+              <span>Schedule Post</span>
+            </label>
+
+            <input
+              type="datetime-local"
+              name="date"
+              id="datetime"
+              data-post-form-target="dateinput"
+              value="<%= Time.current.strftime('%Y-%m-%dT%H:%M') %>"
+              class="w-full hidden cursor-pointer px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#B12C00] focus:border-[#B12C00] transition duration-150"
+            />
+          </div>
+        </div>
+
+        <!-- Select Social Media Platforms -->
+        <div>
+          <% if @user.ig_user_id || @user.fb_page_id || @user.twitter_profile || @user.linkedin_id %>
+            <p class="block text-lg font-medium text-gray-700 mb-3">Select Social Media Platforms:</p>
+          <% end %>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <% if @user.ig_user_id %>
+              <label class="flex items-center p-3 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  name="post_to_ig"
+                  value="1"
+                  data-post-form-target="ig"
+                  class="form-checkbox h-5 w-5 text-blue-600 rounded"
+                />
+                <span class="ml-3 text-2xl"><i class="fab fa-instagram text-danger"></i></span>
+                <span class="ml-3 text-lg font-medium text-gray-800">Instagram</span>
+              </label>
+            <% end %>
+
+            <% if @user.fb_page_id %>
+              <label class="flex items-center p-3 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  name="post_to_fb"
+                  value="1"
+                  data-post-form-target="fb"
+                  class="form-checkbox h-5 w-5 text-blue-600 rounded"
+                />
+                <span class="ml-3 text-2xl"><i class="fab fa-facebook text-primary"></i></span>
+                <span class="ml-3 text-lg font-medium text-gray-800">Facebook</span>
+              </label>
+            <% end %>
+
+            <% if @user.linkedin_id %>
+              <label class="flex items-center p-3 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  name="post_to_li"
+                  value="1"
+                  data-post-form-target="li"
+                  class="form-checkbox h-5 w-5 text-blue-600 rounded"
+                />
+                <span class="ml-3 text-2xl"><i class="fa-brands fa-linkedin"></i></span>
+                <span class="ml-3 text-lg font-medium text-gray-800">LinkedIn</span>
+              </label>
+            <% end %>
+
+            <% if @user.twitter_profile %>
+              <label class="flex items-center p-3 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  name="post_to_twitter"
+                  value="1"
+                  data-post-form-target="twitter"
+                  class="form-checkbox h-5 w-5 text-blue-600 rounded"
+                />
+                <span class="ml-3 text-2xl"><i class="fa-brands fa-square-x-twitter"></i></span>
+                <span class="ml-3 text-lg font-medium text-gray-800">Twitter</span>
+              </label>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Post Button -->
+        <div class="form-group mt-3 flex items-center justify-center">
+          <button
+            type="button"
+            id="postButton"
+            data-post-form-target="btnPost"
+            data-action="click->post-form#submit"
+            class="cursor-pointer publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50"
+          >
+            Post Now
+          </button>
+        </div>
+      </form>
+
+      <!-- Preview Checkbox -->
+      <div class="form-group absolute top-[59px] z-10">
+        <%= render "home_pages/preview_checkbox" %>
       </div>
-<% end %>
-<div id="loginContainer">
-<div class="flex items-center justify-center mt-2 mb-2" >
-  <h6 class="text-2xl capitalize ">Before you post, pause and log in</h6>
-</div>
-  <div class="flex flex-wrap gap-4 mt-2">
-        <% unless @user.ig_user_id && @user.fb_page_id  %>
-            <%= link_to "/auth/facebook", class: "btn bg-[#1A77F2] text-white border-[#005fd8]" do %>
-                  <svg aria-label="Facebook logo" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="white" d="M8 12h5V8c0-6 4-7 11-6v5c-4 0-5 0-5 3v2h5l-1 6h-4v12h-6V18H8z"></path></svg>
-                  Login with Facebook
-            <%end%>
-        <%end%>
-        <!-- X -->
+    <% end %>
+
+    <!-- Login Prompt -->
+    <div id="loginContainer">
+      <% unless @user.ig_user_id || @user.fb_page_id || @user.twitter_profile || @user.linkedin_id %>
+        <div class="flex items-center justify-center mt-2 mb-2">
+          <h6 class="text-2xl capitalize">Before you post, pause and log in</h6>
+        </div>
+      <% end %>
+
+      <div class="flex flex-wrap gap-4 mt-2">
+        <% unless @user.ig_user_id && @user.fb_page_id %>
+          <%= link_to "/auth/facebook", class: "btn bg-[#1A77F2] text-white border-[#005fd8]" do %>
+            <svg aria-label="Facebook logo" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+              <path fill="white" d="M8 12h5V8c0-6 4-7 11-6v5c-4 0-5 0-5 3v2h5l-1 6h-4v12h-6V18H8z"></path>
+            </svg>
+            Login with Facebook
+          <% end %>
+        <% end %>
+
         <% unless @user.twitter_profile %>
-        <%= link_to  "/auth/twitter",class:"btn bg-black text-white border-black" do %>
-
-      <svg aria-label="X logo" width="16" height="12" viewBox="0 0 300 271" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="m236 0h46l-101 115 118 156h-92.6l-72.5-94.8-83 94.8h-46l107-123-113-148h94.9l65.5 86.6zm-16.1 244h25.5l-165-218h-27.4z"/></svg>
-      Login with X
-
-    <%end%>
-        <%end%>
-
+          <%= link_to "/auth/twitter", class: "btn bg-black text-white border-black" do %>
+            <svg aria-label="X logo" width="16" height="12" viewBox="0 0 300 271" xmlns="http://www.w3.org/2000/svg">
+              <path fill="currentColor" d="m236 0h46l-101 115 118 156h-92.6l-72.5-94.8-83 94.8h-46l107-123-113-148h94.9l65.5 86.6zm-16.1 244h25.5l-165-218h-27.4z"/>
+            </svg>
+            Login with X
+          <% end %>
+        <% end %>
 
         <% unless @user.linkedin_id %>
-         <%= link_to "/auth/linkedin",class:"btn bg-[#0967C2] text-white border-[#0059b3]" do %>
-                <svg aria-label="LinkedIn logo" width="16" height="16" xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 32 32">
-                    <path fill="white"
-                        d="M26.111,3H5.889c-1.595,0-2.889,1.293-2.889,2.889V26.111c0,1.595,1.293,2.889,2.889,2.889H26.111c1.595,0,2.889-1.293,2.889-2.889V5.889c0-1.595-1.293-2.889-2.889-2.889ZM10.861,25.389h-3.877V12.87h3.877v12.519Zm-1.957-14.158c-1.267,0-2.293-1.034-2.293-2.31s1.026-2.31,2.293-2.31,2.292,1.034,2.292,2.31-1.026,2.31-2.292,2.31Zm16.485,14.158h-3.858v-6.571c0-1.802-.685-2.809-2.111-2.809-1.551,0-2.362,1.048-2.362,2.809v6.571h-3.718V12.87h3.718v1.686s1.118-2.069,3.775-2.069,4.556,1.621,4.556,4.975v7.926Z"
-                        fill-rule="evenodd"></path>
-                </svg>
-                Login with LinkedIn
-                <%end%>
-          <%end%>
+          <%= link_to "/auth/linkedin", class: "btn bg-[#0967C2] text-white border-[#0059b3]" do %>
+            <svg aria-label="LinkedIn logo" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+              <path fill="white" d="M26.111,3H5.889c-1.595,0-2.889,1.293-2.889,2.889V26.111c0,1.595,1.293,2.889,2.889,2.889H26.111c1.595,0,2.889-1.293,2.889-2.889V5.889c0-1.595-1.293-2.889-2.889-2.889ZM10.861,25.389h-3.877V12.87h3.877v12.519Zm-1.957-14.158c-1.267,0-2.293-1.034-2.293-2.31s1.026-2.31,2.293-2.31,2.292,1.034,2.292,2.31-1.026,2.31-2.292,2.31Zm16.485,14.158h-3.858v-6.571c0-1.802-.685-2.809-2.111-2.809-1.551,0-2.362,1.048-2.362,2.809v6.571h-3.718V12.87h3.718v1.686s1.118-2.069,3.775-2.069,4.556,1.621,4.556,4.975v7.926Z" fill-rule="evenodd"/>
+            </svg>
+            Login with LinkedIn
+          <% end %>
+        <% end %>
+      </div>
     </div>
-  </div>
-    <div class="mt-[50px] flex flex-col items-start justify-start mt-4" id="previewSocialContainer" >
+
+    <!-- Social Media Previews -->
+    <div class="mt-[50px] flex flex-col items-start justify-start mt-4" id="previewSocialContainer">
       <div class="hidden flex flex-col gap-2" id="facebookPreview">
         <div class="text-2xl"><i class="fa-brands fa-facebook text-blue-500"></i>Facebook</div>
-        <div> <%= render "home_pages/facebook_preview" %></div>
+        <div><%= render "home_pages/facebook_preview" %></div>
       </div>
 
       <div class="hidden flex flex-col gap-2" id="instagramPreview">
         <div class="text-2xl mt-5"><i class="fa-brands fa-instagram text-red-500"></i>Instagram</div>
-        <div> <%= render "home_pages/instagram_preview" %></div>
+        <div><%= render "home_pages/instagram_preview" %></div>
       </div>
 
       <div class="hidden flex flex-col gap-2" id="linkedinPreview">
         <div class="text-2xl"><i class="fa-brands fa-linkedin text-blue-700"></i>LinkedIn</div>
-        <div> <%= render "home_pages/linkedin_preview" %></div>
+        <div><%= render "home_pages/linkedin_preview" %></div>
       </div>
-          <div class="hidden flex flex-col gap-2" id="twitterPreview">
+
+      <div class="hidden flex flex-col gap-2" id="twitterPreview">
         <div class="text-2xl"><i class="fa-brands fa-square-x-twitter text-blue-700"></i>Twitter</div>
-        <div> <%= render "home_pages/twitter_preview" %></div>
+        <div><%= render "home_pages/twitter_preview" %></div>
       </div>
-    </div>
-
-
-    <!-- Modal Close -->
-    <div class="modal-action mt-4">
-      <form method="dialog">
-        <button class="btn rounded-full w-[100px] bg-[#B12C00] hover:bg-[#c17962] text-white"><i class="fa-solid fa-xmark"></i></button>
-      </form>
     </div>
   </div>
 </dialog>
