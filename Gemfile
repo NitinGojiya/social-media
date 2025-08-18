@@ -120,3 +120,7 @@ gem "shoulda-matchers", "~> 5.0"
 group :test do
   gem "rails-controller-testing"
 end
+
+
+gem "cloudinary"
+gem "activestorage-cloudinary-service"
