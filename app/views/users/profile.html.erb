@@ -1,4 +1,4 @@
-<div class="w-full  bg-white  p-6">
+<div class="w-full  p-6">
 
   <!-- Title -->
   <h1 class="text-2xl font-bold text-gray-800">Settings</h1>
@@ -16,7 +16,7 @@
           <p class="text-sm text-gray-500">Permanently delete your account</p>
         </div>
       </div>
-          <%= button_to "Delete Account", delete_profile_path, method: :delete, class: "px-4 py-1 bg-gray-100 text-black rounded-md text-sm font-medium hover:bg-red-600 hover:text-white" %>
+          <%= button_to "Delete Account", delete_profile_path, method: :delete, class: "px-4 py-1 cust-btn rounded-md text-sm font-medium" %>
     </div>
 
     <!-- Profile Photo Upload Form -->
@@ -38,7 +38,7 @@
       <div class="flex items-center gap-2">
         <%= f.file_field :profile_photo, class: "hidden", id: "profile_photo_input" %>
         <label for="profile_photo_input" class="px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200 cursor-pointer">Choose</label>
-        <%= f.submit "Save", class: "px-4 py-1 bg-[#B12C00] text-white rounded-md text-sm font-medium hover:bg-[#c17962]" %>
+        <%= f.submit "Save", class: "px-4 py-1 cust-btn rounded-md text-sm font-medium" %>
       </div>
     <% end %>
   </div>
@@ -95,3 +95,4 @@
     </div>
   </div>
 </div>
+

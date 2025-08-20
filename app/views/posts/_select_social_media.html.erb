@@ -1,0 +1,65 @@
+ <% if @user.ig_user_id || @user.fb_page_id || @user.twitter_profile || @user.linkedin_id %>
+            <p class="block text-lg font-medium text-gray-700 mb-3">Select Social Media Platforms:</p>
+          <% end %>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <% if @user.ig_user_id %>
+              <label class="flex items-center p-3 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  name="post_to_ig"
+                  value="1"
+                  data-post-form-target="ig"
+                  data-action="change->post-form#previewPost"
+                  class="form-checkbox h-5 w-5 text-blue-600 rounded"
+                />
+                <span class="ml-3 text-2xl"><i class="fab fa-instagram text-danger"></i></span>
+                <span class="ml-3 text-lg font-medium text-gray-800">Instagram</span>
+              </label>
+            <% end %>
+
+            <% if @user.fb_page_id %>
+              <label class="flex items-center p-3 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  name="post_to_fb"
+                  value="1"
+                  data-post-form-target="fb"
+                  data-action="change->post-form#previewPost"
+                  class="form-checkbox h-5 w-5 text-blue-600 rounded"
+                />
+                <span class="ml-3 text-2xl"><i class="fab fa-facebook text-primary"></i></span>
+                <span class="ml-3 text-lg font-medium text-gray-800">Facebook</span>
+              </label>
+            <% end %>
+
+            <% if @user.linkedin_id %>
+              <label class="flex items-center p-3 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  name="post_to_li"
+                  value="1"
+                  data-post-form-target="li"
+                  data-action="change->post-form#previewPost"
+                  class="form-checkbox h-5 w-5 text-blue-600 rounded"
+                />
+                <span class="ml-3 text-2xl"><i class="fa-brands fa-linkedin"></i></span>
+                <span class="ml-3 text-lg font-medium text-gray-800">LinkedIn</span>
+              </label>
+            <% end %>
+
+            <% if @user.twitter_profile %>
+              <label class="flex items-center p-3 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  name="post_to_twitter"
+                  value="1"
+                  data-post-form-target="twitter"
+                  data-action="change->post-form#previewPost"
+                  class="form-checkbox h-5 w-5 text-blue-600 rounded"
+                />
+                <span class="ml-3 text-2xl"><i class="fa-brands fa-square-x-twitter"></i></span>
+                <span class="ml-3 text-lg font-medium text-gray-800">Twitter</span>
+              </label>
+            <% end %>
+          </div>

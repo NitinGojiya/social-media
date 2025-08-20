@@ -4,6 +4,7 @@ export default class extends Controller {
   static targets = ["generateButton", "form", "login", "imageUrl", "imageFile", "caption", "ig", "fb", "btnPost", "li", "twitter", "schedule", "dateinput"]
 
   connect() {
+
     document.getElementById('image-file-input').addEventListener('change', function (event) {
       const files = Array.from(event.target.files);
       const images = files.filter(file => file.type.startsWith('image/'));
@@ -19,91 +20,152 @@ export default class extends Controller {
     if (is_schedule) {
       this.updateButtonLabel()
     }
-    document.getElementById("previewSocialContainer").classList.add("hidden")
   }
 
   previewPost(event) {
-    const isChecked = event.target.checked
+    const checkbox = event.target;
+    const platform = checkbox.name.replace("post_to_", ""); // fb | ig | li | twitter
+    const previewEl = document.getElementById(`${platform}Preview`);
 
-    if (isChecked) {
-      const postToIG = this.hasIgTarget ? this.igTarget.checked : false
-      const postToFB = this.hasFbTarget ? this.fbTarget.checked : false
-      const postToLI = this.hasLiTarget ? this.liTarget.checked : false
-      const postToTwitter = this.hasTwitterTarget ? this.twitterTarget.checked : false
-      if (postToFB) {
-        document.getElementById("facebookPreview").classList.remove("hidden")
-      }
-      if (postToIG) {
-        document.getElementById("instagramPreview").classList.remove("hidden")
-      }
-      if (postToLI) {
-        document.getElementById("linkedinPreview").classList.remove("hidden")
-      }
-      if (postToTwitter) {
-        document.getElementById("twitterPreview").classList.remove("hidden")
-      }
+    if (!previewEl) return;
 
-      if (postToFB || postToIG || postToLI || postToTwitter) {
-        document.getElementById("previewLabel").textContent = "Disable preview"
-        this.previewPostData()
-        this.formTarget.classList.add("hidden")
-        document.getElementById("loginContainer").classList.add("hidden")
-        document.getElementById("previewSocialContainer").classList.remove("hidden")
+    // Show/hide this platform's preview
+    if (checkbox.checked) {
+      previewEl.classList.remove("hidden");
 
-      } else {
-        alert("please select any one platform to preview")
-        event.target.checked = false
+      switch (platform) {
+        case "fb":
+          this.updateFacebookPreview();
+          break;
+        case "ig":
+          this.updateInstagramPreview();
+          break;
+        case "li":
+          this.updateLinkedinPreview();
+          break;
+        case "twitter":
+          this.updateTwitterPreview();
+          break;
       }
-
     } else {
-      document.getElementById("previewLabel").textContent = "Enable preview"
-      this.formTarget.classList.remove("hidden")
-      document.getElementById("loginContainer").classList.remove("hidden")
-      document.getElementById("previewSocialContainer").classList.add("hidden")
-
-
+      previewEl.classList.add("hidden");
     }
+
+    // Update label text depending on whether any are selected
+    const anyChecked =
+      (this.hasFbTarget && this.fbTarget.checked) ||
+      (this.hasIgTarget && this.igTarget.checked) ||
+      (this.hasLiTarget && this.liTarget.checked) ||
+      (this.hasTwitterTarget && this.twitterTarget.checked);
+
+    document.getElementById("previewLabel").textContent =
+      anyChecked ? "Disable preview" : "Enable preview";
   }
 
-  async previewPostData() {
-    const imageUrl = this.imageUrlTarget.value.trim();
-    const fileInput = this.hasImageFileTarget ? this.imageFileTarget.files[0] : null;
+  disablePreview() {
+    document.getElementById("previewLabel").textContent = "Enable preview";
+    document.getElementById("facebookPreview")?.classList.add("hidden");
+    document.getElementById("instagramPreview")?.classList.add("hidden");
+    document.getElementById("linkedinPreview")?.classList.add("hidden");
+    document.getElementById("twitterPreview")?.classList.add("hidden");
+
+    // Uncheck all platform checkboxes
+    if (this.hasFbTarget) this.fbTarget.checked = false;
+    if (this.hasIgTarget) this.igTarget.checked = false;
+    if (this.hasLiTarget) this.liTarget.checked = false;
+    if (this.hasTwitterTarget) this.twitterTarget.checked = false;
+  }
+
+
+  // --- ✅ Facebook ---
+  updateFacebookPreview() {
     const caption = this.captionTarget.value.trim();
+    const imageUrl = this.imageUrlTarget.value.trim();
+    const files = this.hasImageFileTarget ? Array.from(this.imageFileTarget.files) : [];
 
-    const previewContainer = document.getElementById("previewContainer");
-    const previewCaption = document.querySelectorAll(".previewCaption");
-    const previewImages = document.querySelectorAll(".previewImage");
-    const previewPlaceholder = document.getElementById("previewPlaceholder");
+    const fbController = this.application.getControllerForElementAndIdentifier(
+      document.querySelector('[data-controller="facebook-preview"]'),
+      "facebook-preview"
+    );
 
-    previewCaption.forEach(captionElement => {
-      captionElement.textContent = caption || "No caption provided";
-    });
+    this.loadMediaAndUpdate(files, imageUrl, caption, fbController);
+  }
 
-    if (fileInput) {
-          const reader = new FileReader();
-      reader.onload = await function (e) {
-        previewImages.forEach(img => {
-          img.src = e.target.result;
-          img.classList.remove("hidden");
-        });
-      previewPlaceholder.classList.add("hidden");
-      };
-      reader.readAsDataURL(fileInput);
+  // --- ✅ Instagram ---
+  updateInstagramPreview() {
+    const caption = this.captionTarget.value.trim();
+    const imageUrl = this.imageUrlTarget.value.trim();
+    const files = this.hasImageFileTarget ? Array.from(this.imageFileTarget.files) : [];
+
+    const igController = this.application.getControllerForElementAndIdentifier(
+      document.querySelector('[data-controller="instagram-preview"]'),
+      "instagram-preview"
+    );
+
+    this.loadMediaAndUpdate(files, imageUrl, caption, igController);
+  }
+
+  // --- ✅ LinkedIn ---
+  updateLinkedinPreview() {
+    const caption = this.captionTarget.value.trim();
+    const imageUrl = this.imageUrlTarget.value.trim();
+    const files = this.hasImageFileTarget ? Array.from(this.imageFileTarget.files) : [];
+
+    const liController = this.application.getControllerForElementAndIdentifier(
+      document.querySelector('[data-controller="linkedin-preview"]'),
+      "linkedin-preview"
+    );
+
+    this.loadMediaAndUpdate(files, imageUrl, caption, liController);
+  }
+
+  // --- ✅ Twitter ---
+  updateTwitterPreview() {
+    const caption = this.captionTarget.value.trim();
+    const imageUrl = this.imageUrlTarget.value.trim();
+    const files = this.hasImageFileTarget ? Array.from(this.imageFileTarget.files) : [];
+
+    const twController = this.application.getControllerForElementAndIdentifier(
+      document.querySelector('[data-controller="twitter-preview"]'),
+      "twitter-preview"
+    );
+
+    this.loadMediaAndUpdate(files, imageUrl, caption, twController);
+  }
+
+  // --- Shared loader for all networks ---
+  loadMediaAndUpdate(files, imageUrl, caption, controller) {
+    if (!controller) return;
+
+    if (files.length > 0) {
+      const mediaArray = [];
+      let loadedCount = 0;
+
+      files.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const type = file.type.startsWith("video") ? "video" : "image";
+          mediaArray.push({ type, url: e.target.result });
+
+          loadedCount++;
+          if (loadedCount === files.length) {
+            controller.update(caption, mediaArray);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+
     } else if (imageUrl) {
-      previewImages.forEach(img => {
-        img.src = imageUrl;
-        img.classList.remove("hidden");
-      });
-      previewPlaceholder.classList.add("hidden");
-    } else {
-      previewImages.forEach(img => {
-        img.src = "";
-        img.classList.add("hidden");
-      });
-      previewPlaceholder.classList.remove("hidden");
-    }
+      const lowerUrl = imageUrl.toLowerCase();
+      const isVideo = /\.(mp4|webm|ogg)$/i.test(lowerUrl);
 
-    previewContainer.classList.remove("hidden");
+      controller.update(caption, [
+        { type: isVideo ? "video" : "image", url: imageUrl }
+      ]);
+
+    } else {
+      controller.update(caption, []);
+    }
   }
 
   updateButtonLabel() {
@@ -111,9 +173,21 @@ export default class extends Controller {
 
     // Show or hide the date input
     if (is_schedule) {
+        flatpickr(this.dateinputTarget, {
+      enableTime: true,
+      inline: true,         // always open calendar
+      dateFormat: "Y-m-d H:i",
+      defaultDate: document.getElementById("datetime").value
+    })
       this.dateinputTarget.classList.remove("hidden");
       console.log(document.getElementById("datetime").value)
     } else {
+        flatpickr(this.dateinputTarget, {
+      enableTime: true,
+      inline: false,         // always open calendar
+      dateFormat: "Y-m-d H:i",
+      defaultDate: document.getElementById("datetime").value
+    })
       this.dateinputTarget.classList.add("hidden");
     }
 

@@ -1,0 +1,44 @@
+<div data-controller="facebook-preview"
+     class="max-w-xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+
+  <!-- Post header -->
+  <div class="flex items-center p-4">
+    <div class="flex-shrink-0 w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-xl font-bold text-gray-700">
+      S
+    </div>
+    <div class="ml-3 flex-grow">
+      <p class="font-semibold text-gray-800">xyz</p>
+      <p class="text-sm text-gray-500">Just now</p>
+    </div>
+  </div>
+
+  <!-- Caption -->
+  <div class="px-4 pb-4 text-gray-800">
+    <p data-facebook-preview-target="caption" class="previewCaption">
+      Your caption will appear here
+    </p>
+  </div>
+
+  <!-- Media carousel -->
+  <div class="relative w-full bg-black aspect-square overflow-hidden">
+    <!-- Media wrapper (slides injected by Stimulus) -->
+    <div data-facebook-preview-target="mediaWrapper"
+         class="w-full h-full flex transition-transform duration-500 ease-in-out">
+      <!-- Images/videos go here -->
+    </div>
+
+    <!-- Prev Button -->
+    <button data-action="click->facebook-preview#prevMedia"
+            data-facebook-preview-target="prevButton"
+            class="absolute left-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow hidden">
+      ‹
+    </button>
+
+    <!-- Next Button -->
+    <button data-action="click->facebook-preview#nextMedia"
+            data-facebook-preview-target="nextButton"
+            class="absolute right-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow hidden">
+      ›
+    </button>
+  </div>
+</div>

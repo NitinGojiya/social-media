@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   allow_unauthenticated_access only: [ :new, :create ]
+  layout 'user_dashboard',only: [:profile]
   def new
     @user = User.new
   end

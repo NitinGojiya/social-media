@@ -1,0 +1,73 @@
+<!-- Sidebar area -->
+<div class="drawer-side">
+  <label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay"></label>
+  <aside class="w-80 min-h-full bg-white text-base-content border-r border-gray-200 shadow-lg flex flex-col">
+    <div class="p-6 flex-1">
+      <!-- Profile/Logo Section -->
+      <div class="flex items-center mb-6">
+        <div class="avatar online mr-4">
+          <div class="w-12 h-12 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+            <% if @user.profile_photo.attached? %>
+              <%= image_tag @user.profile_photo.variant(resize_to_limit: [150, 150]), class: "rounded-full shadow" %>
+            <% else %>
+              <img src="https://placehold.co/48x48/000000/FFFFFF?text=USER" alt="Post Universal Avatar" class="rounded-full"/>
+            <% end %>
+          </div>
+        </div>
+        <div>
+          <h2 class="text-xl font-semibold text-gray-800">    <a class="text-xl font-bold" href="/"><span class="text-[#3338A0] text-3xl">Post</span>Universal</a></h2>
+
+        </div>
+      </div>
+
+      <!-- Menu List -->
+      <ul class="menu w-full p-0">
+        <!-- Dashboard -->
+        <li class="rounded-lg mb-2">
+          <a href="/dashboard" class="flex items-center space-x-2 text-gray-600 hover:bg-gray-200 rounded-lg py-3 px-4 transition-colors">
+            <i class="fa-solid fa-house w-5 h-5"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <!-- Calendar -->
+        <li class="rounded-lg mb-2">
+          <a href="/calendar" class="flex items-center space-x-2 text-gray-600 hover:bg-gray-200 rounded-lg py-3 px-4 transition-colors">
+            <i class="fa-solid fa-calendar w-5 h-5"></i>
+            <span>Calendar</span>
+          </a>
+        </li>
+        <!-- Posts (Highlighted) -->
+        <li class="rounded-lg mb-2">
+          <a href="/post" class="flex items-center space-x-2  text-gray-800 font-medium rounded-lg py-3 px-4 transition-colors">
+            <i class="fa-solid fa-file-lines w-5 h-5"></i>
+            <span>Posts</span>
+          </a>
+        </li>
+
+      </ul>
+    </div>
+
+    <!-- Bottom Buttons -->
+    <div class="p-6 border-t border-gray-200 space-y-3">
+      <button id="newPostBtn" onclick="my_modal_1.showModal()" class="block w-full text-center cust-btn font-medium py-3 px-4 rounded-lg shadow hover:bg-blue-700 transition-colors">
+        <i class="fa-solid fa-plus mr-2"></i>New Post
+      </button>
+  <div class="dropdown dropdown-right dropdown-end">
+  <div tabindex="0" role="button" class="block w-full bg-transparent text-center font-medium py-3 px-4 rounded-lg  hover:bg-slate-200 transition-colors">
+    <i class="fa-solid fa-gear"></i>Settings
+  </div>
+  <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+    <li>
+      <%= link_to "Profile", profile_path, class: "w-full text-center" %>
+    </li>
+    <% if authenticated? %>
+      <li>
+        <%= button_to "Logout", session_path, method: :delete,
+            class: "w-full text-center bg-red-500 text-white px-4 py-1 font-medium rounded-lg shadow hover:bg-red-600 transition-colors"%>
+      </li>
+    <% end %>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>

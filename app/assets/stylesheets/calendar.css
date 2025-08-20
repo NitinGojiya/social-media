@@ -4,8 +4,8 @@
   left: 2px;
   z-index: 10;
   border: none;
-  background: #a83e29;
-  color: white;
+  background:var(--btn-bg);
+  color: var(--btn-text);
   border-radius: 20px;
   width: 80%;
   height: 20px;

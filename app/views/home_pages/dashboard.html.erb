@@ -1,0 +1,63 @@
+   <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <!-- Main title and subtitle section -->
+        <div class="mb-8">
+            <h1 class="text-4xl font-semibold text-gray-900 mb-2">Welcome back, <%=@user.email_address%></h1>
+            <h2 class="text-2xl font-semibold text-gray-800">Connected Platforms</h2>
+        </div>
+
+        <!-- Grid container for the social media cards.
+             It will be a single column on mobile, two on small screens,
+             and four on medium and larger screens. -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+            <!-- Facebook Card -->
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:scale-105 cursor-pointer p-6">
+                <!-- Icon container with a solid background matching the brand color -->
+                <div class="w-32 h-32 md:w-40 md:h-40 bg-[#1877F2] rounded-lg mb-4 flex items-center justify-center">
+                    <i class="fa-brands fa-facebook-f text-white text-6xl"></i>
+                </div>
+                <div class="text-left">
+                    <p class="text-xl font-medium text-gray-800 mb-1">Facebook</p>
+                    <button class="px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200"><% if @user.fb_page_id? %>Unlink<% else %><%= link_to "/auth/facebook"  do %>Link<%end%><% end %></button>
+                </div>
+            </div>
+
+            <!-- Instagram Card -->
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:scale-105 cursor-pointer p-6">
+                <!-- Icon container with a gradient background -->
+                <div class="w-32 h-32 md:w-40 md:h-40 bg-gradient-to-br from-purple-600 via-pink-500 to-yellow-400 rounded-lg mb-4 flex items-center justify-center">
+                    <i class="fa-brands fa-instagram text-white text-6xl"></i>
+                </div>
+                <div class="text-left">
+                    <p class="text-xl font-medium text-gray-800 mb-1">Instagram</p>
+                    <button class="px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200"><% if @user.fb_page_id? %>Unlink<% else %><%= link_to "/auth/facebook"  do %>Link<%end%><% end %></button>
+                </div>
+            </div>
+
+            <!-- LinkedIn Card -->
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:scale-105 cursor-pointer p-6">
+                <!-- Icon container with a solid background matching the brand color -->
+                <div class="w-32 h-32 md:w-40 md:h-40 bg-[#0A66C2] rounded-lg mb-4 flex items-center justify-center">
+                    <i class="fa-brands fa-linkedin-in text-white text-6xl"></i>
+                </div>
+                <div class="text-left">
+                    <p class="text-xl font-medium text-gray-800 mb-1">LinkedIn</p>
+                    <button class="px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200"><% if @user.linkedin_id? %>Unlink<% else %><%= link_to "/auth/linkedin" do %>Link<%end%><% end %></button>
+                </div>
+            </div>
+
+            <!-- Twitter Card -->
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:scale-105 cursor-pointer p-6">
+                <!-- Icon container with a solid background matching the brand color -->
+                <div class="w-32 h-32 md:w-40 md:h-40 bg-[#1DA1F2] rounded-lg mb-4 flex items-center justify-center">
+                    <i class="fa-brands fa-twitter text-blue text-6xl"></i>
+                </div>
+                <div class="text-left">
+                    <p class="text-xl font-medium text-gray-800 mb-1">Twitter</p>
+                    <button class="px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200"><% if @user.twitter_profile %>Unlink<% else %><%= link_to  "/auth/twitter" do %>Link<%end%><% end %></button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>

@@ -1,30 +1,41 @@
-<div class="navbar bg-base-100 shadow-sm sticky top-0 z-50">
+<div class="navbar  shadow-sm sticky top-0 z-50 bg-[#f8fbfc]">
   <div class="flex-1">
-    <a class="text-xl" href="/">Universal Posting</a>
+    <a class="text-xl font-bold" href="/"><span class="text-[#3338A0] text-3xl">Post</span>Universal</a>
   </div>
   <div class="flex gap-2 items-center justify-center">
-    <div class="navbar bg-base-100">
+    <div class="navbar">
   <!-- Desktop Menu -->
-  <div class="hidden md:flex space-x-4 ">
-    <a href="/" class="btn btn-ghost hover:bg-[#B12C00] hover:text-white rounded-lg hover:shadow-md">
-      <i class="fa-solid fa-house"></i> Home
+  <div class="hidden md:flex space-x-8  items-center justify-center ">
+    <a href="/" class="hover:text-blue-500">
+      Product
     </a>
-    <a href="/post" class="btn btn-ghost hover:bg-[#B12C00] hover:text-white rounded-lg hover:shadow-md">
-      <i class="fa-solid fa-photo-film"></i> Post
+    <a href="/solution" class="hover:text-blue-500">
+      Solutions
     </a>
-    <a href="/link_account" class="btn btn-ghost hover:bg-[#B12C00] hover:text-white rounded-lg hover:shadow-md">
-      <i class="fa-solid fa-link"></i> Link Social Account
+    <a href="/resources" class="hover:text-blue-500">
+       Resources
     </a>
-   <% if authenticated? %>
-    <a href="/calendar" class="btn btn-ghost bg-[#B12C00] hover:bg-[#c17962] text-white rounded-lg shadow-md  transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">
-      <i class="fa-solid fa-calendar"></i> Calendar
+    <a href="/pricing" class="hover:text-blue-500">
+       Pricing
+    </a>
+    <% unless authenticated? %>
+        <%=link_to dashboard_path,class:"flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 px-4 @[480px]:h-12 @[480px]:px-5 cust-btn text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] grow" do%>
+            <span class="truncate">Get Started</span>
+        <%end%>
+
+        <%=link_to new_session_path,class:"flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 px-4 @[480px]:h-12 @[480px]:px-5 cust-btn text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] grow" do%>
+            <span class="truncate">Log In</span>
+        <%end%>
+       <%else%>
+            <a href="/dashboard"
+        class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-[#38bef8] text-[#0d171c] text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] grow"
+      >
+      <span class="truncate">Dashboard</span>
     </a>
 
-      <button id="newPostBtn" onclick="my_modal_1.showModal()" class="btn btn-ghost bg-[#B12C00] hover:bg-[#c17962] text-white  rounded-lg shadow-md  transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">
-        + New Post
-      </button>
-    <% end %>
-  </div>
+    <%end%>
+
+    </div>
 
   <!-- Mobile Menu Icon -->
   <div class="md:hidden dropdown dropdown-end ml-auto">
@@ -32,21 +43,44 @@
       <i class="fa-solid fa-bars"></i>
     </div>
     <ul tabindex="0" class="menu dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-      <li><a href="/"><i class="fa-solid fa-house"></i> Home</a></li>
-      <li><a href="/post"><i class="fa-solid fa-photo-film"></i> Post</a></li>
-      <li><a href="/link_account"><i class="fa-solid fa-link"></i> Link Social Account</a></li>
       <li>
-         <%if authenticated? %>
-        <a href="/calendar" class="mt-2 bg-[#B12C00] hover:bg-[#c17962] text-white p-3 rounded-lg shadow-md  transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">
-          <i class="fa-solid fa-calendar"></i> Calendar
+        <a href="/" class="hover:text-blue-500">
+          Product
         </a>
+      </li>
+      <li>
+          <a href="/solution" class="hover:text-blue-500">
+        Solutions
+      </a>
+      </li>
+      <li>
+         <a href="/resources" class="hover:text-blue-500">
+       Resources
+    </a>
+      </li>
+      <li>
+      <a href="/pricing" class="hover:text-blue-500">
+       Pricing
+    </a>
+      </li>
+      <li>
+        <% unless authenticated? %>
+           <%=link_to dashboard_path,class:"flex min-w-[84px] mt-3 max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 px-4 @[480px]:h-12 @[480px]:px-5 cust-btn text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] grow" do%>
+            <span class="truncate">Get Started</span>
+          <%end%>
+      <%else%>
+            <a href="/dashboard"
+        class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-[#38bef8] text-[#0d171c] text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] grow"
+      >
+      <span class="truncate">Dashboard</span>
+      </a>
         <%end%>
       </li>
-      <%if authenticated? %>
+      <%unless authenticated? %>
       <li>
-        <button id="newPostBtn" onclick="my_modal_1.showModal()" class="mt-2 bg-[#B12C00] hover:bg-[#c17962] text-white p-3 rounded-lg shadow-md  transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50">
-          + New Post
-        </button>
+        <%=link_to new_session_path,class:"flex min-w-[84px] mt-3 max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 px-4 @[480px]:h-12 @[480px]:px-5 cust-btn text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] grow" do%>
+            <span class="truncate">Log In</span>
+        <%end%>
       </li>
       <%end%>
       <li><%#render "calendar" if authenticated? %></li>
@@ -54,42 +88,9 @@
   </div>
 </div>
 
-    <div class="dropdown dropdown-end">
-       <% if authenticated? %>
-      <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-          <% if @user.profile_photo.attached? %>
-            <%= image_tag @user.profile_photo.variant(resize_to_limit: [150, 150]),class:"w-10 h-10 rounded-full" %>
-          <% else %>
-          <i class="fa-solid fa-user text-2xl"></i>
-          <% end %>
-      </div>
-
-      <ul
-        tabindex="0"
-        class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-       <li>
-        <%= link_to profile_path, class: "justify-between" do %>
-          Profile
-          <span class="badge">New</span>
-        <% end %>
-      </li>
-        <li><%= button_to "Log out", session_path, method: :delete if authenticated? %></li>
-      </ul>
-      <% else %>
-            <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar flex items-center justify-center">
-              <i class="fa-solid fa-user-plus text-2xl"></i>
-            </div>
-
-        <ul
-          tabindex="0"
-          class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-          <li><%= link_to "Sign in", new_session_path %></li>
-          <li><%= link_to "Sign up", new_user_path %></li>
-        </ul>
-      <% end %>
-    </div>
+   <%= render 'shared/user_profile'%>
   </div>
 </div>
 
 
-<%=render "home_pages/post_modal" if authenticated? && @user %>
+

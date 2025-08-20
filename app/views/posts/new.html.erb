@@ -1,13 +1,7 @@
 <!-- Button to trigger modal -->
-<dialog id="my_modal_1" class="modal" data-controller="post">
-  <div class="modal-box relative">
-     <form method="dialog" class="absolute top-2 right-2">
-      <button
-        class="btn rounded-full w-[40px] h-[40px] bg-[#B12C00] hover:bg-[#c17962] text-white flex items-center justify-center shadow-md"
-      >
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </form>
+
+  <div class="relative overflow-y-auto" data-controller="post" >
+
     <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">Create New Post</h2>
 
     <%= tag.div data: { controller: "post-form" } do %>
@@ -165,7 +159,7 @@
             id="postButton"
             data-post-form-target="btnPost"
             data-action="click->post-form#submit"
-            class="cursor-pointer publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50"
+            class="cursor-pointer publish-btn cust-btn text-white px-5 py-2.5 rounded-lg shadow-md  transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50"
           >
             Post Now
           </button>
@@ -174,7 +168,7 @@
 
       <!-- Preview Checkbox -->
       <div class="form-group absolute top-[59px] z-10">
-        <%= render "home_pages/preview_checkbox" %>
+        <%= render "posts/preview_checkbox" %>
       </div>
     <% end %>
 
@@ -220,23 +214,22 @@
     <div class="mt-[50px] flex flex-col items-start justify-start mt-4" id="previewSocialContainer">
       <div class="hidden flex flex-col gap-2" id="facebookPreview">
         <div class="text-2xl"><i class="fa-brands fa-facebook text-blue-500"></i>Facebook</div>
-        <div><%= render "home_pages/facebook_preview" %></div>
+        <div><%= render "posts/facebook_preview" %></div>
       </div>
 
       <div class="hidden flex flex-col gap-2" id="instagramPreview">
         <div class="text-2xl mt-5"><i class="fa-brands fa-instagram text-red-500"></i>Instagram</div>
-        <div><%= render "home_pages/instagram_preview" %></div>
+        <div><%= render "posts/instagram_preview" %></div>
       </div>
 
       <div class="hidden flex flex-col gap-2" id="linkedinPreview">
         <div class="text-2xl"><i class="fa-brands fa-linkedin text-blue-700"></i>LinkedIn</div>
-        <div><%= render "home_pages/linkedin_preview" %></div>
+        <div><%= render "posts/linkedin_preview" %></div>
       </div>
 
       <div class="hidden flex flex-col gap-2" id="twitterPreview">
         <div class="text-2xl"><i class="fa-brands fa-square-x-twitter text-blue-700"></i>Twitter</div>
-        <div><%= render "home_pages/twitter_preview" %></div>
+        <div><%= render "posts/twitter_preview" %></div>
       </div>
     </div>
-  </div>
-</dialog>
+

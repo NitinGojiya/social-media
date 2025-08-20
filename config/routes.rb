@@ -15,10 +15,15 @@ Rails.application.routes.draw do
   delete "/delete_post/:id", to: "posts#destroy", as: :delete_post
   delete "/scheduled_posts_delete/:id", to: "posts#scheduled_posts_delete", as: :scheduled_posts_delete
 
-  get "post", to: "home_pages#post", as: "post"
+  get "post", to: "posts#post", as: "post"
+
   get "link_account", controller: "home_pages", as: "link_account"
   get "calendar_events", to: "home_pages#calendar_events"
   get "calendar", controller: "home_pages"
+  get "dashboard", to: "home_pages#dashboard", as: "dashboard"
+  get "solution",  to: "home_pages#solution", as: "solution"
+  get "resources",  to: "home_pages#resources", as: "resources"
+  get "pricing",  to: "home_pages#pricing", as: "pricing"
 
   # ig and fb routes
   post "ig_fb_posts", to: "posts#create", as: "ig_fb_posts"

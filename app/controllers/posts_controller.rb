@@ -1,8 +1,19 @@
 class PostsController < ApplicationController
   after_action :delete_uploaded_file, only: [ :create ]
+  layout "user_dashboard"
   require "oauth"
 
   ALLOWED_CONTENT_TYPES = %w[image/jpeg image/png image/gif video/mp4 video/quicktime]
+  def post
+    @posts_future = Current.session.user.posts.scheduled.order(scheduled_at: :asc)
+    @posts_posted = Current.session.user.posts.posted.order(created_at: :desc)
+    @user = Current.session.user
+    @new_post = Current.session.user.posts.new
+  end
+
+  def new
+    @user = Current.session.user
+  end
 
   def create
     user             = Current.session.user

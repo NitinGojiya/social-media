@@ -1,46 +1,66 @@
-<div class="mx-auto md:w-2/3 max-w-md mt-5">
-  <div class="flex items-center justify-center">
-    <h1 class="font-bold text-4xl">Sign in</h1>
-  </div>
+<div class="flex flex-col md:flex-row mx-auto max-w-6xl mt-5 gap-10 p-5">
 
-  <%= form_with url: session_url, class: "contents" do |form| %>
+  <!-- Left Column: Sign-In Form -->
+  <div class="md:w-1/3 h-[500px]">
+    <div class="flex items-center justify-center">
+      <h1 class="font-bold text-4xl">Sign in To Post Universal</h1>
+    </div>
+
+    <%= form_with url: session_url, class: "contents" do |form| %>
+      <div class="my-10">
+        <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address], class: "block shadow-sm rounded-md border border-gray-400 focus:outline-[#38bef8] px-3 py-2 mt-2 w-full" %>
+      </div>
+
+      <div class="my-10">
+        <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "Enter your password", maxlength: 72, class: "block shadow-sm rounded-md border border-gray-400 focus:outline-[#38bef8] px-3 py-2 mt-2 w-full" %>
+      </div>
+
+      <div class="col-span-6 sm:flex sm:items-center sm:gap-4">
+        <div class="inline">
+          <%= form.submit "Sign in", class: "cursor-pointer cust-btn px-5 py-2.5 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50" %>
+        </div>
+
+        <div class="mt-4 text-sm text-gray-500 sm:mt-0">
+          <%= link_to "sign up", new_user_path, class: "text-gray-700 underline hover:no-underline" %>
+        </div>
+
+        <div class="mt-4 text-sm text-gray-500 sm:mt-0">
+          <%= link_to "Forgot password?", new_password_path, class: "text-gray-700 underline hover:no-underline" %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Divider with OR -->
+    <div class="flex items-center my-6">
+      <div class="flex-grow border-t border-gray-300"></div>
+      <span class="mx-3 text-gray-500 text-sm uppercase font-medium">or</span>
+      <div class="flex-grow border-t border-gray-300"></div>
+    </div>
+
+    <!-- Google Sign-In Button -->
     <div class="my-5">
-      <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address], class: "block shadow-sm rounded-md border border-gray-400 focus:outline-[#B12C00] px-3 py-2 mt-2 w-full" %>
+      <a href="/auth/google_oauth2"
+         class="flex items-center justify-center gap-3 w-full rounded-md px-3.5 py-2.5 cust-btn font-medium shadow-sm transition">
+        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google logo" class="w-5 h-5 bg-white rounded-full p-0.5">
+        <span>Sign in with Google</span>
+      </a>
     </div>
-
-    <div class="my-5">
-      <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "Enter your password", maxlength: 72, class: "block shadow-sm rounded-md border border-gray-400 focus:outline-[#B12C00] px-3 py-2 mt-2 w-full" %>
-    </div>
-
-    <div class="col-span-6 sm:flex sm:items-center sm:gap-4">
-      <div class="inline">
-        <%= form.submit "Sign in", class: "cursor-pointer publish-btn bg-[#B12C00] text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-[#c17962] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#c17962] focus:ring-opacity-50" %>
-      </div>
-
-      <div class="mt-4 text-sm text-gray-500 sm:mt-0">
-        <%= link_to "sign up", new_user_path, class: "text-gray-700 underline hover:no-underline" %>
-      </div>
-
-      <div class="mt-4 text-sm text-gray-500 sm:mt-0">
-        <%= link_to "Forgot password?", new_password_path, class: "text-gray-700 underline hover:no-underline" %>
-      </div>
-    </div>
-  <% end %>
-
-  <!-- Divider with OR -->
-  <div class="flex items-center my-6">
-    <div class="flex-grow border-t border-gray-300"></div>
-    <span class="mx-3 text-gray-500 text-sm uppercase font-medium">or</span>
-    <div class="flex-grow border-t border-gray-300"></div>
   </div>
 
-  <!-- Google Sign-In Button -->
-  <div class="my-5">
-    <a href="/auth/google_oauth2"
-       class="flex items-center justify-center gap-3 w-full rounded-md px-3.5 py-2.5 bg-[#B12C00] hover:bg-[#c17962] text-white font-medium shadow-sm transition">
-      <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google logo" class="w-5 h-5 bg-white rounded-full p-0.5">
-      <span>Sign in with Google</span>
-    </a>
+  <!-- Right Column: Image Grid -->
+  <div class="md:w-1/2 grid grid-cols-2 grid-rows-2 gap-4">
+    <!-- Portrait Image (tall) -->
+    <div class="row-span-2">
+      <img src="https://images.unsplash.com/photo-1620794511798-d7ba5299a087?q=80&w=698&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Portrait" class="w-full h-full object-cover rounded-lg shadow-md">
+    </div>
+
+    <!-- Two smaller images -->
+    <div>
+      <img src="https://plus.unsplash.com/premium_photo-1681883461099-c20b7b0a541c?q=80&w=1176&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Nature" class="w-full h-full object-cover rounded-lg shadow-md">
+    </div>
+    <div>
+      <img src="https://images.unsplash.com/photo-1704018453307-d563498b585b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="City" class="w-full h-full object-cover rounded-lg shadow-md">
+    </div>
   </div>
+
 </div>
-

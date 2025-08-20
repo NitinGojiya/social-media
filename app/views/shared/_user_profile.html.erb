@@ -1,0 +1,34 @@
+ <div class="dropdown dropdown-end">
+       <% if authenticated? %>
+      <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+          <% if @user.profile_photo.attached? %>
+            <%= image_tag @user.profile_photo.variant(resize_to_limit: [150, 150]),class:"w-10 h-10 rounded-full" %>
+          <% else %>
+          <i class="fa-solid fa-user text-2xl"></i>
+          <% end %>
+      </div>
+
+      <ul
+        tabindex="0"
+        class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+       <li>
+        <%= link_to profile_path, class: "justify-between" do %>
+          Profile
+          <span class="badge">New</span>
+        <% end %>
+      </li>
+        <li><%= button_to "Log out", session_path, method: :delete if authenticated? %></li>
+      </ul>
+      <% else %>
+            <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar flex items-center justify-center">
+              <i class="fa-solid fa-user-plus text-2xl"></i>
+            </div>
+
+        <ul
+          tabindex="0"
+          class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+          <li><%= link_to "Sign in", new_session_path %></li>
+          <li><%= link_to "Sign up", new_user_path %></li>
+        </ul>
+      <% end %>
+    </div>

@@ -1,0 +1,55 @@
+<div data-controller="instagram-preview"
+     class="bg-white rounded-xl shadow-md overflow-hidden max-w-sm mx-auto my-8 border border-gray-200">
+
+  <!-- Post Header -->
+  <div class="flex items-center justify-between p-4">
+    <div class="flex items-center space-x-2">
+      <div class="flex-shrink-0">
+        <img class="h-8 w-8 rounded-full"
+             src="https://placehold.co/32x32/1d4ed8/ffffff?text=U"
+             alt="Profile Picture">
+      </div>
+      <p class="text-sm font-semibold text-gray-900">Username</p>
+    </div>
+    <button class="text-gray-500 hover:text-gray-900 transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Media Carousel -->
+  <div class="relative bg-black overflow-hidden">
+    <div data-instagram-preview-target="mediaWrapper"
+         class="w-full h-[500px] flex transition-transform duration-300 ease-in-out">
+      <!-- slides injected by controller -->
+    </div>
+
+    <!-- Prev / Next Arrows -->
+    <button data-action="click->instagram-preview#prev"
+            class="absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-2">
+      ‹
+    </button>
+    <button data-action="click->instagram-preview#next"
+            class="absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-2">
+      ›
+    </button>
+
+    <!-- Dots Indicator -->
+    <div class="absolute bottom-2 w-full flex justify-center space-x-1"
+         data-instagram-preview-target="dots">
+      <!-- dots injected -->
+    </div>
+  </div>
+
+  <!-- Post Footer -->
+  <div class="p-4">
+    <!-- Caption -->
+    <p data-instagram-preview-target="caption"
+       class="text-sm font-medium text-gray-700 mb-1">
+      Write a caption...
+    </p>
+
+    <p class="text-xs text-gray-500">Just now</p>
+  </div>
+</div>

@@ -1,6 +1,21 @@
 class HomePagesController < ApplicationController
-  allow_unauthenticated_access only: %i[ index ]
+  allow_unauthenticated_access only: %i[ index solution pricing resources]
+  layout "user_dashboard", except: [ :index, :link_account, :solution, :pricing, :resources]
   def index
+    @user = Current.session.user if authenticated?
+  end
+
+  def dashboard
+    @user = Current.session.user
+  end
+
+  def solution
+    @user = Current.session.user if authenticated?
+  end
+  def pricing
+    @user = Current.session.user if authenticated?
+  end
+  def resources
     @user = Current.session.user if authenticated?
   end
 
