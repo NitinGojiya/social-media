@@ -231,7 +231,7 @@ end
   private
 
   def post_params
-    params.require(:post).permit(:caption, :scheduled_at, :fb, :ig, :linkedin)
+    params.require(:post).permit(:caption, :scheduled_at, :fb, :ig, :linkedin,:twitter)
   end
 
  def attach_photos(post, files)

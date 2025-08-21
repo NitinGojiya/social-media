@@ -1,6 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
+    static targets = ["generateButton","caption"]
   open(event) {
     const btn = event.currentTarget
 
@@ -12,6 +13,7 @@ export default class extends Controller {
     document.getElementById("post-fb").checked = btn.dataset.postFb === "1"
     document.getElementById("post-ig").checked = btn.dataset.postIg === "1"
     document.getElementById("post-linkedin").checked = btn.dataset.postLinkedin === "1"
+    document.getElementById("post-twitter").checked = btn.dataset.postTwitter === "1";
 
     // Set the form action dynamically
     // document.getElementById("edit-form").action = `/scheduled_update/${btn.dataset.postId}`
@@ -40,5 +42,41 @@ export default class extends Controller {
 
   return `${year}-${month}-${day}T${hours}:${minutes}` // Local time format
 }
+
+  async generate() {
+    const prompt = this.captionTarget.value || "Generate a caption for my post"
+
+    // Show loader
+    this.captionTarget.disabled = true
+    const originalText = this.captionTarget.value
+    this.captionTarget.value = "Generating caption..."
+    this.generateButtonTarget.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`
+    try {
+      const response = await fetch("/ai/generate_caption", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ prompt: prompt })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        this.captionTarget.value = data.caption
+      } else {
+        alert("Something went wrong generating the caption.")
+        this.captionTarget.value = originalText
+      }
+    } catch (error) {
+      console.error("Request failed:", error)
+      this.captionTarget.value = originalText
+      this.generateButtonTarget.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i>`
+      // alert("Something went wrong.")
+    } finally {
+      this.captionTarget.disabled = false
+      this.generateButtonTarget.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i>`
+    }
+  }
 
 }
