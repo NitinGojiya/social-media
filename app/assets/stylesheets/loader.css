@@ -1,15 +1,23 @@
- #fullscreen-loader {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(255, 255, 255, 0.7);
-    align-items: center;
-    justify-content: center;
-  }
+/* By default loader is hidden */
+#fullscreen-loader {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.7);
+  align-items: center;
+  justify-content: center;
+}
+
+/* Show loader when form is submitting (button disabled) */
+.profile-loader-form:has(.submit-btn[disabled]) ~ #fullscreen-loader {
+  display: flex;
+}
+
+/* Animation you already made */
 .loading-wave {
   width: 300px;
   height: 100px;
@@ -27,28 +35,12 @@
   animation: loading-wave-animation 1s ease-in-out infinite;
 }
 
-.loading-bar:nth-child(2) {
-  animation-delay: 0.1s;
-}
-
-.loading-bar:nth-child(3) {
-  animation-delay: 0.2s;
-}
-
-.loading-bar:nth-child(4) {
-  animation-delay: 0.3s;
-}
+.loading-bar:nth-child(2) { animation-delay: 0.1s; }
+.loading-bar:nth-child(3) { animation-delay: 0.2s; }
+.loading-bar:nth-child(4) { animation-delay: 0.3s; }
 
 @keyframes loading-wave-animation {
-  0% {
-    height: 10px;
-  }
-
-  50% {
-    height: 50px;
-  }
-
-  100% {
-    height: 10px;
-  }
+  0%   { height: 10px; }
+  50%  { height: 50px; }
+  100% { height: 10px; }
 }

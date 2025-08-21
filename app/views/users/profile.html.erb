@@ -20,27 +20,32 @@
     </div>
 
     <!-- Profile Photo Upload Form -->
-    <%= form_with model: @user, url: profile_create_path, method: :post, local: true, html: { class: "flex justify-between items-center py-3" } do |f| %>
-      <div class="flex items-center gap-3">
-        <i class="fa-regular fa-image text-gray-600 text-lg"></i>
-        <div>
-          <p class="font-medium text-gray-800">Profile Photo</p>
-          <p class="text-sm text-gray-500">Set or change your profile photo</p>
-        <% if @user.persisted? && @user.profile_photo.attached? %>
-          <div class="mt-2">
-            <p class="text-xs text-gray-500 mb-1">Current photo:</p>
-            <%= image_tag @user.profile_photo.variant(resize_to_limit: [150, 150]), class: "rounded-lg shadow" %>
-          </div>
-        <% end %>
+<%= form_with model: @user, url: profile_create_path, method: :post, local: true,
+  html: { class: "flex justify-between items-center py-3 relative loader-form" } do |f| %>
 
+  <div class="flex items-center gap-3">
+    <i class="fa-regular fa-image text-gray-600 text-lg"></i>
+    <div>
+      <p class="font-medium text-gray-800">Profile Photo</p>
+      <p class="text-sm text-gray-500">Set or change your profile photo</p>
+      <% if @user.persisted? && @user.profile_photo.attached? %>
+        <div class="mt-2">
+          <p class="text-xs text-gray-500 mb-1">Current photo:</p>
+          <%= image_tag @user.profile_photo.variant(resize_to_limit: [150, 150]), class: "rounded-lg shadow" %>
         </div>
-      </div>
-      <div class="flex items-center gap-2">
-        <%= f.file_field :profile_photo, class: "hidden", id: "profile_photo_input" %>
-        <label for="profile_photo_input" class="px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200 cursor-pointer">Choose</label>
-        <%= f.submit "Save", class: "px-4 py-1 cust-btn rounded-md text-sm font-medium" %>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-2">
+    <%= f.file_field :profile_photo, class: "hidden", id: "profile_photo_input" %>
+    <label for="profile_photo_input" class="px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200 cursor-pointer">Choose</label>
+
+    <%= f.submit "Save",
+      class: "px-4 py-1 cust-btn rounded-md text-sm font-medium relative submit-btn" %>
+  </div>
+<% end %>
+
   </div>
 
   <!-- Linked Accounts -->

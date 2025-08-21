@@ -2,9 +2,21 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["schedule", "dateinput"]
+   static initialized = false
 
-  connect() {
-    const calendar = new window.FullCalendar.Calendar(this.element, {
+   connect() {
+  if (this.calendar) return // already initialized
+  this.initCalendar()
+}
+
+  disconnect() {
+    if (this.calendar) {
+      this.calendar.destroy() // cleans DOM + listeners
+      this.calendar = null
+    }
+  }
+   initCalendar(){
+    this.calendar = new window.FullCalendar.Calendar(this.element, {
       headerToolbar: {
         start: 'dayGridMonth,timeGridWeek,timeGridDay',
         center: 'title',
@@ -61,7 +73,7 @@ export default class extends Controller {
 
       // Week/Day view: "+" on time slot hover
       slotLaneDidMount: function (info) {
-        if (!["timeGridWeek", "timeGridDay"].includes(calendar.view.type)) return
+        if (!["timeGridWeek", "timeGridDay"].includes(this.calendar.view.type)) return
 
         const plusBtn = document.createElement("button")
         plusBtn.textContent = "+"
@@ -111,7 +123,7 @@ export default class extends Controller {
       },
 
       dateClick: function (info) {
-        if (["timeGridWeek", "timeGridDay"].includes(calendar.view.type)) {
+        if (["timeGridWeek", "timeGridDay"].includes(this.calendar.view.type)) {
           if (typeof my_modal_1 !== 'undefined' && typeof my_modal_1.showModal === 'function') {
             my_modal_1.showModal()
           }
@@ -223,7 +235,7 @@ export default class extends Controller {
       },
     })
 
-    calendar.render()
+    this.calendar.render()
 
     function formatDateForDatetimeLocal(date) {
       const pad = (n) => String(n).padStart(2, '0')
@@ -266,6 +278,6 @@ export default class extends Controller {
 
       document.getElementById("event_details_modal").showModal()
     }
-
+  this.calendar.render()
   }
 }
