@@ -1,5 +1,5 @@
  <div class="dropdown dropdown-end">
-       <% if authenticated? %>
+       <% if authenticated? && @user%>
       <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
           <% if @user.profile_photo.attached? %>
             <%= image_tag @user.profile_photo.variant(resize_to_limit: [150, 150]),class:"w-10 h-10 rounded-full" %>
