@@ -56,7 +56,11 @@
             <p class="text-sm text-gray-500">Share your posts on Instagram</p>
           </div>
         </div>
-        <button class="px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200"><% if @user.ig_user_id? %>Unlink<% else %><%= link_to "/auth/facebook"  do %>Link<%end%><% end %></button>
+        <% if @user.ig_user_id? %>
+          <%= button_to "Unlink", unlink_instagram_path, method: :delete, class: "px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200" %>
+        <% else %>
+          <%= link_to "Link", "/auth/facebook", class: "px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200" %>
+        <% end %>
       </div>
 
       <div class="flex justify-between items-center">
@@ -67,7 +71,11 @@
             <p class="text-sm text-gray-500">Share your posts on Facebook</p>
           </div>
         </div>
-        <button class="px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200"><% if @user.fb_page_id? %>Unlink<% else %><%= link_to "/auth/facebook"  do %>Link<%end%><% end %></button>
+         <% if @user.fb_page_id? %>
+          <%= button_to "Unlink", unlink_facebook_path, method: :delete, class: "px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200" %>
+        <% else %>
+          <%= link_to "Link", "/auth/facebook", class: "px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200" %>
+        <% end %>
       </div>
 
       <div class="flex justify-between items-center">
@@ -78,7 +86,11 @@
             <p class="text-sm text-gray-500">Share your posts on LinkedIn</p>
           </div>
         </div>
-        <button class="px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200"><% if @user.linkedin_id? %>Unlink<% else %><%= link_to "/auth/linkedin" do %>Link<%end%><% end %></button>
+        <% if @user.linkedin_id? %>
+          <%= button_to "Unlink", unlink_linkedin_path, method: :delete, class: "px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200" %>
+        <% else %>
+          <%= link_to "Link", "/auth/linkedin", class: "px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200" %>
+        <% end %>
       </div>
 
       <div class="flex justify-between items-center">
@@ -89,7 +101,11 @@
             <p class="text-sm text-gray-500">Share your posts on Twitter</p>
           </div>
         </div>
-        <button class="px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200"><% if @user.twitter_profile %>Unlink<% else %><%= link_to  "/auth/twitter" do %>Link<%end%><% end %></button>
+        <% if @user.twitter_profile %>
+          <%= button_to "Unlink", unlink_twitter_path, method: :delete, class: "px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200" %>
+        <% else %>
+          <%= link_to "Link", "/auth/twitter", class: "px-4 py-1 bg-gray-100 rounded-md text-sm font-medium hover:bg-gray-200" %>
+        <% end %>
       </div>
 
     </div>

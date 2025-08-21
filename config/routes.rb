@@ -5,9 +5,13 @@ Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
   resources :users, only: [ :new, :create ]
-  get "profile", to: "users#profile", as: "profile"
+  get "profile", to: "users#profile", as: :profile
   post "/profile",        to: "users#profile_create", as: :profile_create
   delete "/profile/delete", to: "users#delete_profile", as: :delete_profile
+  delete "/facebook/profile/delete", to: "users#unlink_facebook", as: :unlink_facebook
+  delete "/instagram/profile/delete", to: "users#unlink_instagram", as: :unlink_instagram
+  delete "/linkedin/profile/delete", to: "users#unlink_linkedin", as: :unlink_linkedin
+  delete "/twitter/profile/delete", to: "users#unlink_twitter", as: :unlink_twitter
   get "/auth/google_oauth2/callback", to: "sessions#omniauth"
 
   resources :posts, only: [ :new ]
